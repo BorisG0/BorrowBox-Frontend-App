@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
-  appName: 'fe-app',
+  appName: 'Borrow Box',
   webDir: 'dist',
   server: {
     androidScheme: 'https'
