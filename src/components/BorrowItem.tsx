@@ -1,16 +1,19 @@
-import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip } from "@ionic/react";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip } from "@ionic/react";
 
-const BorrowItem: React.FC = () => {
+const BorrowItem: React.FC<{ item: any}> = ({item}) => {
     return(
         <IonCard>
             <IonCardHeader>
-                <IonCardTitle>Ausgestopfter Papagei</IonCardTitle>
+                <IonCardTitle>{item.name}</IonCardTitle>
                 <IonCardSubtitle>
-                    <IonChip color="primary">Biologie</IonChip>
-                    <IonChip color="secondary">Tier</IonChip>
+                    {item.tags.map((tag: string, index: number) =>
+                        <IonChip key={index}>{tag}</IonChip>
+                    )}
                 </IonCardSubtitle>
             </IonCardHeader>
             <IonCardContent></IonCardContent>
+            <IonButton>Details</IonButton>
+            <IonButton>Borrow</IonButton>
         </IonCard>
     )
 }
