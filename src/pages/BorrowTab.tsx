@@ -11,12 +11,14 @@ const BorrowTab: React.FC = () => {
             name: "Ausgestopfter Papagei",
             tags: ["Biologie", "Tier"],
             description: "Ein ausgestopfter Papagei, der auf einem Ast sitzt.",
+            available: true,
         },
         {
             id: 2,
             name: "Schutzbrillen",
             tags: ["Chemie", "Brille"],
             description: "Schutzbrillen für den Chemieunterricht.",
+            available: true,
         }
     ]
     
