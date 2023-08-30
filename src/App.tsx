@@ -19,6 +19,7 @@ import {
   home,
   cube,
   apps,
+  addCircle,
 } from "ionicons/icons";
 import Tab1 from "./pages/Tab1";
 import Tab2 from "./pages/Tab2";
@@ -45,6 +46,7 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import { useState } from "react";
 import Header from "./components/Header";
+import BorrowTab from "./pages/BorrowTab";
 
 setupIonicReact();
 interface CartItem {
@@ -75,6 +77,9 @@ const App: React.FC = () => {
             <Route exact path="/user">
               <UserProfile/>
             </Route>
+            <Route exact path="/borrow">
+              <BorrowTab/>
+            </Route>
             <Route exact path="/">
               <Redirect to="/tab1" />
             </Route>
@@ -94,6 +99,10 @@ const App: React.FC = () => {
               {cartItems.length > 0 && (
                 <IonBadge color="danger">{cartItems.length}</IonBadge>
               )}
+            </IonTabButton>
+            <IonTabButton tab="borrow" href="/borrow">
+              <IonIcon aria-hidden="true" icon={addCircle} />
+              <IonLabel>Borrow</IonLabel>
             </IonTabButton>
           </IonTabBar>
         </IonTabs>
