@@ -1,6 +1,10 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip } from "@ionic/react";
 
-const BorrowItem: React.FC<{ item: any}> = ({item}) => {
+const BorrowItem: React.FC<{
+        item: any,
+        itemAction: (item: any) => void,
+        itemActionText?: string,
+    }> = ({item, itemAction, itemActionText}) => {
     return(
         <IonCard>
             <IonCardHeader>
@@ -20,7 +24,9 @@ const BorrowItem: React.FC<{ item: any}> = ({item}) => {
             
             <div style={{float: "right", padding: "10px"}}>
                 <IonButton fill="clear">Details</IonButton>
-                <IonButton>Ausleihen</IonButton>
+                <IonButton onClick={() => itemAction(item)}>
+                    {itemActionText ? itemActionText : "Ausleihen"}
+                </IonButton>
             </div>
             
         </IonCard>
