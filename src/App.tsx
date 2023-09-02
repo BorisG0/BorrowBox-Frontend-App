@@ -22,6 +22,7 @@ import {
   cube,
   apps,
   addCircle,
+  layers,
 } from "ionicons/icons";
 import Tab1 from "./pages/Tab1";
 import Tab2 from "./pages/Tab2";
@@ -47,7 +48,7 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
 
@@ -64,6 +65,34 @@ const App: React.FC = () => {
 
   const [availableItems, setAvailableItems] = useState([] as any[]);
   const [myItems, setMyItems] = useState([] as any[]);
+
+  const dummyItems = [
+      {
+          id: 1,
+          name: "Ausgestopfter Papagei",
+          tags: ["Biologie", "Tier"],
+          description: "Ein ausgestopfter Papagei, der auf einem Ast sitzt.",
+          available: true,
+      },
+      {
+          id: 2,
+          name: "Schutzbrillen",
+          tags: ["Chemie", "Brille"],
+          description: "Schutzbrillen für den Chemieunterricht.",
+          available: true,
+      },
+      {
+          id: 3,
+          name: "Experiment Handbuch",
+          tags: ["Buch", "Chemie"],
+          description: "Ein Handbuch mit vielen Experimenten.",
+          available: true,
+      }
+  ]
+
+  useEffect(() => {
+      setAvailableItems(dummyItems);
+  }, []);
 
   const borrowItem = (item: any) => {
     const updatedAvailableItems = availableItems.filter((availableItem) => availableItem.id !== item.id);
@@ -101,10 +130,10 @@ const App: React.FC = () => {
                 <UserProfile/>
               </Route>
               <Route exact path="/borrow">
-                <BorrowTab availableItems={availableItems} setAvailableItems={setAvailableItems} borrowItem={borrowItem}/>
+                <BorrowTab availableItems={availableItems} borrowItem={borrowItem}/>
               </Route>
               <Route exact path="/myItems">
-                <MyItemsTab myItems={myItems} setMyItems={setMyItems} returnItem={returnItem}/>
+                <MyItemsTab myItems={myItems} returnItem={returnItem}/>
               </Route>
               <Route exact path="/">
                 <Redirect to="/tab1" />
@@ -131,7 +160,7 @@ const App: React.FC = () => {
                 <IonLabel>Borrow</IonLabel>
               </IonTabButton>
               <IonTabButton tab="myItems" href="/myItems">
-                <IonIcon aria-hidden="true" icon={addCircle} />
+                <IonIcon aria-hidden="true" icon={layers} />
                 <IonLabel>My Items</IonLabel>
               </IonTabButton>
             </IonTabBar>
