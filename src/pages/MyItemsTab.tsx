@@ -2,8 +2,11 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/rea
 import ExploreContainer from '../components/ExploreContainer';
 import BorrowItem from '../components/BorrowItem';
 
-const MyItemsTab: React.FC<{ myItems: any[], setMyItems: React.Dispatch<React.SetStateAction<any[]>> }> 
-    = ({myItems, setMyItems}) => {
+const MyItemsTab: React.FC<{
+        myItems: any[],
+        setMyItems: React.Dispatch<React.SetStateAction<any[]>>,
+        returnItem: (item: any) => void,
+    }> = ({myItems, setMyItems, returnItem}) => {
 
     const item = {
         id: 1,
@@ -17,11 +20,9 @@ const MyItemsTab: React.FC<{ myItems: any[], setMyItems: React.Dispatch<React.Se
     return (
         <IonPage>
         <IonContent fullscreen>
-
-            <BorrowItem item={item} />
-
+            
             {myItems.map((item, index) =>
-                <BorrowItem item={item} key={index}/>
+                <BorrowItem item={item} itemAction={returnItem} key={index} itemActionText='zurückgeben'/>
             )}
 
         </IonContent>

@@ -61,7 +61,23 @@ interface CartItem {
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState([] as CartItem[]);
+
   const [availableItems, setAvailableItems] = useState([] as any[]);
+  const [myItems, setMyItems] = useState([] as any[]);
+
+  const borrowItem = (item: any) => {
+    const updatedAvailableItems = availableItems.filter((availableItem) => availableItem.id !== item.id);
+    setAvailableItems(updatedAvailableItems);
+    const updatedMyItems = [...myItems, item];
+    setMyItems(updatedMyItems);
+  }
+
+  const returnItem = (item: any) => {
+    const updatedMyItems = myItems.filter((myItem) => myItem.id !== item.id);
+    setMyItems(updatedMyItems);
+    const updatedAvailableItems = [...availableItems, item];
+    setAvailableItems(updatedAvailableItems);
+  }
 
   return (
     <IonApp>
@@ -85,10 +101,10 @@ const App: React.FC = () => {
                 <UserProfile/>
               </Route>
               <Route exact path="/borrow">
-                <BorrowTab availableItems={availableItems} setAvailableItems={setAvailableItems}/>
+                <BorrowTab availableItems={availableItems} setAvailableItems={setAvailableItems} borrowItem={borrowItem}/>
               </Route>
               <Route exact path="/myItems">
-                <MyItemsTab myItems={availableItems} setMyItems={setAvailableItems}/>
+                <MyItemsTab myItems={myItems} setMyItems={setMyItems} returnItem={returnItem}/>
               </Route>
               <Route exact path="/">
                 <Redirect to="/tab1" />
