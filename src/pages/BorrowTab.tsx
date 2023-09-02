@@ -31,7 +31,7 @@ const BorrowTab: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader>
             <IonToolbar>
-                <IonTitle size="large">Tab 3</IonTitle>
+                <IonTitle size="large">Borrow</IonTitle>
             </IonToolbar>
         </IonHeader>
         {availableItems.map((item, index) =>
