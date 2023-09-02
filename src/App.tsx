@@ -61,6 +61,7 @@ interface CartItem {
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState([] as CartItem[]);
+  const [availableItems, setAvailableItems] = useState([] as any[]);
 
   return (
     <IonApp>
@@ -84,10 +85,10 @@ const App: React.FC = () => {
                 <UserProfile/>
               </Route>
               <Route exact path="/borrow">
-                <BorrowTab/>
+                <BorrowTab availableItems={availableItems} setAvailableItems={setAvailableItems}/>
               </Route>
               <Route exact path="/myItems">
-                <MyItemsTab/>
+                <MyItemsTab myItems={availableItems} setMyItems={setAvailableItems}/>
               </Route>
               <Route exact path="/">
                 <Redirect to="/tab1" />

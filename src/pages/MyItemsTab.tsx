@@ -2,11 +2,12 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/rea
 import ExploreContainer from '../components/ExploreContainer';
 import BorrowItem from '../components/BorrowItem';
 
-const MyItemsTab: React.FC = () => {
+const MyItemsTab: React.FC<{ myItems: any[], setMyItems: React.Dispatch<React.SetStateAction<any[]>> }> 
+    = ({myItems, setMyItems}) => {
 
     const item = {
-        id: 2,
-        name: "Schutzbrillen",
+        id: 1,
+        name: "My Test Item",
         tags: ["Chemie", "Brille"],
         description: "Schutzbrillen für den Chemieunterricht.",
         available: true,
@@ -16,13 +17,12 @@ const MyItemsTab: React.FC = () => {
     return (
         <IonPage>
         <IonContent fullscreen>
-            <IonHeader>
-            <IonToolbar>
-                <IonTitle size="large">my items</IonTitle>
-            </IonToolbar>
-            </IonHeader>
 
             <BorrowItem item={item} />
+
+            {myItems.map((item, index) =>
+                <BorrowItem item={item} key={index}/>
+            )}
 
         </IonContent>
         </IonPage>

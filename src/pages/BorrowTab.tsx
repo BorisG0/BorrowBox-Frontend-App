@@ -2,8 +2,8 @@ import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/rea
 import BorrowItem from '../components/BorrowItem';
 import React, { useEffect, useState } from 'react';
 
-const BorrowTab: React.FC = () => {
-    const [availableItems, setAvailableItems] = useState([] as any[]);
+const BorrowTab: React.FC<{ availableItems: any[], setAvailableItems: React.Dispatch<React.SetStateAction<any[]>> }> 
+    = ({ availableItems, setAvailableItems }) => {
 
     const dummyItems = [
         {
@@ -29,11 +29,6 @@ const BorrowTab: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <IonHeader>
-            <IonToolbar>
-                <IonTitle size="large">Borrow</IonTitle>
-            </IonToolbar>
-        </IonHeader>
         {availableItems.map((item, index) =>
             <BorrowItem item={item} key={index}/>
         )}
