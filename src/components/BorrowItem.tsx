@@ -23,7 +23,7 @@ const BorrowItem: React.FC<{
             <IonCardContent></IonCardContent>
             
             <div style={{float: "right", padding: "10px"}}>
-                <IonButton fill="clear">Details</IonButton>
+                <IonButton routerLink={`/item/${item.id}`} fill="clear">Details</IonButton>
                 <IonButton onClick={() => itemAction(item)}>
                     {itemActionText ? itemActionText : "Ausleihen"}
                 </IonButton>

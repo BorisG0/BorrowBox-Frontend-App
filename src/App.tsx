@@ -29,6 +29,7 @@ import Tab2 from "./pages/Tab2";
 import Tab3 from "./pages/Tab3";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
+import DetailPage from "./pages/DetailPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -128,6 +129,9 @@ const App: React.FC = () => {
               </Route>
               <Route exact path="/user">
                 <UserProfile/>
+              </Route>
+              <Route exact path="/item/:id">
+                <DetailPage/>
               </Route>
               <Route exact path="/borrow">
                 <BorrowTab availableItems={availableItems} borrowItem={borrowItem}/>
