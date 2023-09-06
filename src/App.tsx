@@ -14,19 +14,10 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import {
-  ellipse,
-  square,
-  triangle,
-  cart,
-  home,
-  cube,
-  apps,
   addCircle,
   layers,
+  person,
 } from "ionicons/icons";
-import Tab1 from "./pages/Tab1";
-import Tab2 from "./pages/Tab2";
-import Tab3 from "./pages/Tab3";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
 
@@ -117,15 +108,6 @@ const App: React.FC = () => {
         <IonReactRouter>
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/tab1">
-                <Tab1 cartItems={cartItems} setCartItems={setCartItems} />
-              </Route>
-              <Route path="/tab3">
-                <Tab3 />
-              </Route>
-              <Route exact path="/tab2">
-                <Tab2 cartItems={cartItems} setCartItems={setCartItems} />
-              </Route>
               <Route exact path="/user">
                 <UserProfile/>
               </Route>
@@ -140,21 +122,6 @@ const App: React.FC = () => {
               </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
-              <IonTabButton tab="tab1" href="/tab1">
-                <IonIcon aria-hidden="true" icon={home} />
-                <IonLabel>Home</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab3" href="/tab3">
-                <IonIcon aria-hidden="true" icon={apps} />
-                <IonLabel>Categories</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="cart" href="/tab2">
-                <IonIcon aria-hidden="true" icon={cube} />
-                <IonLabel>Borrow Box</IonLabel>
-                {cartItems.length > 0 && (
-                  <IonBadge color="danger">{cartItems.length}</IonBadge>
-                )}
-              </IonTabButton>
               <IonTabButton tab="borrow" href="/borrow">
                 <IonIcon aria-hidden="true" icon={addCircle} />
                 <IonLabel>Borrow</IonLabel>
@@ -163,12 +130,14 @@ const App: React.FC = () => {
                 <IonIcon aria-hidden="true" icon={layers} />
                 <IonLabel>My Items</IonLabel>
               </IonTabButton>
+              <IonTabButton tab="User" href="/user">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>User</IonLabel>
+              </IonTabButton>
             </IonTabBar>
           </IonTabs>
         </IonReactRouter>
-      </IonContent>
-      
-      
+      </IonContent>      
     </IonApp>
   );
 };
