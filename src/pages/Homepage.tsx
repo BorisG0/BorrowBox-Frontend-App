@@ -20,6 +20,7 @@ import {
 } from "@ionic/react";
 import { logoIonic, book, camera } from "ionicons/icons";
 import { Camera } from "@ionic-native/camera";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface CartItem {
   id: number;
@@ -37,6 +38,8 @@ const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<CartItem[]>([]);
+  const {isAuthenticated} = useAuth0();
+
 
   const handleOpenPopup = () => {
     setShowPopup(true);
