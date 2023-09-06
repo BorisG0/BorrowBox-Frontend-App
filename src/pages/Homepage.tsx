@@ -20,7 +20,6 @@ import {
 } from "@ionic/react";
 import { logoIonic, book, camera } from "ionicons/icons";
 import { Camera } from "@ionic-native/camera";
-import Header from "../components/Header";
 
 interface CartItem {
   id: number;
@@ -77,6 +76,7 @@ const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems }) => {
       const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
       setCartItems(updatedCartItems);
     }
+    console.log(cartItems)
   };
 
   const handleConsoleClick = async () => {
@@ -107,17 +107,11 @@ const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems }) => {
 
   return (
     <IonPage>
-{/*       <Header/>
- */}{/*       <IonHeader>
-        <IonToolbar>
-          <IonTitle>Borrow Box</IonTitle>
-        </IonToolbar>
-      </IonHeader> */}
       <IonContent>
         <div
           style={{
             textAlign: "center",
-            marginTop: "33%",
+            marginTop: "10rem",
             marginBottom: "1rem",
           }}
         >
