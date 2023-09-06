@@ -17,8 +17,22 @@ import {
   filterCircle,
   settings,
 } from "ionicons/icons";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const UserProfile: React.FC = () => {
+  const {isAuthenticated} = useAuth0();
+  if(!isAuthenticated){
+
+    return(
+      <IonPage>
+        <IonContent>
+      <div>
+        no login
+      </div>
+      </IonContent>
+    </IonPage>
+      )
+    }
   return (
     <IonPage>
       <IonContent>
