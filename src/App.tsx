@@ -113,9 +113,9 @@ const App: React.FC = () => {
   }, [handleRedirectCallback]);
   return (
       <IonApp>
-        <IonHeader>
+        {/* <IonHeader>
           <Header />
-        </IonHeader>
+        </IonHeader> */}
         <IonContent>
           <IonReactRouter>
             <IonTabs>

@@ -18,9 +18,13 @@ import {
   settings,
 } from "ionicons/icons";
 import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from '../components/LoginButton';
+import LogoutButton from '../components/LogoutButton';
 
 const UserProfile: React.FC = () => {
   const {isAuthenticated} = useAuth0();
+  // user name
+  const { user } = useAuth0();
   if(!isAuthenticated){
 
     return(
@@ -28,6 +32,7 @@ const UserProfile: React.FC = () => {
         <IonContent>
       <div>
         no login
+        <LoginButton/>
       </div>
       </IonContent>
     </IonPage>
@@ -43,7 +48,8 @@ const UserProfile: React.FC = () => {
             <img src="./user.jpg" alt /*  */="Benutzerbild" />
           </IonAvatar>
           <IonText>
-            <h2>Nutzername</h2>
+            <h2>{user?.name}</h2>
+            <h3>{user?.email}</h3>
           </IonText>
         </div>
         <IonButton expand="full" color="primary">
@@ -58,6 +64,7 @@ const UserProfile: React.FC = () => {
           <IonIcon icon={settings} />
           Einstellungen
         </IonButton>
+        <LogoutButton/>
       </IonContent>
     </IonPage>
   );
