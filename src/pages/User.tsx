@@ -23,6 +23,8 @@ import LogoutButton from '../components/LogoutButton';
 
 const UserProfile: React.FC = () => {
   const {isAuthenticated} = useAuth0();
+  // user name
+  const { user } = useAuth0();
   if(!isAuthenticated){
 
     return(
@@ -46,7 +48,7 @@ const UserProfile: React.FC = () => {
             <img src="./user.jpg" alt /*  */="Benutzerbild" />
           </IonAvatar>
           <IonText>
-            <h2>Nutzername</h2>
+            <h2>{user?.name}</h2>
           </IonText>
         </div>
         <IonButton expand="full" color="primary">
