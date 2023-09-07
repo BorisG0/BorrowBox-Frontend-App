@@ -49,6 +49,7 @@ const UserProfile: React.FC = () => {
           </IonAvatar>
           <IonText>
             <h2>{user?.name}</h2>
+            <h3>{user?.email}</h3>
           </IonText>
         </div>
         <IonButton expand="full" color="primary">
