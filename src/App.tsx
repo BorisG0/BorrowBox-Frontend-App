@@ -113,46 +113,41 @@ const App: React.FC = () => {
   }, [handleRedirectCallback]);
   return (
       <IonApp>
-        {/* <IonHeader>
-          <Header />
-        </IonHeader> */}
-        <IonContent>
-          <IonReactRouter>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/user">
-                  <UserProfile />
-                </Route>
-                <Route exact path="/borrow">
-                  <BorrowTab
-                    availableItems={availableItems}
-                    borrowItem={borrowItem}
-                  />
-                </Route>
-                <Route exact path="/myItems">
-                  <MyItemsTab myItems={myItems} returnItem={returnItem} />
-                </Route>
-                <Route exact path="/">
-                  <Redirect to="/tab1" />
-                </Route>
-              </IonRouterOutlet>
-              <IonTabBar slot="bottom">
-                <IonTabButton tab="borrow" href="/borrow">
-                  <IonIcon aria-hidden="true" icon={addCircle} />
-                  <IonLabel>Borrow</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="myItems" href="/myItems">
-                  <IonIcon aria-hidden="true" icon={layers} />
-                  <IonLabel>My Items</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="User" href="/user">
-                  <IonIcon aria-hidden="true" icon={person} />
-                  <IonLabel>User</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-          </IonReactRouter>
-        </IonContent>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/user">
+                <UserProfile />
+              </Route>
+              <Route exact path="/borrow">
+                <BorrowTab
+                  availableItems={availableItems}
+                  borrowItem={borrowItem}
+                />
+              </Route>
+              <Route exact path="/myItems">
+                <MyItemsTab myItems={myItems} returnItem={returnItem} />
+              </Route>
+              <Route exact path="/">
+                <Redirect to="/tab1" />
+              </Route>
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="borrow" href="/borrow">
+                <IonIcon aria-hidden="true" icon={addCircle} />
+                <IonLabel>Borrow</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="myItems" href="/myItems">
+                <IonIcon aria-hidden="true" icon={layers} />
+                <IonLabel>My Items</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="User" href="/user">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>User</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
       </IonApp>
   );
 };
