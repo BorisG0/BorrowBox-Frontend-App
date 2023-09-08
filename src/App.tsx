@@ -7,6 +7,7 @@ import {
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonTab,
   IonTabBar,
   IonTabButton,
   IonTabs,
@@ -42,14 +43,9 @@ import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
 import { Auth0Provider } from "@auth0/auth0-react";
+import DBQuery from "./pages/dbquerry";
 
 setupIonicReact();
-interface CartItem {
-  id: number;
-  name: string;
-  icon: string;
-  quantity: number;
-}
 
 const App: React.FC = () => {
   const [availableItems, setAvailableItems] = useState([] as any[]);
@@ -113,46 +109,48 @@ const App: React.FC = () => {
   }, [handleRedirectCallback]);
   return (
       <IonApp>
-        {/* <IonHeader>
-          <Header />
-        </IonHeader> */}
-        <IonContent>
-          <IonReactRouter>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/user">
-                  <UserProfile />
-                </Route>
-                <Route exact path="/borrow">
-                  <BorrowTab
-                    availableItems={availableItems}
-                    borrowItem={borrowItem}
-                  />
-                </Route>
-                <Route exact path="/myItems">
-                  <MyItemsTab myItems={myItems} returnItem={returnItem} />
-                </Route>
-                <Route exact path="/">
-                  <Redirect to="/tab1" />
-                </Route>
-              </IonRouterOutlet>
-              <IonTabBar slot="bottom">
-                <IonTabButton tab="borrow" href="/borrow">
-                  <IonIcon aria-hidden="true" icon={addCircle} />
-                  <IonLabel>Borrow</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="myItems" href="/myItems">
-                  <IonIcon aria-hidden="true" icon={layers} />
-                  <IonLabel>My Items</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="User" href="/user">
-                  <IonIcon aria-hidden="true" icon={person} />
-                  <IonLabel>User</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-          </IonReactRouter>
-        </IonContent>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/user">
+                <UserProfile />
+              </Route>
+              <Route exact path="/borrow">
+                <BorrowTab
+                  availableItems={availableItems}
+                  borrowItem={borrowItem}
+                />
+              </Route>
+              <Route exact path="/myItems">
+                <MyItemsTab myItems={myItems} returnItem={returnItem} />
+              </Route>
+              <Route>
+                <DBQuery/>
+              </Route>
+              <Route exact path="/">
+                <Redirect to="/user" />
+              </Route>
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="borrow" href="/borrow">
+                <IonIcon aria-hidden="true" icon={addCircle} />
+                <IonLabel>Borrow</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="myItems" href="/myItems">
+                <IonIcon aria-hidden="true" icon={layers} />
+                <IonLabel>My Items</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="User" href="/user">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>User</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="DBQuery" href="/dbquery">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>DBQuery</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
       </IonApp>
   );
 };
