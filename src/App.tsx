@@ -7,6 +7,7 @@ import {
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonTab,
   IonTabBar,
   IonTabButton,
   IonTabs,
@@ -42,14 +43,9 @@ import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
 import { Auth0Provider } from "@auth0/auth0-react";
+import DBQuery from "./pages/dbquerry";
 
 setupIonicReact();
-interface CartItem {
-  id: number;
-  name: string;
-  icon: string;
-  quantity: number;
-}
 
 const App: React.FC = () => {
   const [availableItems, setAvailableItems] = useState([] as any[]);
@@ -128,8 +124,11 @@ const App: React.FC = () => {
               <Route exact path="/myItems">
                 <MyItemsTab myItems={myItems} returnItem={returnItem} />
               </Route>
+              <Route>
+                <DBQuery/>
+              </Route>
               <Route exact path="/">
-                <Redirect to="/tab1" />
+                <Redirect to="/user" />
               </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
@@ -144,6 +143,10 @@ const App: React.FC = () => {
               <IonTabButton tab="User" href="/user">
                 <IonIcon aria-hidden="true" icon={person} />
                 <IonLabel>User</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="DBQuery" href="/dbquery">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>DBQuery</IonLabel>
               </IonTabButton>
             </IonTabBar>
           </IonTabs>
