@@ -30,7 +30,7 @@ const BorrowItem: React.FC<{
           </div>
         </IonCardTitle>
         <IonCardSubtitle>
-          {item.tags.map((tag: string, index: number) => (
+          {item.tags?.map((tag: string, index: number) => (
             <IonChip key={index}>{tag}</IonChip>
           ))}
         </IonCardSubtitle>
