@@ -8,6 +8,7 @@ import {
   IonCardTitle,
   IonChip,
 } from "@ionic/react";
+import { startRental } from "../apiService";
 
 const BorrowItem: React.FC<{
   item: any;
@@ -15,6 +16,20 @@ const BorrowItem: React.FC<{
   itemActionText?: string;
 }> = ({ item, itemAction, itemActionText }) => {
   const { isAuthenticated } = useAuth0();
+
+  const newRental = {
+    "user": "test email",
+    "itemId": item._id
+  }
+
+  const handleStartRental = async () => {
+    try{
+      const response = await startRental(newRental);
+      console.log(response);
+    }catch(error){
+      console.log(error);
+    }
+  }
 
   return (
     <IonCard>
