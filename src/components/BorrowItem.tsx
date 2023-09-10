@@ -14,11 +14,12 @@ const BorrowItem: React.FC<{
   item: any;
   itemAction: (item: any) => void;
   itemActionText?: string;
-}> = ({ item, itemAction, itemActionText }) => {
-  const { isAuthenticated } = useAuth0();
+  isFunctionStartRental: boolean;
+}> = ({ item, itemAction, itemActionText, isFunctionStartRental }) => {
+  const { isAuthenticated, user } = useAuth0();
 
   const newRental = {
-    "user": "test email",
+    "userEmail": user?.email,
     "itemId": item._id
   }
 
@@ -29,6 +30,10 @@ const BorrowItem: React.FC<{
     }catch(error){
       console.log(error);
     }
+  }
+
+  const handleEndRental = () => {
+    console.log("End rental");
   }
 
   return (
@@ -55,7 +60,7 @@ const BorrowItem: React.FC<{
       <div style={{ float: "right", padding: "10px" }}>
         <IonButton fill="clear">Details</IonButton>
         <IonButton
-          onClick={() => itemAction(item)}
+          onClick={ (isFunctionStartRental ? handleStartRental: handleEndRental) }
           disabled={!isAuthenticated} // Deaktiviere den Button, wenn nicht authentifiziert
         >
           {itemActionText ? itemActionText : "Ausleihen"}
