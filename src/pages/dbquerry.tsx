@@ -27,7 +27,7 @@ const DBQuery: React.FC = () => {
 
   const testRental = {
     "user": "test email",
-    "item": "test item"
+    "itemId": "64ede287c1440cab375577f9"
   }
 
   const handleStartRental = async () => {

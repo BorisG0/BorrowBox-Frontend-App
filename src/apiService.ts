@@ -20,7 +20,7 @@ export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
 
 export const fetchItemData = async (): Promise<AxiosResponse<any>> => {
     try{
-        const response = await apiService.get('documents/items');
+        const response = await apiService.get('items');
         return response;
     }catch(error){
         throw error;
