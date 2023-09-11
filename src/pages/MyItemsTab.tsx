@@ -1,31 +1,35 @@
 import { IonContent, IonPage } from '@ionic/react';
 import BorrowItem from '../components/BorrowItem';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const MyItemsTab: React.FC<{
-        myItems: any[],
-        returnItem: (item: any) => void,
-    }> = ({myItems, returnItem}) => {
+  myItems: any[],
+  returnItem: (item: any) => void,
+}> = ({ myItems, returnItem }) => {
+  const { isAuthenticated } = useAuth0();
 
-    const item = {
-        id: 1,
-        name: "My Test Item",
-        tags: ["Chemie", "Brille"],
-        description: "Schutzbrillen für den Chemieunterricht.",
-        available: true,
-    };
-
-
+  if (!isAuthenticated) {
     return (
-        <IonPage>
+      <IonPage>
         <IonContent fullscreen>
-
-            {myItems.map((item, index) =>
-                <BorrowItem item={item} itemAction={returnItem} key={index} itemActionText='zurückgeben'/>
-            )}
-
+          {/* TODO: Schön machen */}
+          <div>
+            Bitte melden Sie sich an, um diese Seite anzuzeigen.
+          </div>
         </IonContent>
-        </IonPage>
+      </IonPage>
     );
+  }
+
+  return (
+    <IonPage>
+      <IonContent fullscreen>
+        {myItems.map((item, index) => (
+          <BorrowItem item={item} itemAction={returnItem} key={index} itemActionText='zurückgeben' isFunctionStartRental={true}/>
+        ))}
+      </IonContent>
+    </IonPage>
+  );
 };
 
 export default MyItemsTab;

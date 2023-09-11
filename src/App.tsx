@@ -7,29 +7,21 @@ import {
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonTab,
   IonTabBar,
   IonTabButton,
   IonTabs,
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import {
-  ellipse,
-  square,
-  triangle,
-  cart,
-  home,
-  cube,
-  apps,
-  addCircle,
-  layers,
-} from "ionicons/icons";
-import Tab1 from "./pages/Tab1";
-import Tab2 from "./pages/Tab2";
-import Tab3 from "./pages/Tab3";
+import { addCircle, layers, person } from "ionicons/icons";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
 import DetailPage from "./pages/DetailPage";
+import { useAuth0 } from '@auth0/auth0-react';
+import { App as CapApp } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
+
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -52,113 +44,99 @@ import "./theme/variables.css";
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
+import { Auth0Provider } from "@auth0/auth0-react";
+import DBQuery from "./pages/dbquerry";
 
 setupIonicReact();
-interface CartItem {
-  id: number;
-  name: string;
-  icon: string;
-  quantity: number;
-}
 
 const App: React.FC = () => {
-  const [cartItems, setCartItems] = useState([] as CartItem[]);
-
   const [availableItems, setAvailableItems] = useState([] as any[]);
   const [myItems, setMyItems] = useState([] as any[]);
 
   const dummyItems = [
-      {
-          id: 1,
-          name: "Ausgestopfter Papagei",
-          tags: ["Biologie", "Tier"],
-          description: "Ein ausgestopfter Papagei, der auf einem Ast sitzt.",
-          available: true,
-      },
-      {
-          id: 2,
-          name: "Schutzbrillen",
-          tags: ["Chemie", "Brille"],
-          description: "Schutzbrillen für den Chemieunterricht.",
-          available: true,
-      },
-      {
-          id: 3,
-          name: "Experiment Handbuch",
-          tags: ["Buch", "Chemie"],
-          description: "Ein Handbuch mit vielen Experimenten.",
-          available: true,
-      }
-  ]
+    {
+      id: 1,
+      name: "Ausgestopfter Papagei",
+      tags: ["Biologie", "Tier"],
+      description: "Ein ausgestopfter Papagei, der auf einem Ast sitzt.",
+      available: true,
+    },
+    {
+      id: 2,
+      name: "Schutzbrillen",
+      tags: ["Chemie", "Brille"],
+      description: "Schutzbrillen für den Chemieunterricht.",
+      available: true,
+    },
+    {
+      id: 3,
+      name: "Experiment Handbuch",
+      tags: ["Buch", "Chemie"],
+      description: "Ein Handbuch mit vielen Experimenten.",
+      available: true,
+    },
+  ];
 
   useEffect(() => {
-      setAvailableItems(dummyItems);
+    setAvailableItems(dummyItems);
   }, []);
 
   const borrowItem = (item: any) => {
-    const updatedAvailableItems = availableItems.filter((availableItem) => availableItem.id !== item.id);
+    const updatedAvailableItems = availableItems.filter(
+      (availableItem) => availableItem.id !== item.id
+    );
     setAvailableItems(updatedAvailableItems);
     const updatedMyItems = [...myItems, item];
     setMyItems(updatedMyItems);
-  }
+  };
 
   const returnItem = (item: any) => {
     const updatedMyItems = myItems.filter((myItem) => myItem.id !== item.id);
     setMyItems(updatedMyItems);
     const updatedAvailableItems = [...availableItems, item];
     setAvailableItems(updatedAvailableItems);
-  }
+  };
 
+  const { handleRedirectCallback, } = useAuth0();
+  
+  useEffect(() => {
+    // Handle the 'appUrlOpen' event and call `handleRedirectCallback`
+    CapApp.addListener('appUrlOpen', async ({ url }) => {
+      if (url.includes('state') && (url.includes('code') || url.includes('error'))) {
+        await handleRedirectCallback(url);
+      }
+      // No-op on Android
+      await Browser.close();
+    });
+  }, [handleRedirectCallback]);
   return (
-    <IonApp>
-      <IonHeader>
-        <Header />
-      </IonHeader>
-      <IonContent>
+      <IonApp>
         <IonReactRouter>
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/tab1">
-                <Tab1 cartItems={cartItems} setCartItems={setCartItems} />
-              </Route>
-              <Route path="/tab3">
-                <Tab3 />
-              </Route>
-              <Route exact path="/tab2">
-                <Tab2 cartItems={cartItems} setCartItems={setCartItems} />
-              </Route>
               <Route exact path="/user">
-                <UserProfile/>
+                <UserProfile />
               </Route>
               <Route exact path="/item/:id">
                 <DetailPage/>
               </Route>
               <Route exact path="/borrow">
-                <BorrowTab availableItems={availableItems} borrowItem={borrowItem}/>
+                <BorrowTab
+                  availableItems={availableItems}
+                  borrowItem={borrowItem}
+                />
               </Route>
               <Route exact path="/myItems">
-                <MyItemsTab myItems={myItems} returnItem={returnItem}/>
+                <MyItemsTab myItems={myItems} returnItem={returnItem} />
+              </Route>
+              <Route>
+                <DBQuery/>
               </Route>
               <Route exact path="/">
-                <Redirect to="/tab1" />
+                <Redirect to="/user" />
               </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
-              <IonTabButton tab="tab1" href="/tab1">
-                <IonIcon aria-hidden="true" icon={home} />
-                <IonLabel>Home</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab3" href="/tab3">
-                <IonIcon aria-hidden="true" icon={apps} />
-                <IonLabel>Categories</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="cart" href="/tab2">
-                <IonIcon aria-hidden="true" icon={cube} />
-                <IonLabel>Borrow Box</IonLabel>
-                {cartItems.length > 0 && (
-                  <IonBadge color="danger">{cartItems.length}</IonBadge>
-                )}
-              </IonTabButton>
               <IonTabButton tab="borrow" href="/borrow">
                 <IonIcon aria-hidden="true" icon={addCircle} />
                 <IonLabel>Borrow</IonLabel>
@@ -167,13 +145,18 @@ const App: React.FC = () => {
                 <IonIcon aria-hidden="true" icon={layers} />
                 <IonLabel>My Items</IonLabel>
               </IonTabButton>
+              <IonTabButton tab="User" href="/user">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>User</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="DBQuery" href="/dbquery">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>DBQuery</IonLabel>
+              </IonTabButton>
             </IonTabBar>
           </IonTabs>
         </IonReactRouter>
-      </IonContent>
-      
-      
-    </IonApp>
+      </IonApp>
   );
 };
 
