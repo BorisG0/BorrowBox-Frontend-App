@@ -41,13 +41,16 @@ const DetailPage: React.FC = () => {
                 <IonCardTitle>
                     {item.name}
                     <div style={{float: "right"}}>
-                        <IonChip color="danger">Ausgeliehen??</IonChip>
+                    {item.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
                     </div>
                 </IonCardTitle>
                 <IonCardSubtitle>
+                    <> Tags: </>
                     {item.tags.map((tag: string, index: number) =>
                         <IonChip key={index}>{tag}</IonChip>
                     )}
+                    <br/>
+                    {item.available ? <></> : <> Rented by: <IonChip>{item.currentRenter}</IonChip></>}
                 </IonCardSubtitle>
             </IonCardHeader>
             <IonCardContent>
