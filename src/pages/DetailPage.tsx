@@ -2,24 +2,21 @@ import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/rea
 import BorrowItem from '../components/BorrowItem';
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { fetchItemData } from '../apiService';
+import { fetchItemDetailData } from '../apiService';
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip } from "@ionic/react";
 
 const DetailPage: React.FC = () => {
     const [item, setItem] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const { id } = useParams<{ id: string }>();
 
-    const itemTest = {
-        id: 1,
-        name: "My Test Item",
-        tags: ["Chemie", "Brille"],
-        description: "Schutzbrillen für den Chemieunterricht.",
-        available: true,
-    };
+
     useEffect(() => {
         async function fetchData(){
           try{
-            const item = await fetchItemData();
+            //const item = await fetchItemDetailData(id);
+
+            const item = await fetchItemDetailData("64ede1a0c1440cab375577f2");
             setItem(item.data);
             setLoading(false);
           }catch(error){
@@ -30,32 +27,31 @@ const DetailPage: React.FC = () => {
         fetchData();
       }, []);
 
-    const { id } = useParams<{ id: string }>();  return (
+    return (
+
     <IonPage>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+
+
       <IonContent fullscreen>
       <IonCard>
-      <div>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <pre>{JSON.stringify(item, null, 2)}</pre>
-          )}
-        </div>
             <IonCardHeader>
                 <IonCardTitle>
-                    {itemTest.name} id: {id}
+                    {item.name}
                     <div style={{float: "right"}}>
-                        {itemTest.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
+                        <IonChip color="danger">Ausgeliehen??</IonChip>
                     </div>
                 </IonCardTitle>
                 <IonCardSubtitle>
-                    {itemTest.tags.map((tag: string, index: number) =>
+                    {item.tags.map((tag: string, index: number) =>
                         <IonChip key={index}>{tag}</IonChip>
                     )}
                 </IonCardSubtitle>
             </IonCardHeader>
             <IonCardContent>
-                {itemTest.description}
+                {item.description}
             </IonCardContent>
             
             <div style={{float: "right", padding: "10px"}}>
@@ -66,6 +62,7 @@ const DetailPage: React.FC = () => {
             
         </IonCard>
       </IonContent>
+            )}
     </IonPage>
   );
 };

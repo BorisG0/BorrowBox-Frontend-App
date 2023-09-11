@@ -18,9 +18,9 @@ export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
     }
 }
 
-export const fetchItemData = async (): Promise<AxiosResponse<any>> => {
+export const fetchItemDetailData = async (itemId: any): Promise<AxiosResponse<any>> => {
     try{
-        const response = await apiService.get('getDocumentByID/items/64ede1a0c1440cab375577f2');
+        const response = await apiService.get('getDocumentByID/items/'+ itemId);
         return response;
     }catch(error){
         throw error;
