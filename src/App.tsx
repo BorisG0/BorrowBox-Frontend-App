@@ -17,9 +17,11 @@ import { IonReactRouter } from "@ionic/react-router";
 import { addCircle, layers, person } from "ionicons/icons";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
+import DetailPage from "./pages/DetailPage";
 import { useAuth0 } from '@auth0/auth0-react';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
+
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -114,6 +116,9 @@ const App: React.FC = () => {
             <IonRouterOutlet>
               <Route exact path="/user">
                 <UserProfile />
+              </Route>
+              <Route exact path="/item/:id">
+                <DetailPage/>
               </Route>
               <Route exact path="/borrow">
                 <BorrowTab

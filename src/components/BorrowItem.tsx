@@ -11,12 +11,39 @@ import {
 import { startRental } from "../apiService";
 
 const BorrowItem: React.FC<{
-  item: any;
-  itemAction: (item: any) => void;
-  itemActionText?: string;
+        item: any,
+        itemAction: (item: any) => void,
+        itemActionText?: string,
   isFunctionStartRental: boolean;
 }> = ({ item, itemAction, itemActionText, isFunctionStartRental }) => {
   const { isAuthenticated, user } = useAuth0();
+    return(
+        <IonCard>
+            <IonCardHeader>
+                <IonCardTitle>
+                    {item.name}
+                    <div style={{float: "right"}}>
+                        {item.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
+                    </div>
+                </IonCardTitle>
+                <IonCardSubtitle>
+                    {item.tags.map((tag: string, index: number) =>
+                        <IonChip key={index}>{tag}</IonChip>
+                    )}
+                </IonCardSubtitle>
+            </IonCardHeader>
+            <IonCardContent></IonCardContent>
+            
+            <div style={{float: "right", padding: "10px"}}>
+                <IonButton routerLink={`/item/${item.id}`} fill="clear">Details</IonButton>
+                <IonButton onClick={() => itemAction(item)}>
+                    {itemActionText ? itemActionText : "Ausleihen"}
+                </IonButton>
+            </div>
+            
+        </IonCard>
+    )
+}
 
   const newRental = {
     "userEmail": user?.email,
