@@ -24,7 +24,7 @@ const DetailPage: React.FC = () => {
           }
         }
         fetchData();
-      }, []);
+      }, [id]);
 
     return (
 
