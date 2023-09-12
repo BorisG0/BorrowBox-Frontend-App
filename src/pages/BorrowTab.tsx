@@ -26,11 +26,11 @@ const BorrowTab: React.FC<{
     <IonPage>
       <IonContent fullscreen>
         {availableItems.map((item, index) =>
-            <BorrowItem item={item} itemAction={borrowItem} key={index} isFunctionStartRental={true}/>
+            <BorrowItem item={item} key={index} isFunctionStartRental={true}/>
         )}
         <h1>Alle Items (aus db)</h1>
         {allItems.map((item, index) =>
-            <BorrowItem item={item} itemAction={borrowItem} key={index} isFunctionStartRental={true}/>
+            <BorrowItem item={item} key={index} isFunctionStartRental={true}/>
         )}
       </IonContent>
     </IonPage>

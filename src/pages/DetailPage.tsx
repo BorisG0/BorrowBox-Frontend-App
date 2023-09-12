@@ -1,5 +1,4 @@
 import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/react';
-import BorrowItem from '../components/BorrowItem';
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { fetchItemDetailData } from '../apiService';
@@ -14,9 +13,9 @@ const DetailPage: React.FC = () => {
     useEffect(() => {
         async function fetchData(){
           try{
-            //const item = await fetchItemDetailData(id);
+            const item = await fetchItemDetailData(id);
 
-            const item = await fetchItemDetailData("64ede1a0c1440cab375577f2");
+            //const item = await fetchItemDetailData("64ede1a0c1440cab375577f2");
             setItem(item.data);
             setLoading(false);
           }catch(error){
