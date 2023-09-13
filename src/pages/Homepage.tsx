@@ -20,7 +20,6 @@ import {
 } from "@ionic/react";
 import { logoIonic, book, camera } from "ionicons/icons";
 import { Camera } from "@ionic-native/camera";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface CartItem {
   id: number;

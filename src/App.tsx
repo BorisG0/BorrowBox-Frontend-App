@@ -18,10 +18,6 @@ import { addCircle, layers, person } from "ionicons/icons";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
 import DetailPage from "./pages/DetailPage";
-import { useAuth0 } from '@auth0/auth0-react';
-import { App as CapApp } from '@capacitor/app';
-import { Browser } from '@capacitor/browser';
-
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -42,12 +38,10 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import { useEffect, useState } from "react";
-import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
 import Login from "./pages/Login";
 import { checkLoginStatus } from "./data/utils";
 import UserLoginSwitch from "./pages/UserLoginSwitch";
-import { Auth0Provider } from "@auth0/auth0-react";
 import DBQuery from "./pages/dbquerry";
 
 setupIonicReact();
@@ -105,69 +99,68 @@ const App: React.FC = () => {
   };
 
   return (
-      <IonApp>
-        <IonReactRouter>
-          <IonTabs>
-            <IonRouterOutlet>
-              <Route
-                exact
-                path="/user"
-                render={(props) => (
-                  <UserProfile
-                    {...props}
-                    loginToken={loginToken}
-                    setLoginToken={setLoginToken}
-                  />
-                )}
-              />
-              <Route exact path="/item/:id">
-                <DetailPage/>
-              </Route>
-              <Route exact path="/borrow">
-                <BorrowTab
-                  availableItems={availableItems}
-                  borrowItem={borrowItem}
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route
+              exact
+              path="/user"
+              render={(props) => (
+                <UserProfile
+                  {...props}
                   loginToken={loginToken}
+                  setLoginToken={setLoginToken}
                 />
-              </Route>
-              <Route exact path="/myItems">
-                <MyItemsTab
-                  myItems={myItems}
-                  returnItem={returnItem}
-                  loginToken={loginToken}
-                />
-              </Route>
-              <Route
-                exact
-                path="/login"
-                render={(props) => (
-                  <Login {...props} setLoginToken={setLoginToken} />
-                )}
+              )}
+            />
+            <Route exact path="/item/:id">
+              <DetailPage />
+            </Route>
+            <Route exact path="/borrow">
+              <BorrowTab
+                availableItems={availableItems}
+                borrowItem={borrowItem}
+                loginToken={loginToken}
               />
-              <Route
-                exact
-                path="/"
-                render={(props) => (
-                  <UserLoginSwitch {...props} loginToken={loginToken} />
-                )}
-              ></Route>
-            </IonRouterOutlet>
-            <IonTabBar slot="bottom">
-              <IonTabButton tab="borrow" href="/borrow">
-                <IonIcon aria-hidden="true" icon={addCircle} />
-                <IonLabel>Borrow</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="myItems" href="/myItems">
-                <IonIcon aria-hidden="true" icon={layers} />
-                <IonLabel>My Items</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="User" href="/user">
-                <IonIcon aria-hidden="true" icon={person} />
-                <IonLabel>User</IonLabel>
-              </IonTabButton>
-            </IonTabBar>
-          </IonTabs>
-        </IonContent>
+            </Route>
+            <Route exact path="/myItems">
+              <MyItemsTab
+                myItems={myItems}
+                returnItem={returnItem}
+                loginToken={loginToken}
+              />
+            </Route>
+            <Route
+              exact
+              path="/login"
+              render={(props) => (
+                <Login {...props} setLoginToken={setLoginToken} />
+              )}
+            />
+            <Route
+              exact
+              path="/"
+              render={(props) => (
+                <UserLoginSwitch {...props} loginToken={loginToken} />
+              )}
+            ></Route>
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="borrow" href="/borrow">
+              <IonIcon aria-hidden="true" icon={addCircle} />
+              <IonLabel>Borrow</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="myItems" href="/myItems">
+              <IonIcon aria-hidden="true" icon={layers} />
+              <IonLabel>My Items</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="User" href="/user">
+              <IonIcon aria-hidden="true" icon={person} />
+              <IonLabel>User</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
       </IonReactRouter>
     </IonApp>
   );
