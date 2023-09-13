@@ -1,6 +1,5 @@
 import { IonContent, IonPage } from '@ionic/react';
 import BorrowItem from '../components/BorrowItem';
-import { useAuth0 } from '@auth0/auth0-react';
 
 const MyItemsTab: React.FC<{
   myItems: any[],

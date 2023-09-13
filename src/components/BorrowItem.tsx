@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   IonButton,
   IonCard,
@@ -12,15 +11,14 @@ import { startRental } from "../apiService";
 
 const BorrowItem: React.FC<{
   item: any;
-  itemAction: (item: any) => void;
+  isFunctionStartRental: boolean;
   itemActionText?: string;
   loginToken: boolean;
 }> = ({ item, itemActionText, isFunctionStartRental, loginToken }) => {
-  const { isAuthenticated, user } = useAuth0();
-
+  
 
   const newRental = {
-    "userEmail": user?.email,
+    "userEmail": 'demoemial',
     "itemId": item._id
   }
 

@@ -19,10 +19,6 @@ export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
     }
 }
 
-export const fetchLogin = async (loginData: any): Promise<AxiosResponse<any>> => {
-    try{
-        const response = await apiService.post('login', loginData);
-        console.log(response)
 export const fetchItemData = async (): Promise<AxiosResponse<any>> => {
     try{
         const response = await apiService.get('items');
@@ -44,6 +40,17 @@ export const startRental = async (rental: any): Promise<AxiosResponse<any>> => {
 export const fetchItemDetailData = async (itemId: any): Promise<AxiosResponse<any>> => {
     try{
         const response = await apiService.get('getDocumentByID/items/'+ itemId);
+        return response;
+    }catch(error){
+        throw error;
+    }
+}
+
+
+export const fetchLogin = async (loginData: any): Promise<AxiosResponse<any>> => {
+    try{
+        const response = await apiService.post('login', loginData);
+        console.log(response)
         return response;
     }catch(error){
         throw error;
