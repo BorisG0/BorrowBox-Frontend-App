@@ -11,10 +11,11 @@ import {
 import { startRental } from "../apiService";
 
 const BorrowItem: React.FC<{
-        item: any,
-        itemActionText?: string,
-  isFunctionStartRental: boolean;
-}> = ({ item, itemActionText, isFunctionStartRental }) => {
+  item: any;
+  itemAction: (item: any) => void;
+  itemActionText?: string;
+  loginToken: boolean;
+}> = ({ item, itemActionText, isFunctionStartRental, loginToken }) => {
   const { isAuthenticated, user } = useAuth0();
 
 
@@ -61,7 +62,7 @@ const BorrowItem: React.FC<{
         <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
         <IonButton
           onClick={ (isFunctionStartRental ? handleStartRental: handleEndRental) }
-          disabled={!isAuthenticated} // Deaktiviere den Button, wenn nicht authentifiziert
+          disabled={!loginToken} // Deaktiviere den Button, wenn nicht authentifiziert
         >
           {itemActionText ? itemActionText : "Ausleihen"}
         </IonButton>

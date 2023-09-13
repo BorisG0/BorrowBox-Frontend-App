@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:8080/';
 
 const apiService = axios.create({
     baseURL: API_URL,
+    timeout: 3000,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -18,6 +19,10 @@ export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
     }
 }
 
+export const fetchLogin = async (loginData: any): Promise<AxiosResponse<any>> => {
+    try{
+        const response = await apiService.post('login', loginData);
+        console.log(response)
 export const fetchItemData = async (): Promise<AxiosResponse<any>> => {
     try{
         const response = await apiService.get('items');

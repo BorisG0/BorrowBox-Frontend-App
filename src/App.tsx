@@ -1,4 +1,4 @@
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useHistory } from "react-router-dom";
 import {
   IonApp,
   IonBadge,
@@ -44,6 +44,9 @@ import "./theme/variables.css";
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
+import Login from "./pages/Login";
+import { checkLoginStatus } from "./data/utils";
+import UserLoginSwitch from "./pages/UserLoginSwitch";
 import { Auth0Provider } from "@auth0/auth0-react";
 import DBQuery from "./pages/dbquerry";
 
@@ -52,7 +55,7 @@ setupIonicReact();
 const App: React.FC = () => {
   const [availableItems, setAvailableItems] = useState([] as any[]);
   const [myItems, setMyItems] = useState([] as any[]);
-
+  const [loginToken, setLoginToken] = useState(String);
   const dummyItems = [
     {
       id: 1,
@@ -79,6 +82,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     setAvailableItems(dummyItems);
+    const loginToken = checkLoginStatus();
+    if (loginToken) {
+      setLoginToken(loginToken);
+    }
   }, []);
 
   const borrowItem = (item: any) => {
@@ -97,26 +104,22 @@ const App: React.FC = () => {
     setAvailableItems(updatedAvailableItems);
   };
 
-  const { handleRedirectCallback, } = useAuth0();
-  
-  useEffect(() => {
-    // Handle the 'appUrlOpen' event and call `handleRedirectCallback`
-    CapApp.addListener('appUrlOpen', async ({ url }) => {
-      if (url.includes('state') && (url.includes('code') || url.includes('error'))) {
-        await handleRedirectCallback(url);
-      }
-      // No-op on Android
-      await Browser.close();
-    });
-  }, [handleRedirectCallback]);
   return (
       <IonApp>
         <IonReactRouter>
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/user">
-                <UserProfile />
-              </Route>
+              <Route
+                exact
+                path="/user"
+                render={(props) => (
+                  <UserProfile
+                    {...props}
+                    loginToken={loginToken}
+                    setLoginToken={setLoginToken}
+                  />
+                )}
+              />
               <Route exact path="/item/:id">
                 <DetailPage/>
               </Route>
@@ -124,17 +127,30 @@ const App: React.FC = () => {
                 <BorrowTab
                   availableItems={availableItems}
                   borrowItem={borrowItem}
+                  loginToken={loginToken}
                 />
               </Route>
               <Route exact path="/myItems">
-                <MyItemsTab myItems={myItems} returnItem={returnItem} />
+                <MyItemsTab
+                  myItems={myItems}
+                  returnItem={returnItem}
+                  loginToken={loginToken}
+                />
               </Route>
-              <Route>
-                <DBQuery/>
-              </Route>
-              <Route exact path="/">
-                <Redirect to="/user" />
-              </Route>
+              <Route
+                exact
+                path="/login"
+                render={(props) => (
+                  <Login {...props} setLoginToken={setLoginToken} />
+                )}
+              />
+              <Route
+                exact
+                path="/"
+                render={(props) => (
+                  <UserLoginSwitch {...props} loginToken={loginToken} />
+                )}
+              ></Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
               <IonTabButton tab="borrow" href="/borrow">
@@ -149,14 +165,11 @@ const App: React.FC = () => {
                 <IonIcon aria-hidden="true" icon={person} />
                 <IonLabel>User</IonLabel>
               </IonTabButton>
-              <IonTabButton tab="DBQuery" href="/dbquery">
-                <IonIcon aria-hidden="true" icon={person} />
-                <IonLabel>DBQuery</IonLabel>
-              </IonTabButton>
             </IonTabBar>
           </IonTabs>
-        </IonReactRouter>
-      </IonApp>
+        </IonContent>
+      </IonReactRouter>
+    </IonApp>
   );
 };
 
