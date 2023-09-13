@@ -32,14 +32,13 @@ interface CartItem {
 interface Tab1Props {
   cartItems: CartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  isAuthenticated: boolean;
 }
 
-const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems }) => {
+const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems, isAuthenticated }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<CartItem[]>([]);
-  const {isAuthenticated} = useAuth0();
-
 
   const handleOpenPopup = () => {
     setShowPopup(true);

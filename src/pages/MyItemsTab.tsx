@@ -5,10 +5,10 @@ import { useAuth0 } from '@auth0/auth0-react';
 const MyItemsTab: React.FC<{
   myItems: any[],
   returnItem: (item: any) => void,
-}> = ({ myItems, returnItem }) => {
-  const { isAuthenticated } = useAuth0();
+  loginToken: any,
+}> = ({ myItems, returnItem, loginToken }) => {
 
-  if (!isAuthenticated) {
+  if (!loginToken) {
     return (
       <IonPage>
         <IonContent fullscreen>
@@ -25,7 +25,7 @@ const MyItemsTab: React.FC<{
     <IonPage>
       <IonContent fullscreen>
         {myItems.map((item, index) => (
-          <BorrowItem item={item} itemAction={returnItem} key={index} itemActionText='zurückgeben' />
+          <BorrowItem item={item} itemAction={returnItem} key={index} itemActionText='zurückgeben' loginToken={loginToken}/>
         ))}
       </IonContent>
     </IonPage>

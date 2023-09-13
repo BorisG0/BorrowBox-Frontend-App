@@ -1,4 +1,4 @@
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useHistory } from "react-router-dom";
 import {
   IonApp,
   IonBadge,
@@ -16,9 +16,6 @@ import { IonReactRouter } from "@ionic/react-router";
 import { addCircle, layers, person } from "ionicons/icons";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
-import { useAuth0 } from '@auth0/auth0-react';
-import { App as CapApp } from '@capacitor/app';
-import { Browser } from '@capacitor/browser';
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -41,20 +38,16 @@ import "./theme/variables.css";
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BorrowTab from "./pages/BorrowTab";
-import { Auth0Provider } from "@auth0/auth0-react";
+import Login from "./pages/Login";
+import { checkLoginStatus } from "./data/utils";
+import UserLoginSwitch from "./pages/UserLoginSwitch";
 
 setupIonicReact();
-interface CartItem {
-  id: number;
-  name: string;
-  icon: string;
-  quantity: number;
-}
 
 const App: React.FC = () => {
   const [availableItems, setAvailableItems] = useState([] as any[]);
   const [myItems, setMyItems] = useState([] as any[]);
-
+  const [loginToken, setLoginToken] = useState(String);
   const dummyItems = [
     {
       id: 1,
@@ -81,6 +74,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     setAvailableItems(dummyItems);
+    const loginToken = checkLoginStatus();
+    if (loginToken) {
+      setLoginToken(loginToken);
+    }
   }, []);
 
   const borrowItem = (item: any) => {
@@ -99,61 +96,73 @@ const App: React.FC = () => {
     setAvailableItems(updatedAvailableItems);
   };
 
-  const { handleRedirectCallback, } = useAuth0();
-  
-  useEffect(() => {
-    // Handle the 'appUrlOpen' event and call `handleRedirectCallback`
-    CapApp.addListener('appUrlOpen', async ({ url }) => {
-      if (url.includes('state') && (url.includes('code') || url.includes('error'))) {
-        await handleRedirectCallback(url);
-      }
-      // No-op on Android
-      await Browser.close();
-    });
-  }, [handleRedirectCallback]);
   return (
-      <IonApp>
+    <IonApp>
+      <IonReactRouter>
         <IonHeader>
-          <Header />
+          <Header loginToken={loginToken} />
         </IonHeader>
         <IonContent>
-          <IonReactRouter>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/user">
-                  <UserProfile />
-                </Route>
-                <Route exact path="/borrow">
-                  <BorrowTab
-                    availableItems={availableItems}
-                    borrowItem={borrowItem}
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route
+                exact
+                path="/user"
+                render={(props) => (
+                  <UserProfile
+                    {...props}
+                    loginToken={loginToken}
+                    setLoginToken={setLoginToken}
                   />
-                </Route>
-                <Route exact path="/myItems">
-                  <MyItemsTab myItems={myItems} returnItem={returnItem} />
-                </Route>
-                <Route exact path="/">
-                  <Redirect to="/tab1" />
-                </Route>
-              </IonRouterOutlet>
-              <IonTabBar slot="bottom">
-                <IonTabButton tab="borrow" href="/borrow">
-                  <IonIcon aria-hidden="true" icon={addCircle} />
-                  <IonLabel>Borrow</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="myItems" href="/myItems">
-                  <IonIcon aria-hidden="true" icon={layers} />
-                  <IonLabel>My Items</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="User" href="/user">
-                  <IonIcon aria-hidden="true" icon={person} />
-                  <IonLabel>User</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-          </IonReactRouter>
+                )}
+              />
+              <Route exact path="/borrow">
+                <BorrowTab
+                  availableItems={availableItems}
+                  borrowItem={borrowItem}
+                  loginToken={loginToken}
+                />
+              </Route>
+              <Route exact path="/myItems">
+                <MyItemsTab
+                  myItems={myItems}
+                  returnItem={returnItem}
+                  loginToken={loginToken}
+                />
+              </Route>
+              <Route
+                exact
+                path="/login"
+                render={(props) => (
+                  <Login {...props} setLoginToken={setLoginToken} />
+                )}
+              />
+              <Route
+                exact
+                path="/"
+                render={(props) => (
+                  <UserLoginSwitch {...props} loginToken={loginToken} />
+                )}
+              ></Route>
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="borrow" href="/borrow">
+                <IonIcon aria-hidden="true" icon={addCircle} />
+                <IonLabel>Borrow</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="myItems" href="/myItems">
+                <IonIcon aria-hidden="true" icon={layers} />
+                <IonLabel>My Items</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="User" href="/user">
+                <IonIcon aria-hidden="true" icon={person} />
+                <IonLabel>User</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
         </IonContent>
-      </IonApp>
+      </IonReactRouter>
+    </IonApp>
   );
 };
 

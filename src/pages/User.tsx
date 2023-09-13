@@ -1,38 +1,45 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   IonContent,
-  IonHeader,
   IonPage,
-  IonTitle,
-  IonToolbar,
   IonAvatar,
   IonText,
   IonButton,
   IonIcon,
-  IonButtons,
 } from "@ionic/react";
 import {
   personCircle,
   informationCircle,
-  filterCircle,
   settings,
+  logOut,
 } from "ionicons/icons";
-import { useAuth0 } from "@auth0/auth0-react";
+import { RouteComponentProps } from "react-router-dom";
+import { deleteCookie } from "../data/utils";
 
-const UserProfile: React.FC = () => {
-  const {isAuthenticated} = useAuth0();
-  if(!isAuthenticated){
+interface UserProfileProps extends RouteComponentProps {}
 
-    return(
-      <IonPage>
-        <IonContent>
-      <div>
-        no login
-      </div>
-      </IonContent>
-    </IonPage>
-      )
+const UserProfile: React.FC<
+  UserProfileProps & {
+    loginToken: any;
+    setLoginToken: (authenticated: any) => void;
+  }
+> = ({ loginToken, setLoginToken, history }) => {
+  useEffect(() => {
+    if (!loginToken) {
+      // Umleitung auf die Login-Seite, wenn nicht authentifiziert
+      history.push("/login");
     }
+  }, [loginToken, history]);
+
+  const handleLogOut = () => {
+    deleteCookie("loginToken");
+    setLoginToken("");
+    history.push("/login"); // Umleitung nach dem Abmelden
+  };
+  if (!loginToken) {
+    // Hier einfach 'null' zurückgeben, um nichts anzuzeigen, wenn nicht authentifiziert
+    return null;
+  }
   return (
     <IonPage>
       <IonContent>
@@ -57,6 +64,10 @@ const UserProfile: React.FC = () => {
         <IonButton expand="full" color="primary">
           <IonIcon icon={settings} />
           Einstellungen
+        </IonButton>
+        <IonButton expand="full" color="primary" onClick={handleLogOut}>
+          <IonIcon icon={logOut} />
+          Log Out
         </IonButton>
       </IonContent>
     </IonPage>

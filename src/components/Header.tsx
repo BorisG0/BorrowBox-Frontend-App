@@ -1,32 +1,43 @@
-import React, { useContext } from 'react';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, NavContext } from '@ionic/react';
-import { person } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
-import LoginButton from './LoginButton';
-import LogoutButton from './LogoutButton';
+import React from "react";
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonIcon,
+} from "@ionic/react";
+import { person } from "ionicons/icons";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 
-const Header: React.FC = () => {
-  const history = useHistory();
-  const { navigate } = useContext(NavContext);
+interface HeaderProps extends RouteComponentProps {}
 
+const Header: React.FC<HeaderProps & { loginToken: any }> = ({
+  history,
+  loginToken,
+}) => {
   const handleUserIconClick = () => {
-    navigate("/user", "forward", "push");
-};
-
+    if (loginToken) {
+      history.push("/user");
+    } else {
+      history.push("/login");
+    }
+  };
   return (
     <IonHeader>
       <IonToolbar>
         <IonTitle>Borrow Box</IonTitle>
         <IonButtons slot="end">
-          <IonButton onClick={handleUserIconClick} style={{ marginRight: '1rem' }}>
+          <IonButton
+            onClick={handleUserIconClick}
+            style={{ marginRight: "1rem" }}
+          >
             <IonIcon icon={person} />
           </IonButton>
-          <LoginButton/>
-          <LogoutButton/>
         </IonButtons>
       </IonToolbar>
     </IonHeader>
   );
 };
 
-export default Header;
+export default withRouter(Header);

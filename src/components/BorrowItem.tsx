@@ -13,8 +13,8 @@ const BorrowItem: React.FC<{
   item: any;
   itemAction: (item: any) => void;
   itemActionText?: string;
-}> = ({ item, itemAction, itemActionText }) => {
-  const { isAuthenticated } = useAuth0();
+  loginToken: boolean;
+}> = ({ item, itemAction, itemActionText, loginToken }) => {
 
   return (
     <IonCard>
@@ -41,7 +41,7 @@ const BorrowItem: React.FC<{
         <IonButton fill="clear">Details</IonButton>
         <IonButton
           onClick={() => itemAction(item)}
-          disabled={!isAuthenticated} // Deaktiviere den Button, wenn nicht authentifiziert
+          disabled={!loginToken} // Deaktiviere den Button, wenn nicht authentifiziert
         >
           {itemActionText ? itemActionText : "Ausleihen"}
         </IonButton>

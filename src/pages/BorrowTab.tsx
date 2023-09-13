@@ -4,13 +4,14 @@ import BorrowItem from '../components/BorrowItem';
 const BorrowTab: React.FC<{
     availableItems: any[],
     borrowItem: (item: any) => void,
-  }> = ({ availableItems, borrowItem }) => {
+    loginToken: any
+  }> = ({ availableItems, borrowItem, loginToken }) => {
 
   return (
     <IonPage>
       <IonContent fullscreen>
         {availableItems.map((item, index) =>
-            <BorrowItem item={item} itemAction={borrowItem} key={index}/>
+            <BorrowItem item={item} itemAction={borrowItem} key={index} loginToken={loginToken}/>
         )}
       </IonContent>
     </IonPage>
