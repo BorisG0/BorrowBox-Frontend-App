@@ -8,13 +8,34 @@ import {
   IonCardTitle,
   IonChip,
 } from "@ionic/react";
+import { startRental } from "../apiService";
 
 const BorrowItem: React.FC<{
   item: any;
   itemAction: (item: any) => void;
   itemActionText?: string;
   loginToken: boolean;
-}> = ({ item, itemAction, itemActionText, loginToken }) => {
+}> = ({ item, itemActionText, isFunctionStartRental, loginToken }) => {
+  const { isAuthenticated, user } = useAuth0();
+
+
+  const newRental = {
+    "userEmail": user?.email,
+    "itemId": item._id
+  }
+
+  const handleStartRental = async () => {
+    try{
+      const response = await startRental(newRental);
+      console.log(response);
+    }catch(error){
+      console.log(error);
+    }
+  }
+
+  const handleEndRental = () => {
+    console.log("End rental");
+  }
 
   return (
     <IonCard>
@@ -30,7 +51,7 @@ const BorrowItem: React.FC<{
           </div>
         </IonCardTitle>
         <IonCardSubtitle>
-          {item.tags.map((tag: string, index: number) => (
+          {item.tags?.map((tag: string, index: number) => (
             <IonChip key={index}>{tag}</IonChip>
           ))}
         </IonCardSubtitle>
@@ -38,9 +59,9 @@ const BorrowItem: React.FC<{
       <IonCardContent></IonCardContent>
 
       <div style={{ float: "right", padding: "10px" }}>
-        <IonButton fill="clear">Details</IonButton>
+        <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
         <IonButton
-          onClick={() => itemAction(item)}
+          onClick={ (isFunctionStartRental ? handleStartRental: handleEndRental) }
           disabled={!loginToken} // Deaktiviere den Button, wenn nicht authentifiziert
         >
           {itemActionText ? itemActionText : "Ausleihen"}

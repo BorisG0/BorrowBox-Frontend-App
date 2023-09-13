@@ -7,6 +7,7 @@ import {
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonTab,
   IonTabBar,
   IonTabButton,
   IonTabs,
@@ -16,6 +17,11 @@ import { IonReactRouter } from "@ionic/react-router";
 import { addCircle, layers, person } from "ionicons/icons";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
+import DetailPage from "./pages/DetailPage";
+import { useAuth0 } from '@auth0/auth0-react';
+import { App as CapApp } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
+
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -41,6 +47,8 @@ import BorrowTab from "./pages/BorrowTab";
 import Login from "./pages/Login";
 import { checkLoginStatus } from "./data/utils";
 import UserLoginSwitch from "./pages/UserLoginSwitch";
+import { Auth0Provider } from "@auth0/auth0-react";
+import DBQuery from "./pages/dbquerry";
 
 setupIonicReact();
 
@@ -97,12 +105,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <IonApp>
-      <IonReactRouter>
-        <IonHeader>
-          <Header loginToken={loginToken} />
-        </IonHeader>
-        <IonContent>
+      <IonApp>
+        <IonReactRouter>
           <IonTabs>
             <IonRouterOutlet>
               <Route
@@ -116,6 +120,9 @@ const App: React.FC = () => {
                   />
                 )}
               />
+              <Route exact path="/item/:id">
+                <DetailPage/>
+              </Route>
               <Route exact path="/borrow">
                 <BorrowTab
                   availableItems={availableItems}

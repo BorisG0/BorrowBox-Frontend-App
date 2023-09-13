@@ -15,6 +15,8 @@ import {
 } from "ionicons/icons";
 import { RouteComponentProps } from "react-router-dom";
 import { deleteCookie } from "../data/utils";
+import LoginButton from '../components/LoginButton';
+import LogoutButton from '../components/LogoutButton';
 
 interface UserProfileProps extends RouteComponentProps {}
 
@@ -50,7 +52,8 @@ const UserProfile: React.FC<
             <img src="./user.jpg" alt /*  */="Benutzerbild" />
           </IonAvatar>
           <IonText>
-            <h2>Nutzername</h2>
+            <h2>{user?.name}</h2>
+            <h3>{user?.email}</h3>
           </IonText>
         </div>
         <IonButton expand="full" color="primary">

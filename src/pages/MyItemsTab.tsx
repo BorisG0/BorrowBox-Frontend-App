@@ -25,7 +25,7 @@ const MyItemsTab: React.FC<{
     <IonPage>
       <IonContent fullscreen>
         {myItems.map((item, index) => (
-          <BorrowItem item={item} itemAction={returnItem} key={index} itemActionText='zurückgeben' loginToken={loginToken}/>
+          <BorrowItem item={item} key={index} loginToken={loginToken} itemActionText='zurückgeben' isFunctionStartRental={true}/>
         ))}
       </IonContent>
     </IonPage>
