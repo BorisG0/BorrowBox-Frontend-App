@@ -52,6 +52,7 @@ const UserProfile: React.FC<
           <IonText>
           </IonText>
         </div>
+        <h1>user id: {loginToken}</h1> {/* Nur zum Testen hier, kann wieder gelöscht werden */}
         <IonButton expand="full" color="primary">
           <IonIcon icon={personCircle} />
           Persönliche Infos

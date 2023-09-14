@@ -18,12 +18,13 @@ const BorrowItem: React.FC<{
   
 
   const newRental = {
-    "userEmail": 'demoemial',
+    "userId": 'aaabbbaaabbbaaabbbaaabbb', //test id, muss noch richtig gesetzt werden
     "itemId": item._id
   }
 
   const handleStartRental = async () => {
     try{
+      console.log(newRental)
       const response = await startRental(newRental);
       console.log(response);
     }catch(error){
