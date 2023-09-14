@@ -2,7 +2,7 @@ import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/rea
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { fetchItemDetailData } from '../apiService';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip } from "@ionic/react";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonImg} from "@ionic/react";
 
 const DetailPage: React.FC = () => {
     const [item, setItem] = useState<any>(null);
@@ -40,26 +40,26 @@ const DetailPage: React.FC = () => {
                 <IonCardTitle>
                     {item.name}
                     <div style={{float: "right"}}>
-                    {item.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
                     </div>
                 </IonCardTitle>
                 <IonCardSubtitle>
-                    <> Tags: </>
-                    {item.tags.map((tag: string, index: number) =>
+                {item.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
+                </IonCardSubtitle>
+            </IonCardHeader>
+            <IonCardContent>
+            <IonImg src={item.image} />
+            {item.description}
+            <br/>
+            <> Tags: </>
+                    {item.tagNames.map((tag: string, index: number) =>
                         <IonChip key={index}>{tag}</IonChip>
                     )}
                     <br/>
                     {item.available ? <></> : <> Rented by: <IonChip>{item.currentRenter}</IonChip></>}
-                </IonCardSubtitle>
-            </IonCardHeader>
-            <IonCardContent>
-                {item.description}
             </IonCardContent>
             
             <div style={{float: "right", padding: "10px"}}>
-                <IonButton >
-                    {"Ausleihen"}
-                </IonButton>
+              <IonButton disabled={!item.available}>Ausleihen</IonButton>
             </div>
             
         </IonCard>

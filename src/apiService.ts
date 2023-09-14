@@ -50,7 +50,7 @@ export const startRental = async (rental: any): Promise<AxiosResponse<any>> => {
 
 export const fetchItemDetailData = async (itemId: any): Promise<AxiosResponse<any>> => {
     try{
-        const response = await apiService.get('getDocumentByID/items/'+ itemId);
+        const response = await apiService.get('items/'+ itemId);
         return response;
     }catch(error){
         throw error;
