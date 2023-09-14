@@ -10,6 +10,8 @@ const apiService = axios.create({
     }
 })
 
+const userId = 'aaabbbaaabbbaaabbbaaabbb';
+
 export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
     try{
         const response = await apiService.get('hello');
@@ -22,6 +24,15 @@ export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
 export const fetchItemData = async (): Promise<AxiosResponse<any>> => {
     try{
         const response = await apiService.get('items');
+        return response;
+    }catch(error){
+        throw error;
+    }
+}
+
+export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
+    try{
+        const response = await apiService.get('useritems/'+userId);
         return response;
     }catch(error){
         throw error;
