@@ -7,7 +7,7 @@ import {
   IonCardTitle,
   IonChip,
 } from "@ionic/react";
-import { startRental } from "../apiService";
+import { endRental, startRental } from "../apiService";
 
 const BorrowItem: React.FC<{
   item: any;
@@ -32,8 +32,14 @@ const BorrowItem: React.FC<{
     }
   }
 
-  const handleEndRental = () => {
-    console.log("End rental");
+  const handleEndRental = async () => {
+    try{
+      console.log("ending rental")
+      const response = await endRental(item._id);
+      console.log(response);
+    }catch(error){
+      console.log(error);
+    }
   }
 
   return (
