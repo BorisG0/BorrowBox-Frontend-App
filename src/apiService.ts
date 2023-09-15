@@ -81,4 +81,12 @@ export const fetchLogin = async (loginData: any): Promise<AxiosResponse<any>> =>
     }
 }
 
+export const addItem = async (item: any): Promise<AxiosResponse<any>> => {
+    try{
+        const response = await apiService.post('addItem', item);
+        return response;
+    }catch(error){
+        throw error;
+    }
+}
 export default apiService;
