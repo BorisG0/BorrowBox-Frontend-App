@@ -4,10 +4,8 @@ import { useEffect, useState } from 'react';
 import { fetchUserItemData } from '../apiService';
 
 const MyItemsTab: React.FC<{
-  myItems: any[],
-  returnItem: (item: any) => void,
   loginToken: any,
-}> = ({ myItems, returnItem, loginToken }) => {
+}> = ({ loginToken }) => {
 
   const [items, setItems] = useState([] as any[]);
 

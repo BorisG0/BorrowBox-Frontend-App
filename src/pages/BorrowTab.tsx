@@ -5,10 +5,8 @@ import { useEffect, useState } from 'react';
 import { fetchItemData } from '../apiService';
 
 const BorrowTab: React.FC<{
-    availableItems: any[],
-    borrowItem: (item: any) => void,
     loginToken: any
-  }> = ({ availableItems, borrowItem, loginToken }) => {
+  }> = ({ loginToken }) => {
 
     const [allItems, setAllItems] = useState([] as any[]);
 
@@ -29,9 +27,6 @@ const BorrowTab: React.FC<{
   return (
     <IonPage>
       <IonContent fullscreen>
-        {availableItems.map((item, index) =>
-            <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={true}/>
-        )}
         <h1>Alle Items (aus db)</h1>
         {allItems.map((item, index) =>
             <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={true}/>
