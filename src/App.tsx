@@ -47,56 +47,14 @@ import DBQuery from "./pages/dbquerry";
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [availableItems, setAvailableItems] = useState([] as any[]);
-  const [myItems, setMyItems] = useState([] as any[]);
   const [loginToken, setLoginToken] = useState(String);
-  const dummyItems = [
-    {
-      id: 1,
-      name: "Ausgestopfter Papagei",
-      tags: ["Biologie", "Tier"],
-      description: "Ein ausgestopfter Papagei, der auf einem Ast sitzt.",
-      available: true,
-    },
-    {
-      id: 2,
-      name: "Schutzbrillen",
-      tags: ["Chemie", "Brille"],
-      description: "Schutzbrillen für den Chemieunterricht.",
-      available: true,
-    },
-    {
-      id: 3,
-      name: "Experiment Handbuch",
-      tags: ["Buch", "Chemie"],
-      description: "Ein Handbuch mit vielen Experimenten.",
-      available: true,
-    },
-  ];
 
   useEffect(() => {
-    setAvailableItems(dummyItems);
     const loginToken = checkLoginStatus();
     if (loginToken) {
       setLoginToken(loginToken);
     }
   }, []);
-
-  const borrowItem = (item: any) => {
-    const updatedAvailableItems = availableItems.filter(
-      (availableItem) => availableItem.id !== item.id
-    );
-    setAvailableItems(updatedAvailableItems);
-    const updatedMyItems = [...myItems, item];
-    setMyItems(updatedMyItems);
-  };
-
-  const returnItem = (item: any) => {
-    const updatedMyItems = myItems.filter((myItem) => myItem.id !== item.id);
-    setMyItems(updatedMyItems);
-    const updatedAvailableItems = [...availableItems, item];
-    setAvailableItems(updatedAvailableItems);
-  };
 
   return (
     <IonApp>
@@ -119,15 +77,11 @@ const App: React.FC = () => {
             </Route>
             <Route exact path="/borrow">
               <BorrowTab
-                availableItems={availableItems}
-                borrowItem={borrowItem}
                 loginToken={loginToken}
               />
             </Route>
             <Route exact path="/myItems">
               <MyItemsTab
-                myItems={myItems}
-                returnItem={returnItem}
                 loginToken={loginToken}
               />
             </Route>

@@ -1,16 +1,20 @@
-import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonButton } from '@ionic/react';
+import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonButton, IonSearchbar } from '@ionic/react';
 import BorrowItem from '../components/BorrowItem';
 import AddItemModal from '../components/AddItemModal';
 import { useEffect, useState } from 'react';
 import { fetchItemData } from '../apiService';
 
 const BorrowTab: React.FC<{
-    availableItems: any[],
-    borrowItem: (item: any) => void,
     loginToken: any
-  }> = ({ availableItems, borrowItem, loginToken }) => {
+  }> = ({ loginToken }) => {
 
     const [allItems, setAllItems] = useState([] as any[]);
+    const [showModal, setShowModal] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    const filteredItems = allItems.filter((item) =>
+      item.name.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     useEffect(() => {
       async function fetchItems(){
@@ -24,16 +28,17 @@ const BorrowTab: React.FC<{
       fetchItems();
     }, [])
 
-    const [showModal, setShowModal] = useState(false);
+    
 
   return (
     <IonPage>
       <IonContent fullscreen>
-        {availableItems.map((item, index) =>
-            <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={true}/>
-        )}
-        <h1>Alle Items (aus db)</h1>
-        {allItems.map((item, index) =>
+        <IonSearchbar
+          placeholder='Suchen'
+          value={searchText}
+          onIonInput={e => setSearchText(e.detail.value!)}
+        />
+        {filteredItems.map((item, index) =>
             <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={true}/>
         )}
         <IonButton onClick={() => setShowModal(true)}>Open Modal</IonButton>

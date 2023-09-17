@@ -8,17 +8,20 @@ import {
   IonChip,
 } from "@ionic/react";
 import { endRental, startRental } from "../apiService";
+import { useState } from "react";
 
 const BorrowItem: React.FC<{
   item: any;
   isFunctionStartRental: boolean;
   loginToken: boolean;
 }> = ({ item, isFunctionStartRental, loginToken }) => {
+  const [isItemAvailable, setIsItemAvailable] = useState(item.available);
 
   const handleStartRental = async () => {
     try{
       const response = await startRental(item._id);
       console.log(response);
+      setIsItemAvailable(false);
     }catch(error){
       console.log(error);
     }
@@ -28,6 +31,7 @@ const BorrowItem: React.FC<{
     try{
       console.log("ending rental")
       const response = await endRental(item._id);
+      setIsItemAvailable(true);
       console.log(response);
     }catch(error){
       console.log(error);
@@ -40,7 +44,7 @@ const BorrowItem: React.FC<{
         <IonCardTitle>
           {item.name}
           <div style={{ float: "right" }}>
-            {item.available ? (
+            {isItemAvailable ? (
               <IonChip color="success">Verfügbar</IonChip>
             ) : (
               <IonChip color="danger">Ausgeliehen</IonChip>
@@ -59,7 +63,11 @@ const BorrowItem: React.FC<{
         <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
         <IonButton
           onClick={ (isFunctionStartRental ? handleStartRental: handleEndRental) }
-          disabled={(!loginToken) || (!item.available && isFunctionStartRental)} // Deaktiviere den Button, wenn nicht authentifiziert oder Item nicht verfügbar
+          disabled={(!loginToken)
+            || (!isItemAvailable && isFunctionStartRental)
+            || (isItemAvailable && !isFunctionStartRental)
+          } // Deaktiviere den Button, wenn nicht authentifiziert
+            //oder Item nicht verfügbar beim Ausleihen oder Item verfügbar beim Zurückgeben
         >
           {isFunctionStartRental ? "Ausleihen" : "Zurückgeben"}
         </IonButton>
