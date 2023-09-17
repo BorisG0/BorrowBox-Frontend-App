@@ -9,6 +9,12 @@ const BorrowTab: React.FC<{
   }> = ({ loginToken }) => {
 
     const [allItems, setAllItems] = useState([] as any[]);
+    const [showModal, setShowModal] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    const filteredItems = allItems.filter((item) =>
+      item.name.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     useEffect(() => {
       async function fetchItems(){
@@ -22,13 +28,17 @@ const BorrowTab: React.FC<{
       fetchItems();
     }, [])
 
-    const [showModal, setShowModal] = useState(false);
+    
 
   return (
     <IonPage>
       <IonContent fullscreen>
-        <IonSearchbar placeholder='Suchen'></IonSearchbar>
-        {allItems.map((item, index) =>
+        <IonSearchbar
+          placeholder='Suchen'
+          value={searchText}
+          onIonInput={e => setSearchText(e.detail.value!)}
+        />
+        {filteredItems.map((item, index) =>
             <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={true}/>
         )}
         <IonButton onClick={() => setShowModal(true)}>Open Modal</IonButton>
