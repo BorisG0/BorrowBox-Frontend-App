@@ -1,4 +1,4 @@
-import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonButton } from '@ionic/react';
+import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonButton, IonSearchbar } from '@ionic/react';
 import BorrowItem from '../components/BorrowItem';
 import AddItemModal from '../components/AddItemModal';
 import { useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ const BorrowTab: React.FC<{
   return (
     <IonPage>
       <IonContent fullscreen>
-        <h1>Alle Items (aus db)</h1>
+        <IonSearchbar placeholder='Suchen'></IonSearchbar>
         {allItems.map((item, index) =>
             <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={true}/>
         )}
