@@ -23,3 +23,19 @@
   opacity: 1;
   color: wheat;
 }
+
+.wobbleanimation {
+  animation: wobble 0.25s ease infinite;
+}
+
+@keyframes wobble {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  15%, 45%, 75%, 105%, 135%, 165%, 195%, 225%, 255%, 285% {
+    transform: translateX(-10px) rotate(2deg);
+  }
+  30%, 60%, 90%, 120%, 150%, 180%, 210%, 240%, 270%, 300% {
+    transform: translateX(10px) rotate(-2deg);
+  }
+}

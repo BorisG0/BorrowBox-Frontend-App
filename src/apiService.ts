@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-const API_URL = "http://localhost:8080/";
+const API_URL = "http://localhost:8080";
 
 const apiService = axios.create({
   baseURL: API_URL,
@@ -9,8 +9,6 @@ const apiService = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-const userId = "aaabbbaaabbbaaabbbaaabbb"; //test id, muss noch richtig gesetzt werden
 
 export const fetchHelloData = async (): Promise<AxiosResponse<any>> => {
   try {
@@ -76,7 +74,9 @@ export const fetchTags = async (userId: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
-export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
+export const fetchUserItemData = async (
+  userId: any
+): Promise<AxiosResponse<any>> => {
   try {
     const response = await apiService.get("useritems/" + userId);
     return response;
@@ -86,7 +86,8 @@ export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
 };
 
 export const startRental = async (
-  itemId: string
+  itemId: string,
+  userId: any
 ): Promise<AxiosResponse<any>> => {
   try {
     const rental = {
@@ -139,4 +140,23 @@ export const addItem = async (item: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
+
+export const addFilter = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.post("addFilter", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteFilter = async (id: any): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.delete(`deleteFilter`, { data: { id } });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default apiService;
