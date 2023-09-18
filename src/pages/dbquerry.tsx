@@ -32,7 +32,7 @@ const DBQuery: React.FC = () => {
 
   const handleStartRental = async () => {
     try{
-      const response = await startRental(testRental);
+      const response = await startRental("64ede287c1440cab375577f9");
       console.log(response);
     }catch(error){
       console.log(error);

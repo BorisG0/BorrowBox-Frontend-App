@@ -12,6 +12,22 @@ const MyItemsTab: React.FC<{
   returnItem: (item: any) => void;
   loginToken: any;
 }> = ({ myItems, returnItem, loginToken }) => {
+
+  const [items, setItems] = useState([] as any[]);
+
+  useEffect(() => {
+    async function fetchItems(){
+      try{
+        const itemData = await fetchUserItemData();
+        setItems(itemData.data.items);
+        console.log(itemData.data);
+      }catch(error){
+        console.log(error);
+      }
+    }
+    fetchItems();
+  }, [])
+
   if (!loginToken) {
     return (
       <IonPage>

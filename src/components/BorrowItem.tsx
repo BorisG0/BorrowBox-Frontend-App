@@ -7,32 +7,35 @@ import {
   IonCardTitle,
   IonChip,
 } from "@ionic/react";
-import { startRental } from "../apiService";
+import { endRental, startRental } from "../apiService";
+import { useState } from "react";
 
 const BorrowItem: React.FC<{
   item: any;
   isFunctionStartRental: boolean;
-  itemActionText?: string;
   loginToken: boolean;
-}> = ({ item, itemActionText, isFunctionStartRental, loginToken }) => {
-  
-
-  const newRental = {
-    "userEmail": 'demoemial',
-    "itemId": item._id
-  }
+}> = ({ item, isFunctionStartRental, loginToken }) => {
+  const [isItemAvailable, setIsItemAvailable] = useState(item.available);
 
   const handleStartRental = async () => {
     try{
-      const response = await startRental(newRental);
+      const response = await startRental(item._id);
       console.log(response);
+      setIsItemAvailable(false);
     }catch(error){
       console.log(error);
     }
   }
 
-  const handleEndRental = () => {
-    console.log("End rental");
+  const handleEndRental = async () => {
+    try{
+      console.log("ending rental")
+      const response = await endRental(item._id);
+      setIsItemAvailable(true);
+      console.log(response);
+    }catch(error){
+      console.log(error);
+    }
   }
 
   return (
@@ -41,7 +44,7 @@ const BorrowItem: React.FC<{
         <IonCardTitle>
           {item.name}
           <div style={{ float: "right" }}>
-            {item.available ? (
+            {isItemAvailable ? (
               <IonChip color="success">Verfügbar</IonChip>
             ) : (
               <IonChip color="danger">Ausgeliehen</IonChip>
@@ -60,9 +63,13 @@ const BorrowItem: React.FC<{
         <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
         <IonButton
           onClick={ (isFunctionStartRental ? handleStartRental: handleEndRental) }
-          disabled={!loginToken} // Deaktiviere den Button, wenn nicht authentifiziert
+          disabled={(!loginToken)
+            || (!isItemAvailable && isFunctionStartRental)
+            || (isItemAvailable && !isFunctionStartRental)
+          } // Deaktiviere den Button, wenn nicht authentifiziert
+            //oder Item nicht verfügbar beim Ausleihen oder Item verfügbar beim Zurückgeben
         >
-          {itemActionText ? itemActionText : "Ausleihen"}
+          {isFunctionStartRental ? "Ausleihen" : "Zurückgeben"}
         </IonButton>
       </div>
     </IonCard>
