@@ -13,11 +13,12 @@ import {
   IonProgressBar,
   IonRouterLink,
   IonRow,
+  IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import styles from "./Login.module.scss";
 
-import { arrowBack, shapesOutline } from "ionicons/icons";
+import { arrowBack, person, shapesOutline } from "ionicons/icons";
 import CustomField from "../components/CustomField";
 import { useLoginFields } from "../data/fields";
 import { Wave } from "../components/Wave";
@@ -25,12 +26,13 @@ import { useEffect, useState } from "react";
 import {
   checkLoginStatus,
   getLoginData,
+  hashPassword,
   setCookie,
   validateForm,
 } from "../data/utils";
 import { RouteComponentProps, useParams } from "react-router";
 import { fetchLogin } from "../apiService";
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 
 const Login: React.FC<
   RouteComponentProps & { setLoginToken: (loginToken: any) => void }
@@ -46,7 +48,9 @@ const Login: React.FC<
     setErrors(formErrors);
     if (formErrors.length === 0) {
       try {
-        const loginData = getLoginData(fields);
+        let loginData = getLoginData(fields);
+        loginData.email = "admin";
+        loginData.password = "admin";
         // Passwort hashen
         const hashedPassword = await hashPassword(loginData.password);
         loginData.password = hashedPassword.toString(); // Verwenden Sie den gehashten Wert
@@ -81,10 +85,6 @@ const Login: React.FC<
     }
   };
 
-  const hashPassword = async (password: any) => {
-    const hashedPassword = await CryptoJS.SHA256(password);
-    return hashedPassword;
-  };
 
   useEffect(() => {
     return () => {
@@ -96,11 +96,15 @@ const Login: React.FC<
   return (
     <IonPage className={styles.loginPage}>
       <IonContent fullscreen>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Log in</IonTitle>
+          </IonToolbar>
+        </IonHeader>
         {isLoading && <IonProgressBar type="indeterminate" color="success" />}{" "}
         <IonGrid className="ion-padding">
           <IonRow>
             <IonCol size="12" className={styles.headingText}>
-              <IonCardTitle>Log in</IonCardTitle>
               <h5>Welcome back, hope you're doing well</h5>
             </IonCol>
           </IonRow>

@@ -1,11 +1,17 @@
-import { IonContent, IonPage } from '@ionic/react';
-import BorrowItem from '../components/BorrowItem';
-import { useEffect, useState } from 'react';
-import { fetchUserItemData } from '../apiService';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
+import BorrowItem from "../components/BorrowItem";
 
 const MyItemsTab: React.FC<{
-  loginToken: any,
-}> = ({ loginToken }) => {
+  myItems: any[];
+  returnItem: (item: any) => void;
+  loginToken: any;
+}> = ({ myItems, returnItem, loginToken }) => {
 
   const [items, setItems] = useState([] as any[]);
 
@@ -26,10 +32,13 @@ const MyItemsTab: React.FC<{
     return (
       <IonPage>
         <IonContent fullscreen>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>My Items</IonTitle>
+            </IonToolbar>
+          </IonHeader>
           {/* TODO: Schön machen */}
-          <div>
-            Bitte melden Sie sich an, um diese Seite anzuzeigen.
-          </div>
+          <div>Bitte melden Sie sich an, um diese Seite anzuzeigen.</div>
         </IonContent>
       </IonPage>
     );
@@ -38,9 +47,20 @@ const MyItemsTab: React.FC<{
   return (
     <IonPage>
       <IonContent fullscreen>
-        {items.map((item, index) => 
-          <BorrowItem item={item} key={index} loginToken={loginToken} isFunctionStartRental={false}/>
-        )}
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>My Items</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        {myItems.map((item, index) => (
+          <BorrowItem
+            item={item}
+            key={index}
+            loginToken={loginToken}
+            itemActionText="zurückgeben"
+            isFunctionStartRental={true}
+          />
+        ))}
       </IonContent>
     </IonPage>
   );

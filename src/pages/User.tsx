@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IonContent,
   IonPage,
@@ -6,6 +6,19 @@ import {
   IonText,
   IonButton,
   IonIcon,
+  IonCardContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonCol,
+  IonGrid,
+  IonRow,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonSearchbar,
+  IonChip,
+  IonModal,
 } from "@ionic/react";
 import {
   personCircle,
@@ -14,9 +27,21 @@ import {
   logOut,
 } from "ionicons/icons";
 import { RouteComponentProps } from "react-router-dom";
-import { deleteCookie } from "../data/utils";
+import { checkLoginStatus, deleteCookie, hashPassword } from "../data/utils";
+import {
+  fetchUserById,
+  updateUserData,
+  fetchTags,
+  updateUserTag,
+} from "../apiService";
+import { useTranslation } from "react-i18next";
+import styles from "./User.module.scss";
 
 interface UserProfileProps extends RouteComponentProps {}
+interface ChipData {
+  id: string;
+  name: string;
+}
 
 const UserProfile: React.FC<
   UserProfileProps & {
@@ -24,51 +49,269 @@ const UserProfile: React.FC<
     setLoginToken: (authenticated: any) => void;
   }
 > = ({ loginToken, setLoginToken, history }) => {
-  useEffect(() => {
-    if (!loginToken) {
-      // Umleitung auf die Login-Seite, wenn nicht authentifiziert
-      history.push("/login");
+  const [userData, setUserData] = useState<any>(null);
+  const { t } = useTranslation();
+  const [currentPage, setCurrentPage] = useState<any>(null);
+  const [emailValue, setEmailValue] = useState<any>();
+  const [passwordValue, setPasswordValue] = useState<any>();
+  const [passwordValue2, setPasswordValue2] = useState<any>();
+  const [selectedChips, setSelectedChips] = useState(new Set());
+  const [editModeEnabled, setEditModeEnabled] = useState<any>(false);
+  const [isManageUsersModalOpen, setIsManageUsersModalOpen] = useState(false);
+
+  const [chipData, setChipData] = useState<ChipData[]>([]);
+
+  const toggleChip = async (chip: any) => {
+    const updatedChips = new Set(selectedChips);
+    if (updatedChips.has(chip.name)) {
+      updatedChips.delete(chip.name);
+    } else {
+      updatedChips.add(chip.name);
     }
+    const data = {
+      userId: loginToken,
+      tagId: chip._id,
+    };
+    const response = await updateUserTag(data);
+    if (response.status === 200) {
+      setSelectedChips(updatedChips);
+    }
+  };
+  const openManageUsersModal = () => {
+    setIsManageUsersModalOpen(true);
+  };
+
+  const closeManageUsersModal = () => {
+    setIsManageUsersModalOpen(false);
+  };
+
+  useEffect(() => {
+    const checkLoginAndFetchData = async () => {
+      if (!loginToken) {
+        const result = checkLoginStatus();
+        setLoginToken(result);
+        loginToken = result;
+        if (result === null) {
+          history.push("/login");
+          return;
+        }
+      }
+      try {
+        const data = await fetchUserById(loginToken);
+        setUserData(data.data);
+        setEmailValue(data.data.email);
+      } catch (error) {
+        console.log(error);
+      }
+      try {
+        const response = await fetchTags(loginToken);
+        console.log(response);
+        const updatedChips = new Set(selectedChips);
+        response.data.map((tag: any) => {
+          if (tag.tagged) {
+            updatedChips.add(tag.name);
+          }
+        });
+        setSelectedChips(updatedChips);
+        setChipData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    checkLoginAndFetchData();
   }, [loginToken, history]);
 
   const handleLogOut = () => {
     deleteCookie("loginToken");
     setLoginToken("");
-    history.push("/login"); // Umleitung nach dem Abmelden
+    history.push("/login");
   };
   if (!loginToken) {
-    // Hier einfach 'null' zurückgeben, um nichts anzuzeigen, wenn nicht authentifiziert
     return null;
   }
+
+  const pagePersonalInfo = "personal-info";
+  const pageFilter = "filter";
+
+  const togglePersonalInfo = () => {
+    if (currentPage === pagePersonalInfo) {
+      setCurrentPage(null);
+    } else {
+      setCurrentPage(pagePersonalInfo);
+    }
+  };
+  const toggleFilter = () => {
+    if (currentPage === pageFilter) {
+      setCurrentPage(null);
+    } else {
+      setCurrentPage(pageFilter);
+    }
+  };
+  const editSaveButton = async () => {
+    if (editModeEnabled) {
+      if (emailValue != userData?.email && passwordValue != "") {
+        let updatedUserData = {
+          id: loginToken,
+          username: userData?.username,
+          email: "",
+          password: "",
+        };
+        console.log(passwordValue != "");
+        if (passwordValue != "" && passwordValue === passwordValue2) {
+          const hashedPassword = await hashPassword(passwordValue);
+          updatedUserData.password = hashedPassword.toString();
+        }
+        if (emailValue != null) {
+          updatedUserData.email = emailValue;
+        }
+        const result = await updateUserData(updatedUserData);
+        console.log(result);
+      }
+    }
+    setEditModeEnabled(!editModeEnabled);
+    setChipData([]);
+    setEmailValue("");
+    setPasswordValue("");
+    setPasswordValue2("");
+  };
+
   return (
     <IonPage>
       <IonContent>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle></IonTitle>
+          </IonToolbar>
+        </IonHeader>
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <IonAvatar
             style={{ width: "120px", height: "120px", margin: "0 auto" }}
           >
             <img src="./user.jpg" alt /*  */="Benutzerbild" />
           </IonAvatar>
-          <IonText>
+          <IonText style={{ fontSize: "24px", margin: "20px 0" }}>
+            {t("welcome")} {userData?.username}
           </IonText>
         </div>
-        <h1>user id: {loginToken}</h1> {/* Nur zum Testen hier, kann wieder gelöscht werden */}
-        <IonButton expand="full" color="primary">
+        <IonButton expand="full" color="primary" onClick={togglePersonalInfo}>
           <IonIcon icon={personCircle} />
           Persönliche Infos
         </IonButton>
-        <IonButton expand="full" color="primary">
+        <div
+          className={`${styles["personal-info-container"]} ${
+            currentPage === pagePersonalInfo ? styles.open : ""
+          }`}
+        >
+          <IonCardContent>
+            <IonGrid>
+              <IonRow>
+                <IonCol>
+                  <IonItem>
+                    <IonLabel position="fixed">Username:</IonLabel>
+                    <IonLabel>{userData?.username}</IonLabel>
+                  </IonItem>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonItem>
+                    <IonLabel position="fixed">Email:</IonLabel>
+                    {editModeEnabled ? (
+                      <IonInput
+                        value={emailValue}
+                        onIonChange={(e) => setEmailValue(e.detail.value!)}
+                      />
+                    ) : (
+                      <IonLabel>{emailValue}</IonLabel>
+                    )}
+                  </IonItem>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonItem>
+                    <IonLabel position="fixed">Password:</IonLabel>
+                    {editModeEnabled ? (
+                      <IonInput
+                        value={passwordValue}
+                        placeholder="**********"
+                        onIonChange={(e) => setPasswordValue(e.detail.value!)}
+                      />
+                    ) : (
+                      // Statt des IonInput hier ********* für das Passwort anzeigen
+                      <IonLabel>*********</IonLabel>
+                    )}
+                  </IonItem>
+                </IonCol>
+              </IonRow>
+              {editModeEnabled && (
+                <IonRow>
+                  <IonCol>
+                    <IonItem>
+                      <IonLabel position="fixed">repeat:</IonLabel>
+                      <IonInput
+                        value={passwordValue2}
+                        placeholder="**********"
+                        onIonChange={(e) => setPasswordValue2(e.detail.value!)}
+                      />
+                    </IonItem>
+                  </IonCol>
+                </IonRow>
+              )}
+            </IonGrid>
+            <IonButton expand="full" onClick={editSaveButton}>
+              {editModeEnabled ? "Save" : "Edit"}
+            </IonButton>
+          </IonCardContent>
+        </div>
+        <IonButton expand="full" color="primary" onClick={toggleFilter}>
           <IonIcon icon={informationCircle} />
           Filter
         </IonButton>
-        <IonButton expand="full" color="primary">
-          <IonIcon icon={settings} />
-          Einstellungen
-        </IonButton>
+        <div
+          className={`${styles["filter-container"]} ${
+            currentPage === pageFilter ? styles.open : ""
+          }`}
+        >
+          <IonCardContent>
+            <p>Select chips by clicking on them:</p>
+            <div>
+              {chipData.map((chip, index) => {
+                return (
+                  <IonChip
+                    key={index}
+                    color={selectedChips.has(chip.name) ? "success" : "primary"}
+                    onClick={() => toggleChip(chip)}
+                  >
+                    {chip.name}
+                  </IonChip>
+                );
+              })}
+            </div>
+          </IonCardContent>
+        </div>
+        {userData?.role == "admin" && (
+          <IonButton
+            expand="full"
+            color="primary"
+            onClick={openManageUsersModal}
+          >
+            <IonIcon icon={logOut} />
+            Manage Users
+          </IonButton>
+        )}
         <IonButton expand="full" color="primary" onClick={handleLogOut}>
           <IonIcon icon={logOut} />
           Log Out
         </IonButton>
+        <IonModal
+          isOpen={isManageUsersModalOpen}
+          onDidDismiss={closeManageUsersModal}
+        >
+          <IonText>Das ist das Manage Users Modal.</IonText>
+          <IonButton onClick={closeManageUsersModal}>Schließen</IonButton>
+        </IonModal>
       </IonContent>
     </IonPage>
   );

@@ -27,14 +27,6 @@ const Header: React.FC<HeaderProps & { loginToken: any }> = ({
     <IonHeader>
       <IonToolbar>
         <IonTitle>Borrow Box</IonTitle>
-        <IonButtons slot="end">
-          <IonButton
-            onClick={handleUserIconClick}
-            style={{ marginRight: "1rem" }}
-          >
-            <IonIcon icon={person} />
-          </IonButton>
-        </IonButtons>
       </IonToolbar>
     </IonHeader>
   );
