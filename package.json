@@ -31,9 +31,11 @@
     "axios": "^1.5.0",
     "bcrypt": "^5.1.1",
     "crypto-js": "^4.1.1",
+    "i18next": "^23.5.1",
     "ionicons": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^13.2.2",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4"
   },

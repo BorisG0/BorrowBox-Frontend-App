@@ -43,6 +43,7 @@ import Login from "./pages/Login";
 import { checkLoginStatus } from "./data/utils";
 import UserLoginSwitch from "./pages/UserLoginSwitch";
 import DBQuery from "./pages/dbquerry";
+import { withAuth } from "./data/auth";
 
 setupIonicReact();
 
@@ -142,7 +143,7 @@ const App: React.FC = () => {
               exact
               path="/"
               render={(props) => (
-                <UserLoginSwitch {...props} loginToken={loginToken} />
+                <UserProfile {...props} loginToken={loginToken} setLoginToken={setLoginToken} />
               )}
             ></Route>
           </IonRouterOutlet>

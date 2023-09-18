@@ -1,4 +1,5 @@
 import { SetStateAction, useState } from "react";
+import CryptoJS from "crypto-js";
 
 export const useFormInput = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
@@ -86,3 +87,9 @@ export const getLoginData = (fields: any[]) => {
 	})
 	return data;
 }
+
+
+export const hashPassword = async (password: any) => {
+  const hashedPassword = await CryptoJS.SHA256(password);
+  return hashedPassword;
+};
