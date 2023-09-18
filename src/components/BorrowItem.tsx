@@ -1,4 +1,5 @@
 import {
+  IonAlert,
   IonButton,
   IonCard,
   IonCardContent,
@@ -16,6 +17,11 @@ const BorrowItem: React.FC<{
   loginToken: boolean;
 }> = ({ item, isFunctionStartRental, loginToken }) => {
   const [isItemAvailable, setIsItemAvailable] = useState(item.available);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleRentPressed = async () => {
+    setShowConfirmation(true);
+  }
 
   const handleStartRental = async () => {
     try{
@@ -39,40 +45,65 @@ const BorrowItem: React.FC<{
   }
 
   return (
-    <IonCard>
-      <IonCardHeader>
-        <IonCardTitle>
-          {item.name}
-          <div style={{ float: "right" }}>
-            {isItemAvailable ? (
-              <IonChip color="success">Verfügbar</IonChip>
-            ) : (
-              <IonChip color="danger">Ausgeliehen</IonChip>
-            )}
-          </div>
-        </IonCardTitle>
-        <IonCardSubtitle>
-          {item.tags?.map((tag: string, index: number) => (
-            <IonChip key={index}>{tag}</IonChip>
-          ))}
-        </IonCardSubtitle>
-      </IonCardHeader>
-      <IonCardContent></IonCardContent>
+    <>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>
+            {item.name}
+            <div style={{ float: "right" }}>
+              {isItemAvailable ? (
+                <IonChip color="success">Verfügbar</IonChip>
+              ) : (
+                <IonChip color="danger">Ausgeliehen</IonChip>
+              )}
+            </div>
+          </IonCardTitle>
+          <IonCardSubtitle>
+            {item.tags?.map((tag: string, index: number) => (
+              <IonChip key={index}>{tag}</IonChip>
+            ))}
+          </IonCardSubtitle>
+        </IonCardHeader>
+        <IonCardContent></IonCardContent>
 
-      <div style={{ float: "right", padding: "10px" }}>
-        <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
-        <IonButton
-          onClick={ (isFunctionStartRental ? handleStartRental: handleEndRental) }
-          disabled={(!loginToken)
-            || (!isItemAvailable && isFunctionStartRental)
-            || (isItemAvailable && !isFunctionStartRental)
-          } // Deaktiviere den Button, wenn nicht authentifiziert
-            //oder Item nicht verfügbar beim Ausleihen oder Item verfügbar beim Zurückgeben
-        >
-          {isFunctionStartRental ? "Ausleihen" : "Zurückgeben"}
-        </IonButton>
-      </div>
-    </IonCard>
+        <div style={{ float: "right", padding: "10px" }}>
+          <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
+          <IonButton
+            onClick={ (isFunctionStartRental ? handleRentPressed: handleEndRental) }
+            disabled={(!loginToken)
+              || (!isItemAvailable && isFunctionStartRental)
+              || (isItemAvailable && !isFunctionStartRental)
+            } // Deaktiviere den Button, wenn nicht authentifiziert
+              //oder Item nicht verfügbar beim Ausleihen oder Item verfügbar beim Zurückgeben
+          >
+            {isFunctionStartRental ? "Ausleihen" : "Zurückgeben"}
+          </IonButton>
+        </div>
+      </IonCard>
+
+      <IonAlert
+        isOpen={showConfirmation}
+        onDidDismiss={() => setShowConfirmation(false)}
+        header="Ausleihen"
+        message={`Möchten Sie ${item.name} wirklich ausleihen?`}
+        buttons={[
+          {
+            text: "Nein",
+            role: "cancel",
+            handler: () => {
+              console.log("Cancel clicked");
+            },
+          },
+          {
+            text: "Ja",
+            handler: () => {
+              handleStartRental();
+            },
+          },
+        ]}
+      />
+    </>
+    
   );
 };
 
