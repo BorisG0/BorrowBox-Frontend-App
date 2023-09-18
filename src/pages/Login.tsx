@@ -49,8 +49,8 @@ const Login: React.FC<
     if (formErrors.length === 0) {
       try {
         let loginData = getLoginData(fields);
-        loginData.email = "admin";
-        loginData.password = "admin";
+        /*         loginData.email = "admin";
+        loginData.password = "admin"; */
         // Passwort hashen
         const hashedPassword = await hashPassword(loginData.password);
         loginData.password = hashedPassword.toString(); // Verwenden Sie den gehashten Wert
@@ -67,7 +67,7 @@ const Login: React.FC<
             },
           ]);
         }
-      } catch (error) {
+      } catch (error: any) {
         setErrors([
           {
             id: "password",
@@ -78,13 +78,17 @@ const Login: React.FC<
             message: "Something went wrong",
           },
         ]);
-        console.error("An error occurred during login:", error);
+        if (error.response.status != 401) {
+          console.error(
+            "An error occurred during login:",
+            error.response.status
+          );
+        }
       } finally {
         setIsLoading(false);
       }
     }
   };
-
 
   useEffect(() => {
     return () => {

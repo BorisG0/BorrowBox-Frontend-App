@@ -15,10 +15,12 @@ import AddItemModal from "../components/AddItemModal";
 import { useEffect, useState } from "react";
 import { fetchItemData, fetchUserById } from "../apiService";
 import { add } from "ionicons/icons";
+import { checkLoginStatus } from "../data/utils";
 
 const BorrowTab: React.FC<{
   loginToken: any;
-}> = ({ loginToken }) => {
+  setLoginToken: (authenticated: any) => void;
+}> = ({ loginToken, setLoginToken }) => {
   const [allItems, setAllItems] = useState([] as any[]);
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -35,16 +37,21 @@ const BorrowTab: React.FC<{
   useEffect(() => {
     async function fetchItems() {
       try {
+        const loginTokenData = checkLoginStatus();
+        if (loginTokenData) {
+          setLoginToken(loginTokenData);
+        }
+        const userData = await fetchUserById(loginTokenData);
         const itemData = await fetchItemData();
-        setAllItems(itemData.data);
-        const userData = await fetchUserById(loginToken);
         setUserRole(userData.data.role);
+        setAllItems(itemData.data);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching data:", error);
       }
     }
     fetchItems();
   }, []);
+  
 
   return (
     <IonPage>

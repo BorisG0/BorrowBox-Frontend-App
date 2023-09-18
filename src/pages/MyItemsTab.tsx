@@ -8,16 +8,26 @@ import {
 import BorrowItem from "../components/BorrowItem";
 import { useState, useEffect } from "react";
 import { fetchUserItemData } from "../apiService";
+import { checkLoginStatus } from "../data/utils";
 
 const MyItemsTab: React.FC<{
   loginToken: any;
-}> = ({ loginToken }) => {
+  setLoginToken: (authenticated: any) => void;
+}> = ({ loginToken, setLoginToken }) => {
   const [items, setItems] = useState([] as any[]);
 
   useEffect(() => {
     async function fetchItems() {
       try {
-        const itemData = await fetchUserItemData();
+        let loginTokenData = loginToken;
+        if (loginTokenData === "") {
+          loginTokenData = checkLoginStatus();
+          if (loginTokenData) {
+            setLoginToken(loginTokenData);
+          }
+        }
+        console.log(loginTokenData)
+        const itemData = await fetchUserItemData(loginTokenData);
         setItems(itemData.data.items);
       } catch (error) {
         console.log(error);

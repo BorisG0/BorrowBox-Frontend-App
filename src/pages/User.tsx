@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "@ionic/react/css/core.css";
 import {
   IonContent,
   IonPage,
@@ -16,15 +17,15 @@ import {
   IonHeader,
   IonTitle,
   IonToolbar,
-  IonSearchbar,
   IonChip,
   IonModal,
+  IonAlert,
 } from "@ionic/react";
 import {
   personCircle,
   informationCircle,
-  settings,
   logOut,
+  closeCircleOutline,
 } from "ionicons/icons";
 import { RouteComponentProps } from "react-router-dom";
 import { checkLoginStatus, deleteCookie, hashPassword } from "../data/utils";
@@ -33,6 +34,8 @@ import {
   updateUserData,
   fetchTags,
   updateUserTag,
+  addFilter,
+  deleteFilter,
 } from "../apiService";
 import { useTranslation } from "react-i18next";
 import styles from "./User.module.scss";
@@ -58,25 +61,49 @@ const UserProfile: React.FC<
   const [selectedChips, setSelectedChips] = useState(new Set());
   const [editModeEnabled, setEditModeEnabled] = useState<any>(false);
   const [isManageUsersModalOpen, setIsManageUsersModalOpen] = useState(false);
-
   const [chipData, setChipData] = useState<ChipData[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [alertState, setAlertState] = useState(false);
+
+  const [tagsEditState, setTagsEditState] = useState(false);
 
   const toggleChip = async (chip: any) => {
-    const updatedChips = new Set(selectedChips);
-    if (updatedChips.has(chip.name)) {
-      updatedChips.delete(chip.name);
-    } else {
-      updatedChips.add(chip.name);
-    }
-    const data = {
-      userId: loginToken,
-      tagId: chip._id,
-    };
-    const response = await updateUserTag(data);
-    if (response.status === 200) {
-      setSelectedChips(updatedChips);
+    if (!tagsEditState) {
+      const updatedChips = new Set(selectedChips);
+      if (updatedChips.has(chip.name)) {
+        updatedChips.delete(chip.name);
+      } else {
+        updatedChips.add(chip.name);
+      }
+      const data = {
+        userId: loginToken,
+        tagId: chip._id,
+      };
+      const response = await updateUserTag(data);
+      if (response.status === 200) {
+        setSelectedChips(updatedChips);
+      }
     }
   };
+
+  const handleAlertDismiss = async (e: any) => {
+    if (e.detail.role !== "cancel") {
+      const enteredValue = e.detail.data.values[0];
+      const response = await addFilter({
+        loginToken: loginToken,
+        filterName: enteredValue,
+      });
+      setChipData(response.data);
+    } else {
+      setInputValue("");
+    }
+    setAlertState(false);
+  };
+
+  const addChip = () => {
+    setAlertState(!alertState);
+  };
+
   const openManageUsersModal = () => {
     setIsManageUsersModalOpen(true);
   };
@@ -105,7 +132,6 @@ const UserProfile: React.FC<
       }
       try {
         const response = await fetchTags(loginToken);
-        console.log(response);
         const updatedChips = new Set(selectedChips);
         response.data.map((tag: any) => {
           if (tag.tagged) {
@@ -157,7 +183,6 @@ const UserProfile: React.FC<
           email: "",
           password: "",
         };
-        console.log(passwordValue != "");
         if (passwordValue != "" && passwordValue === passwordValue2) {
           const hashedPassword = await hashPassword(passwordValue);
           updatedUserData.password = hashedPassword.toString();
@@ -166,7 +191,6 @@ const UserProfile: React.FC<
           updatedUserData.email = emailValue;
         }
         const result = await updateUserData(updatedUserData);
-        console.log(result);
       }
     }
     setEditModeEnabled(!editModeEnabled);
@@ -176,12 +200,17 @@ const UserProfile: React.FC<
     setPasswordValue2("");
   };
 
+  const handleDeleteChip = async (chip: any) => {
+    const result = await deleteFilter(chip._id);
+    setChipData(result.data);
+  };
+
   return (
     <IonPage>
       <IonContent>
         <IonHeader>
           <IonToolbar>
-            <IonTitle></IonTitle>
+            <IonTitle>User Page</IonTitle>
           </IonToolbar>
         </IonHeader>
         <div style={{ textAlign: "center", marginTop: "20px" }}>
@@ -239,7 +268,6 @@ const UserProfile: React.FC<
                         onIonChange={(e) => setPasswordValue(e.detail.value!)}
                       />
                     ) : (
-                      // Statt des IonInput hier ********* für das Passwort anzeigen
                       <IonLabel>*********</IonLabel>
                     )}
                   </IonItem>
@@ -278,16 +306,48 @@ const UserProfile: React.FC<
             <p>Select chips by clicking on them:</p>
             <div>
               {chipData.map((chip, index) => {
+                function handleChipContextMenu(
+                  e: React.MouseEvent<HTMLIonChipElement, MouseEvent>,
+                  chip: ChipData
+                ): void {
+                  e.preventDefault();
+                  setTagsEditState(!tagsEditState);
+                }
+
                 return (
                   <IonChip
                     key={index}
                     color={selectedChips.has(chip.name) ? "success" : "primary"}
                     onClick={() => toggleChip(chip)}
+                    onContextMenu={(e) => handleChipContextMenu(e, chip)}
+                    className={tagsEditState ? styles.wobbleanimation : ""} // Fügen Sie die CSS-Klasse hinzu, wenn tagsEditState aktiviert ist
                   >
                     {chip.name}
+                    {tagsEditState && (
+                      <IonIcon
+                        icon={closeCircleOutline}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteChip(chip);
+                        }}
+                        style={{
+                          fontSize: "14px",
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                        }}
+                      />
+                    )}
                   </IonChip>
                 );
               })}
+              <IonChip
+                key={"add"}
+                color="primary"
+                id="present-alert"
+                onClick={() => addChip()}
+              >
+                +
+              </IonChip>
             </div>
           </IonCardContent>
         </div>
@@ -312,6 +372,20 @@ const UserProfile: React.FC<
           <IonText>Das ist das Manage Users Modal.</IonText>
           <IonButton onClick={closeManageUsersModal}>Schließen</IonButton>
         </IonModal>
+        {userData?.role === "admin" && (
+          <IonAlert
+            isOpen={alertState}
+            header="Please enter a filter name"
+            buttons={["OK", "CANCEL"]}
+            inputs={[
+              {
+                placeholder: "Math, English, ...",
+                value: inputValue,
+              },
+            ]}
+            onDidDismiss={handleAlertDismiss}
+          ></IonAlert>
+        )}
       </IonContent>
     </IonPage>
   );
