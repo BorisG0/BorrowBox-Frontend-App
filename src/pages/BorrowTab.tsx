@@ -59,14 +59,6 @@ const BorrowTab: React.FC<{
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
-        {filteredItems.map((item, index) => (
-          <BorrowItem
-            item={item}
-            key={index}
-            loginToken={loginToken}
-            isFunctionStartRental={true}
-          />
-        ))}
         {userRole === "admin" && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={modalOncklick}>
