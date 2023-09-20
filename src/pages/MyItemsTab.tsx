@@ -27,7 +27,7 @@ const MyItemsTab: React.FC<{
           }
         }
         console.log(loginTokenData)
-        const itemData = await fetchUserItemData(loginTokenData);
+        const itemData = await fetchUserItemData();
         setItems(itemData.data.items);
       } catch (error) {
         console.log(error);

@@ -75,10 +75,9 @@ export const fetchTags = async (userId: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
-export const fetchUserItemData = async (
-  userId: any
-): Promise<AxiosResponse<any>> => {
+export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus();
     const response = await apiService.get("useritems/" + userId);
     return response;
   } catch (error) {
