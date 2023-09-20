@@ -11,6 +11,7 @@ import {
 import { endRental, startRental } from "../apiService";
 import { useState } from "react";
 import { checkLoginStatus } from "../data/utils";
+import { h } from "ionicons/dist/types/stencil-public-runtime";
 
 const BorrowItem: React.FC<{
   item: any;
@@ -18,6 +19,7 @@ const BorrowItem: React.FC<{
 }> = ({ item, isFunctionStartRental }) => {
   const [isItemAvailable, setIsItemAvailable] = useState(item.available);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showReturnConfirmation, setShowReturnConfirmation] = useState(false);
 
   const handleRentPressed = async () => {
     setShowConfirmation(true);
@@ -33,10 +35,14 @@ const BorrowItem: React.FC<{
     }
   }
 
-  const handleEndRental = async () => {
+  const handleReturnPressed = async () => {
+    setShowReturnConfirmation(true);
+  }
+
+  const handleEndRental = async (location: string) => {
     try{
       console.log("ending rental")
-      const response = await endRental(item._id);
+      const response = await endRental(item._id, location);
       setIsItemAvailable(true);
       console.log(response);
     }catch(error){
@@ -59,17 +65,22 @@ const BorrowItem: React.FC<{
             </div>
           </IonCardTitle>
           <IonCardSubtitle>
-            {item.tags?.map((tag: string, index: number) => (
-              <IonChip key={index}>{tag}</IonChip>
-            ))}
+            {item.location}
+            <div style={{ float: "right" }}>
+              {item.tags?.map((tag: string, index: number) => (
+                <IonChip key={index}>{tag}</IonChip>
+              ))}
+            </div>
           </IonCardSubtitle>
         </IonCardHeader>
-        <IonCardContent></IonCardContent>
+{/*         <IonCardContent>
+            
+        </IonCardContent> */}
 
         <div style={{ float: "right", padding: "10px" }}>
           <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
           <IonButton
-            onClick={ (isFunctionStartRental ? handleRentPressed: handleEndRental) }
+            onClick={ (isFunctionStartRental ? handleRentPressed: handleReturnPressed) }
             disabled={(!checkLoginStatus())
               || (!isItemAvailable && isFunctionStartRental)
               || (isItemAvailable && !isFunctionStartRental)
@@ -102,6 +113,28 @@ const BorrowItem: React.FC<{
           },
         ]}
       />
+
+      <IonAlert
+        isOpen={showReturnConfirmation}
+        onDidDismiss={() => setShowReturnConfirmation(false)}
+        header="Zurückgeben"
+        message={`Wo geben Sie ${item.name} zurück?`}
+        buttons={[
+          {
+            text: "Keller",
+            handler: () => {
+              handleEndRental("Keller");
+            },
+          },
+          {
+            text: "Schnellregal",
+            handler: () => {
+              handleEndRental("Schnellregal");
+            },
+          }
+        ]}
+      />
+      
     </>
     
   );
