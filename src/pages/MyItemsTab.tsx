@@ -10,24 +10,13 @@ import { useState, useEffect } from "react";
 import { fetchUserItemData } from "../apiService";
 import { checkLoginStatus } from "../data/utils";
 
-const MyItemsTab: React.FC<{
-  loginToken: any;
-  setLoginToken: (authenticated: any) => void;
-}> = ({ loginToken, setLoginToken }) => {
+const MyItemsTab: React.FC<{}> = () => {
   const [items, setItems] = useState([] as any[]);
 
   useEffect(() => {
     async function fetchItems() {
       try {
-        let loginTokenData = loginToken;
-        if (loginTokenData === "") {
-          loginTokenData = checkLoginStatus();
-          if (loginTokenData) {
-            setLoginToken(loginTokenData);
-          }
-        }
-        console.log(loginTokenData)
-        const itemData = await fetchUserItemData(loginTokenData);
+        const itemData = await fetchUserItemData();
         setItems(itemData.data.items);
       } catch (error: any) {
         if(error.response.data.message != "No documents found"){
@@ -38,7 +27,7 @@ const MyItemsTab: React.FC<{
     fetchItems();
   }, []);
 
-  if (!loginToken) {
+  if (!checkLoginStatus()) {
     return (
       <IonPage>
         <IonContent fullscreen>
@@ -66,7 +55,6 @@ const MyItemsTab: React.FC<{
           <BorrowItem
             item={item}
             key={index}
-            loginToken={loginToken}
             isFunctionStartRental={false}
           />
         ))}

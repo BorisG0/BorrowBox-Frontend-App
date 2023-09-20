@@ -78,16 +78,10 @@ const App: React.FC = () => {
               <DetailPage />
             </Route>
             <Route exact path="/borrow">
-              <BorrowTab
-                loginToken={loginToken}
-                setLoginToken={setLoginToken}
-              />
+              <BorrowTab/>
             </Route>
             <Route exact path="/myItems">
-              <MyItemsTab
-                setLoginToken={setLoginToken}
-                loginToken={loginToken}
-              />
+              <MyItemsTab/>
             </Route>
             <Route
               exact

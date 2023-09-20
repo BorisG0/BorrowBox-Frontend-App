@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { filter } from "ionicons/icons";
+import { checkLoginStatus } from "./data/utils";
 
 const API_URL = "http://localhost:8080";
 
@@ -41,10 +42,9 @@ export const fetchLogin = async (
   }
 };
 
-export const fetchUserById = async (
-  userId: any
-): Promise<AxiosResponse<any>> => {
+export const fetchCurrentUser = async (): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus();
     const response = await apiService.get("user/" + userId);
     return response;
   } catch (error) {
@@ -76,10 +76,9 @@ export const fetchTags = async (userId: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
-export const fetchUserItemData = async (
-  userId: any
-): Promise<AxiosResponse<any>> => {
+export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus();
     const response = await apiService.get("useritems/" + userId);
     return response;
   } catch (error) {
@@ -88,10 +87,10 @@ export const fetchUserItemData = async (
 };
 
 export const startRental = async (
-  itemId: string,
-  userId: any
+  itemId: string
 ): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus();
     const rental = {
       itemId: itemId,
       userId: userId,
@@ -137,8 +136,10 @@ export const updateUserTag = async (data: any): Promise<AxiosResponse<any>> => {
 export const addItem = async (item: any): Promise<AxiosResponse<any>> => {
   try {
     const response = await apiService.post("addItem", item);
+    console.log(response);
     return response;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
