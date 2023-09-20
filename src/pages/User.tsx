@@ -146,7 +146,6 @@ const UserProfile: React.FC<
       }
     };
     checkLoginAndFetchData();
-    history.push("/usermanagement")
   }, [loginToken, history]);
 
   const handleLogOut = () => {
