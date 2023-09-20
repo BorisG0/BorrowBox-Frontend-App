@@ -120,6 +120,7 @@ const UserProfile: React.FC<
         loginToken = result;
         if (result === null) {
           history.push("/login");
+          console.log("Test2")
           return;
         }
       }
@@ -144,15 +145,15 @@ const UserProfile: React.FC<
         console.log(error);
       }
     };
-
     checkLoginAndFetchData();
+    history.push("/usermanagement")
   }, [loginToken, history]);
 
   const handleLogOut = () => {
     deleteCookie("loginToken");
     setLoginToken("");
-    history.push("/login");
   };
+
   if (!loginToken) {
     return null;
   }
@@ -355,7 +356,7 @@ const UserProfile: React.FC<
           <IonButton
             expand="full"
             color="primary"
-            onClick={openManageUsersModal}
+            routerLink="/usermanagement"
           >
             <IonIcon icon={logOut} />
             Manage Users
