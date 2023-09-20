@@ -18,7 +18,7 @@ export const useFormInput = (initialValue = "") => {
 };
 
 export const checkLoginStatus = () => {
-  const cookies = document.cookie.split(";");
+/*   const cookies = document.cookie.split(";");
   let loginToken = null;
   cookies.forEach((cookie) => {
     const [name, value] = cookie.trim().split("=");
@@ -30,12 +30,13 @@ export const checkLoginStatus = () => {
   if (loginToken) {
     return loginToken;
   }
-  return null;
+  return null; */
+  return localStorage.getItem("loginToken")
 };
 
 
 export const setCookie = (name: any, value: any, days: number) => {
-  const date = new Date();
+/*   const date = new Date();
   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
   const expires = `expires=${date.toUTCString()}`;
 
@@ -43,14 +44,17 @@ export const setCookie = (name: any, value: any, days: number) => {
   const cookieOptions = `SameSite=None; Secure; ${expires}; path=/`;
 
   document.cookie = `${name}=${value}; ${cookieOptions}`;
-  const test = checkLoginStatus()
+  const test = checkLoginStatus() */
+
+  localStorage.setItem("loginToken", value)
 };
 
 
 export function deleteCookie(name: any) {
-  document.cookie =
+/*   document.cookie =
     name +
-    "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure";
+    "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure"; */
+    localStorage.removeItem("loginToken")
 }
 
 export const validateForm = (fields: any[]) => {
