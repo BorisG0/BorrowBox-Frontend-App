@@ -103,10 +103,15 @@ export const startRental = async (
 };
 
 export const endRental = async (
-  itemId: string
+  itemId: string,
+  location: string
 ): Promise<AxiosResponse<any>> => {
   try {
-    const response = await apiService.put("endRental/" + itemId);
+    const returnData = {
+      itemId: itemId,
+      location: location,
+    };
+    const response = await apiService.post("endRental", returnData);
     return response;
   } catch (error) {
     throw error;
