@@ -30,7 +30,7 @@ import {
 import { RouteComponentProps } from "react-router-dom";
 import { checkLoginStatus, deleteCookie, hashPassword } from "../data/utils";
 import {
-  fetchUserById,
+  fetchCurrentUser,
   updateUserData,
   fetchTags,
   updateUserTag,
@@ -125,7 +125,7 @@ const UserProfile: React.FC<
         }
       }
       try {
-        const data = await fetchUserById(loginToken);
+        const data = await fetchCurrentUser();
         setUserData(data.data);
         setEmailValue(data.data.email);
       } catch (error) {

@@ -40,10 +40,9 @@ export const fetchLogin = async (
   }
 };
 
-export const fetchUserById = async (
-  userId: any
-): Promise<AxiosResponse<any>> => {
+export const fetchCurrentUser = async (): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus();
     const response = await apiService.get("user/" + userId);
     return response;
   } catch (error) {
