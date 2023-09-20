@@ -15,6 +15,7 @@ import {
   IonLabel,
   IonList,
   IonModal,
+  IonPage,
   IonSelect,
   IonSelectOption,
   IonText,
@@ -140,145 +141,142 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
     throw new Error("Function not implemented.");
   }
 
-
   useEffect(() => {
-    console.log("Test")
+    console.log("Test");
   }, []);
   return (
-    <IonContent>
-      <IonHeader>
-        <IonToolbar>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {editModeEnabled ? (
-              <IonIcon
-                icon={closeCircleOutline}
-                style={{ marginLeft: "20px" }}
-                onClick={() => {
-                  setEditModeEnabled(false);
-                }}
-              />
-            ) : (
-              <IonIcon
-                icon={arrowBack}
-                style={{ marginLeft: "20px" }}
-                onClick={() => {
-                  history.push("/user");
-                }}
-              />
-            )}
-            <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
-          </div>
-        </IonToolbar>
-      </IonHeader>
+    <IonPage>
+      <IonContent>
+        <IonHeader>
+          <IonToolbar>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {editModeEnabled ? (
+                <IonIcon
+                  icon={closeCircleOutline}
+                  style={{ marginLeft: "20px" }}
+                  onClick={() => {
+                    setEditModeEnabled(false);
+                  }}
+                />
+              ) : (
+                <IonIcon
+                  icon={arrowBack}
+                  style={{ marginLeft: "20px" }}
+                  onClick={() => {
+                    history.push("/user");
+                  }}
+                />
+              )}
+              <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
+            </div>
+          </IonToolbar>
+        </IonHeader>
 
-      <IonList>
-        {users.map((user: User) => (
-          <IonItem key={user.id}>
-            {editModeEnabled ? (
-              <IonCheckbox
-                checked={selectedUsers.includes(user)}
-                onIonChange={(e) => handleCheckboxChange(e, user)}
-                labelPlacement="end"
-              >
-                <IonLabel>
-                  <h2>{user.name}</h2>
-                  <p>{user.email}</p>
-                </IonLabel>
-              </IonCheckbox>
-            ) : (
+        <IonList>
+          {users.map((user: User) => (
+            <IonItem key={user.id}>
+              {editModeEnabled && (
+                <IonCheckbox
+                  checked={selectedUsers.includes(user)}
+                  onIonChange={(e) => handleCheckboxChange(e, user)}
+                  labelPlacement="end"
+                />
+              )}
               <IonLabel>
                 <h2>{user.name}</h2>
                 <p>{user.email}</p>
               </IonLabel>
-            )}
 
-            <IonChip
-              color={user.role === "admin" ? "danger" : "primary"}
-              onContextMenu={(e) => handleChipContextMenu(e, user)}
-            >
-              {user.role}
-            </IonChip>
+              <IonChip
+                color={user.role === "admin" ? "danger" : "primary"}
+                onContextMenu={(e) => handleChipContextMenu(e, user)}
+              >
+                {user.role}
+              </IonChip>
 
-            {!editModeEnabled && (
-              <IonButton onClick={() => handlePasswordReset(user)}>
-                Reset
-              </IonButton>
-            )}
+              {!editModeEnabled && (
+                <IonButton onClick={() => handlePasswordReset(user)}>
+                  Reset
+                </IonButton>
+              )}
+            </IonItem>
+          ))}
+        </IonList>
+
+        <IonModal isOpen={showAddUserModal}>
+          <IonItem>
+            <IonLabel position="floating">Name</IonLabel>
+            <IonInput
+              type="text"
+              value={newUserName}
+              onIonChange={(e: any) => setNewUserName(e.detail.value)}
+            ></IonInput>
           </IonItem>
-        ))}
-      </IonList>
 
-      <IonModal isOpen={showAddUserModal}>
-        <IonItem>
-          <IonLabel position="floating">Name</IonLabel>
-          <IonInput
-            type="text"
-            value={newUserName}
-            onIonChange={(e: any) => setNewUserName(e.detail.value)}
-          ></IonInput>
-        </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Passwort</IonLabel>
+            <IonInput
+              type="password"
+              value={newUserPassword}
+              onIonChange={(e: any) => setNewUserPassword(e.detail.value)}
+            ></IonInput>
+          </IonItem>
 
-        <IonItem>
-          <IonLabel position="floating">Passwort</IonLabel>
-          <IonInput
-            type="password"
-            value={newUserPassword}
-            onIonChange={(e: any) => setNewUserPassword(e.detail.value)}
-          ></IonInput>
-        </IonItem>
-
-        <IonButton onClick={handleAddUser}>Hinzufügen</IonButton>
-        <IonButton onClick={() => setShowAddUserModal(false)}>
-          Abbrechen
-        </IonButton>
-      </IonModal>
-      {editModeEnabled ? (
-        <IonFab slot="fixed" vertical="bottom" horizontal="end">
-          <IonFabButton onClick={handleUserDelete}>
-            <IonIcon icon={trashBin}></IonIcon>
-          </IonFabButton>
-        </IonFab>
-      ) : (
-        <IonFab slot="fixed" vertical="bottom" horizontal="end">
-          <IonFabButton>
-            <IonIcon icon={add}></IonIcon>
-          </IonFabButton>
-          <IonFabList side="top">
-            <IonFabButton
-              onClick={() => {
-                setinputPassword(generateRandomPassword);
-                setAlertState(true);
-              }}
-            >
+          <IonButton onClick={handleAddUser}>Hinzufügen</IonButton>
+          <IonButton onClick={() => setShowAddUserModal(false)}>
+            Abbrechen
+          </IonButton>
+        </IonModal>
+        {editModeEnabled ? (
+          <IonFab slot="fixed" vertical="bottom" horizontal="end">
+            <IonFabButton onClick={handleUserDelete}>
+              <IonIcon icon={trashBin}></IonIcon>
+            </IonFabButton>
+          </IonFab>
+        ) : (
+          <IonFab slot="fixed" vertical="bottom" horizontal="end">
+            <IonFabButton>
               <IonIcon icon={add}></IonIcon>
             </IonFabButton>
-            <IonFabButton onClick={() => setEditModeEnabled(!editModeEnabled)}>
-              <IonIcon icon={pencil}></IonIcon>
-            </IonFabButton>
-          </IonFabList>
-        </IonFab>
-      )}
-      <IonAlert
-        isOpen={alertState}
-        header="Please enter user data"
-        buttons={["OK", "CANCEL"]}
-        inputs={[
-          {
-            placeholder: "username",
-            value: inputUsername,
-          },
-          {
-            placeholder: "email",
-            value: inputEmail,
-          },
-          {
-            placeholder: "password",
-            value: inputPassword,
-          },
-        ]}
-        onDidDismiss={handleAlertDismiss}
-      ></IonAlert>
-    </IonContent>
+            <IonFabList side="top">
+              <IonFabButton
+                onClick={() => {
+                  setinputPassword(generateRandomPassword);
+                  setAlertState(true);
+                }}
+              >
+                <IonIcon icon={add}></IonIcon>
+              </IonFabButton>
+              <IonFabButton
+                onClick={() => setEditModeEnabled(!editModeEnabled)}
+              >
+                <IonIcon icon={pencil}></IonIcon>
+              </IonFabButton>
+            </IonFabList>
+          </IonFab>
+        )}
+        <IonAlert
+          isOpen={alertState}
+          header="Please enter user data"
+          buttons={["OK", "CANCEL"]}
+          inputs={[
+            {
+              placeholder: "username",
+              value: inputUsername,
+            },
+            {
+              placeholder: "email",
+              value: inputEmail,
+            },
+            {
+              placeholder: "password",
+              value: inputPassword,
+            },
+          ]}
+          onDidDismiss={handleAlertDismiss}
+        ></IonAlert>
+      </IonContent>
+    </IonPage>
   );
 };
 
