@@ -134,8 +134,10 @@ export const updateUserTag = async (data: any): Promise<AxiosResponse<any>> => {
 export const addItem = async (item: any): Promise<AxiosResponse<any>> => {
   try {
     const response = await apiService.post("addItem", item);
+    console.log(response);
     return response;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };

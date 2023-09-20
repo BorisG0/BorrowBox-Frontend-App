@@ -8,15 +8,34 @@ import {
   IonButton,
     IonInput,
     IonItem,
-    IonLabel
+    IonLabel,
+    IonChip
 } from '@ionic/react';
-import { addItem } from '../apiService';
+import { addItem, fetchTags } from '../apiService';
+import { useEffect } from 'react';
 
+
+interface Tags {
+  _id: string;
+  name: string;
+}
 interface AddItemModalProps {
     onClose: () => void; // onClose-Funktion als Prop hinzufügen
   }
-  
+
+
   const AddItemModal: React.FC<AddItemModalProps> = ({ onClose }) => {
+    const [existingTags, setExistingTags] = useState<Tags[]>([]);
+    const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+    async function handleModalOpen() {
+      const response = await fetchTags(null);
+      setExistingTags(response.data);
+
+    }
+    useEffect(() => {
+      // Call the async function when the modal is opened
+      handleModalOpen();
+    }, []);
     const inputRefs = {
       name: useRef<HTMLIonInputElement>(null),
       description: useRef<HTMLIonInputElement>(null),
@@ -31,7 +50,8 @@ interface AddItemModalProps {
         description: inputRefs.description.current?.value,
         location: inputRefs.location.current?.value,
         //tagNames: inputRefs.tags.current?.value,
-        tagNames : ["Mathe", "Bücher"]
+        tagIds: selectedTagIds,
+        //tagNames : ["Mathe", "Bücher"] - für neue tags
         //picture: inputRefs.picture.current?.value,
       };
   
@@ -43,14 +63,32 @@ interface AddItemModalProps {
       // Schließen Sie das Modal, wenn die Bestätigung abgeschlossen ist
       onClose();
     }
-  
+    const toggleChip = (chip: any) => {
+      setSelectedTagIds((prevSelectedTagIds) => {
+        // Prüfe, ob die ID bereits im ausgewählten Tag-Array ist
+        const isTagSelected = prevSelectedTagIds.includes(chip._id);
+        if (isTagSelected) {
+          // Wenn der Chip bereits ausgewählt ist, entferne ihn aus dem Array
+          return prevSelectedTagIds.filter((id) => id !== chip._id);
+        } else {
+          // Wenn der Chip nicht ausgewählt ist, füge ihn dem Array hinzu
+          return [...prevSelectedTagIds, chip._id];
+        }
+      });
+    };
+
   const handleAddItem = async (newItem: any) => {
     try{
-        console.log(newItem)
         const response = await addItem(newItem);
-        console.log(response);
+
+        if(response.status === 201){
+          //hier toast
+        }else{
+          //hier toast
+        }
     }catch(error){
-        console.log(error);
+        //hier toast
+
     }
     }
 
@@ -76,7 +114,22 @@ interface AddItemModalProps {
       </IonItem>
       <IonItem>
         <IonLabel position="stacked">Enter the tags:</IonLabel>
-        <IonInput ref={inputRefs.tagNames} type="text" placeholder="Tags" />
+        <div>
+              {existingTags.map((chip, index) => {
+                const selected = selectedTagIds.includes(chip._id);
+
+                return (
+                  <IonChip
+                    key={index}
+                    color={selected ? "success" : "primary"}
+
+                    onClick={() => toggleChip(chip)}
+                  >
+                    {chip.name}
+                  </IonChip>
+                );
+              })}
+            </div>
       </IonItem>
       <IonItem>
         <IonLabel position="stacked">Enter the picture:</IonLabel>
