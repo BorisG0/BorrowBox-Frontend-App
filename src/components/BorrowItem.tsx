@@ -10,12 +10,12 @@ import {
 } from "@ionic/react";
 import { endRental, startRental } from "../apiService";
 import { useState } from "react";
+import { checkLoginStatus } from "../data/utils";
 
 const BorrowItem: React.FC<{
   item: any;
   isFunctionStartRental: boolean;
-  loginToken: boolean;
-}> = ({ item, isFunctionStartRental, loginToken }) => {
+}> = ({ item, isFunctionStartRental }) => {
   const [isItemAvailable, setIsItemAvailable] = useState(item.available);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -70,7 +70,7 @@ const BorrowItem: React.FC<{
           <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
           <IonButton
             onClick={ (isFunctionStartRental ? handleRentPressed: handleEndRental) }
-            disabled={(!loginToken)
+            disabled={(!checkLoginStatus())
               || (!isItemAvailable && isFunctionStartRental)
               || (isItemAvailable && !isFunctionStartRental)
             } // Deaktiviere den Button, wenn nicht authentifiziert

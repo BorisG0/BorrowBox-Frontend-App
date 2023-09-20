@@ -13,14 +13,11 @@ import {
 import BorrowItem from "../components/BorrowItem";
 import AddItemModal from "../components/AddItemModal";
 import { useEffect, useState } from "react";
-import { fetchItemData, fetchUserById } from "../apiService";
+import { fetchItemData, fetchCurrentUser } from "../apiService";
 import { add } from "ionicons/icons";
 import { checkLoginStatus } from "../data/utils";
 
-const BorrowTab: React.FC<{
-  loginToken: any;
-  setLoginToken: (authenticated: any) => void;
-}> = ({ loginToken, setLoginToken }) => {
+const BorrowTab: React.FC<{}> = () => {
   const [allItems, setAllItems] = useState([] as any[]);
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -39,11 +36,10 @@ const BorrowTab: React.FC<{
       try {
         const loginTokenData = checkLoginStatus();
         if (loginTokenData) {
-          setLoginToken(loginTokenData);
+          const userData = await fetchCurrentUser();
+          setUserRole(userData.data.role);
         }
-        const userData = await fetchUserById(loginTokenData);
         const itemData = await fetchItemData();
-        setUserRole(userData.data.role);
         setAllItems(itemData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -77,7 +73,6 @@ const BorrowTab: React.FC<{
           <BorrowItem
             item={item}
             key={index}
-            loginToken={loginToken}
             isFunctionStartRental={true}
           />
         ))}
