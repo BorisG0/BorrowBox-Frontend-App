@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { checkLoginStatus } from "./data/utils";
 
 const API_URL = "http://localhost:8080";
 
@@ -86,10 +87,10 @@ export const fetchUserItemData = async (
 };
 
 export const startRental = async (
-  itemId: string,
-  userId: any
+  itemId: string
 ): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus();
     const rental = {
       itemId: itemId,
       userId: userId,
