@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { filter } from "ionicons/icons";
 import { checkLoginStatus } from "./data/utils";
 
 const API_URL = "http://localhost:8080";
@@ -33,6 +34,7 @@ export const fetchLogin = async (
   loginData: any
 ): Promise<AxiosResponse<any>> => {
   try {
+    console.log(loginData)
     const response = await apiService.post("login", loginData);
     return response;
   } catch (error) {
@@ -159,5 +161,40 @@ export const deleteFilter = async (id: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
+
+function filterObjectsById(objects: any, idToExclude: any) {
+  return objects.filter((obj: { id: any }) => obj.id !== idToExclude);
+}
+
+export const fetchUser = async (): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.get(`users`);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addUser = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.post(`user`, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteUsers = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    console.log(data)
+    const response = await apiService.post(`users`, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 export default apiService;

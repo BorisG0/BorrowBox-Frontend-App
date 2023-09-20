@@ -49,9 +49,6 @@ const Login: React.FC<
     if (formErrors.length === 0) {
       try {
         let loginData = getLoginData(fields);
-        /*         loginData.email = "admin";
-        loginData.password = "admin"; */
-        // Passwort hashen
         const hashedPassword = await hashPassword(loginData.password);
         loginData.password = hashedPassword.toString(); // Verwenden Sie den gehashten Wert
         const response = await fetchLogin(loginData);

@@ -33,42 +33,29 @@ import {
   backspace,
   arrowBack,
   remove,
+  key,
   closeCircleOutline,
 } from "ionicons/icons";
 import { generateRandomPassword } from "../data/auth";
+import { addUser, deleteUsers, fetchUser } from "../apiService";
+import { logDOM } from "@testing-library/react";
+import { checkLoginStatus, hashPassword } from "../data/utils";
+import { AxiosResponse } from "axios";
 interface UserProfileProps extends RouteComponentProps {}
 
 interface User {
-  id: number;
-  name: string;
   email: string;
+  id: string;
   role: string;
+  username: string;
+  password: string;
 }
 
 const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
   history,
   loginToken,
 }) => {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: 1,
-      name: "Benutzer 1",
-      email: "benutzer1@example.com",
-      role: "admin",
-    },
-    {
-      id: 2,
-      name: "Benutzer 2",
-      email: "benutzer2@example.com",
-      role: "lehrer",
-    },
-    {
-      id: 3,
-      name: "Benutzer 3",
-      email: "benutzer3@example.com",
-      role: "lehrer",
-    },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUserName, setNewUserName] = useState("");
@@ -85,9 +72,20 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
     console.log(`Reset Password for User: ${user.name}`);
   };
 
-  const handleUserDelete = () => {
+  const handleUserDelete = async () => {
     setEditModeEnabled(!editModeEnabled);
-    console.log("Delete Selected Users:", selectedUsers);
+    let ids = selectedUsers.map(user => ({ id: user.id }));
+    const response = await deleteUsers(ids)      
+    const filteredResponse = response.data.map((user: any) => {
+      return {
+        ...user,
+        id: user._id,
+      };
+    });
+    
+    const filterd = setUsersWithFilter(filteredResponse);
+    setUsers(filterd);
+    console.log(response);
   };
 
   const handleAddUser = () => {
@@ -99,7 +97,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
 
   const handleCheckboxChange = (e: any, user: User) => {
     const isChecked = e.detail.checked;
-    console.log(user.name);
+    console.log(user.username);
     if (isChecked) {
       // Überprüfe, ob der Benutzer bereits ausgewählt ist
       const isUserSelected = selectedUsers.some(
@@ -118,14 +116,27 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
   };
 
   const handleAlertDismiss = async (e: any) => {
+    const hash = hashPassword(e.detail.data.values[1]);
     if (e.detail.role !== "cancel") {
-      const userData = {
-        loginToken: loginToken,
-        name: e.detail.data.values[0],
+      const userData: User = {
+        username: e.detail.data.values[0],
         email: e.detail.data.values[1],
-        password: e.detail.data.values[2],
+        password: (await hash).toString(),
+        id: "",
+        role: "teacher",
       };
-      console.log(userData);
+      const response = await addUser(userData);
+
+      const filteredResponse = response.data.map((user: any) => {
+        return {
+          ...user,
+          id: user._id,
+        };
+      });
+      
+      const filterd = setUsersWithFilter(filteredResponse);
+      setUsers(filterd);
+      console.log(filterd);
     } else {
       setinputPassword("");
       setinputUsername("");
@@ -142,8 +153,21 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
   }
 
   useEffect(() => {
-    console.log("Test");
+    async function test() {
+      const result = await fetchUser();
+      const filteredArray = setUsersWithFilter(result);
+      setUsers(filteredArray);
+      console.log(filteredArray);
+    }
+    test();
   }, []);
+
+  const setUsersWithFilter = (result: AxiosResponse<any, any>) => {
+    const loginToken = checkLoginStatus();
+    const filterArray: User[] = result as unknown as User[];
+    const filteredArray = filterArray.filter((item) => item.id !== loginToken);
+    return filteredArray;
+  };
   return (
     <IonPage>
       <IonContent>
@@ -173,30 +197,47 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
         </IonHeader>
 
         <IonList>
-          {users.map((user: User) => (
-            <IonItem key={user.id}>
-              {editModeEnabled && (
-                <IonCheckbox
-                  checked={selectedUsers.includes(user)}
-                  onIonChange={(e) => handleCheckboxChange(e, user)}
-                  labelPlacement="end"
-                />
-              )}
-              <IonLabel>
-                <h2>{user.name}</h2>
-                <p>{user.email}</p>
-              </IonLabel>
-
-              <IonChip
-                color={user.role === "admin" ? "danger" : "primary"}
-                onContextMenu={(e) => handleChipContextMenu(e, user)}
+          {users.map((user: User, index) => (
+            <IonItem
+              key={user.id}
+              lines="none"
+              style={{
+                marginBottom: index === users.length - 1 ? "0" : "16px",
+              }}
+            >
+              {" "}
+              <div style={{ marginRight: "16px" }}>
+                {editModeEnabled && (
+                  <IonCheckbox
+                    checked={selectedUsers.includes(user)}
+                    onIonChange={(e) => handleCheckboxChange(e, user)}
+                    aria-label="Auswählen"
+                    labelPlacement="fixed"
+                  />
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
               >
-                {user.role}
-              </IonChip>
-
+                <IonLabel>
+                  <h2>{user.username}</h2>
+                  <p>{user.email}</p>
+                </IonLabel>
+                <IonChip
+                  color={user.role === "admin" ? "danger" : "primary"}
+                  onContextMenu={(e) => handleChipContextMenu(e, user)}
+                >
+                  {user.role}
+                </IonChip>
+              </div>
               {!editModeEnabled && (
                 <IonButton onClick={() => handlePasswordReset(user)}>
-                  Reset
+                  <IonIcon icon={key} />
                 </IonButton>
               )}
             </IonItem>
@@ -248,7 +289,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
                 <IonIcon icon={add}></IonIcon>
               </IonFabButton>
               <IonFabButton
-                onClick={() => setEditModeEnabled(!editModeEnabled)}
+                onClick={() => {setEditModeEnabled(!editModeEnabled); setSelectedUsers([])} }
               >
                 <IonIcon icon={pencil}></IonIcon>
               </IonFabButton>

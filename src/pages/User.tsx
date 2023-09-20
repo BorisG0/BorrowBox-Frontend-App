@@ -120,7 +120,7 @@ const UserProfile: React.FC<
         loginToken = result;
         if (result === null) {
           history.push("/login");
-          console.log("Test2")
+          console.log("Test2");
           return;
         }
       }
@@ -340,23 +340,21 @@ const UserProfile: React.FC<
                   </IonChip>
                 );
               })}
-              <IonChip
-                key={"add"}
-                color="primary"
-                id="present-alert"
-                onClick={() => addChip()}
-              >
-                +
-              </IonChip>
+              {userData?.role == "admin" && (
+                <IonChip
+                  key={"add"}
+                  color="primary"
+                  id="present-alert"
+                  onClick={() => addChip()}
+                >
+                  +
+                </IonChip>
+              )}
             </div>
           </IonCardContent>
         </div>
         {userData?.role == "admin" && (
-          <IonButton
-            expand="full"
-            color="primary"
-            routerLink="/usermanagement"
-          >
+          <IonButton expand="full" color="primary" routerLink="/usermanagement">
             <IonIcon icon={logOut} />
             Manage Users
           </IonButton>
