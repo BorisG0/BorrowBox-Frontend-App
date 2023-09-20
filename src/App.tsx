@@ -44,6 +44,7 @@ import { checkLoginStatus } from "./data/utils";
 import UserLoginSwitch from "./pages/UserLoginSwitch";
 import DBQuery from "./pages/dbquerry";
 import { withAuth } from "./data/auth";
+import UserTable from "./pages/UserManagement";
 
 setupIonicReact();
 
@@ -95,6 +96,10 @@ const App: React.FC = () => {
                 <Login {...props} setLoginToken={setLoginToken} />
               )}
             />
+            <Route
+            exact
+            path="/usermanagement"
+            render={(props) => ( <UserTable {...props} loginToken={loginToken}/> ) } />
             <Route
               exact
               path="/"

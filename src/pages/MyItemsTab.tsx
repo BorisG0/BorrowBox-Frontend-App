@@ -29,8 +29,10 @@ const MyItemsTab: React.FC<{
         console.log(loginTokenData)
         const itemData = await fetchUserItemData(loginTokenData);
         setItems(itemData.data.items);
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        if(error.response.data.message != "No documents found"){
+          console.log(error);
+        }
       }
     }
     fetchItems();
