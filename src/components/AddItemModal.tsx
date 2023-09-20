@@ -13,24 +13,17 @@ import {
 } from '@ionic/react';
 import { addItem, fetchTags } from '../apiService';
 import { useEffect } from 'react';
-
-
-interface Tags {
-  _id: string;
-  name: string;
-}
+import { Tag } from '../data/tag';
 interface AddItemModalProps {
     onClose: () => void; // onClose-Funktion als Prop hinzufügen
   }
 
-
   const AddItemModal: React.FC<AddItemModalProps> = ({ onClose }) => {
-    const [existingTags, setExistingTags] = useState<Tags[]>([]);
+    const [existingTags, setExistingTags] = useState<Tag[]>([]);
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
     async function handleModalOpen() {
       const response = await fetchTags(null);
       setExistingTags(response.data);
-
     }
     useEffect(() => {
       // Call the async function when the modal is opened
@@ -63,7 +56,7 @@ interface AddItemModalProps {
       // Schließen Sie das Modal, wenn die Bestätigung abgeschlossen ist
       onClose();
     }
-    const toggleChip = (chip: any) => {
+    const toggleChip = (chip: Tag) => {
       setSelectedTagIds((prevSelectedTagIds) => {
         // Prüfe, ob die ID bereits im ausgewählten Tag-Array ist
         const isTagSelected = prevSelectedTagIds.includes(chip._id);
@@ -115,17 +108,17 @@ interface AddItemModalProps {
       <IonItem>
         <IonLabel position="stacked">Enter the tags:</IonLabel>
         <div>
-              {existingTags.map((chip, index) => {
-                const selected = selectedTagIds.includes(chip._id);
+              {existingTags.map((tag, index) => {
+                const selected = selectedTagIds.includes(tag._id);
 
                 return (
                   <IonChip
                     key={index}
                     color={selected ? "success" : "primary"}
 
-                    onClick={() => toggleChip(chip)}
+                    onClick={() => toggleChip(tag)}
                   >
-                    {chip.name}
+                    {tag.name}
                   </IonChip>
                 );
               })}
