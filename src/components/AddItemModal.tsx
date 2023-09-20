@@ -18,7 +18,6 @@ interface AddItemModalProps {
     onClose: () => void; // onClose-Funktion als Prop hinzufügen
   }
 
-
   const AddItemModal: React.FC<AddItemModalProps> = ({ onClose }) => {
     const [existingTags, setExistingTags] = useState<Tag[]>([]);
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -109,17 +108,17 @@ interface AddItemModalProps {
       <IonItem>
         <IonLabel position="stacked">Enter the tags:</IonLabel>
         <div>
-              {existingTags.map((chip, index) => {
-                const selected = selectedTagIds.includes(chip._id);
+              {existingTags.map((tag, index) => {
+                const selected = selectedTagIds.includes(tag._id);
 
                 return (
                   <IonChip
                     key={index}
                     color={selected ? "success" : "primary"}
 
-                    onClick={() => toggleChip(chip)}
+                    onClick={() => toggleChip(tag)}
                   >
-                    {chip.name}
+                    {tag.name}
                   </IonChip>
                 );
               })}
