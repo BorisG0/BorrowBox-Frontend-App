@@ -77,7 +77,6 @@ const BorrowTab: React.FC<{
           <BorrowItem
             item={item}
             key={index}
-            loginToken={loginToken}
             isFunctionStartRental={true}
           />
         ))}
