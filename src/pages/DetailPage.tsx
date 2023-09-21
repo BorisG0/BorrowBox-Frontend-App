@@ -20,7 +20,17 @@ import {
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { fetchItemDetailData, updateItem } from '../apiService';
+import { fetchItemDetailData, fetchTags, updateItem } from '../apiService';
+
+//ItemType für backend
+type ItemTypeBackend = {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  location: string;
+  tagIds: string[];
+};
 
 // Definieren Sie einen Typ für das 'item'-Objekt
 type ItemType = {
@@ -34,10 +44,17 @@ type ItemType = {
   // Fügen Sie hier weitere Felder hinzu, die Ihr 'item' hat
 };
 
+interface ChipData {
+  _id: string;
+  name: string;
+}
+
 const DetailPage: React.FC = () => {
   const [item, setItem] = useState<ItemType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const { id } = useParams<{ id: string }>();
+  const [selectedChips, setSelectedChips] = useState<Set<string>>(new Set());
+  const [chipData, setChipData] = useState<ChipData[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -65,22 +82,69 @@ const DetailPage: React.FC = () => {
     }
   }, [item]);
 
-  const handleEditClick = () => {
+  const handleEditClick = async () => {
+    try {
+      const response = await fetchTags(id);
+      const updatedChips = new Set(selectedChips);
+      response.data.map((tag: any) => {
+        if (tag.tagged) {
+          updatedChips.add(tag.name);
+        }
+      });
+      setSelectedChips(item?.tagNames ? new Set(item.tagNames) : new Set());
+      //setSelectedChips(updatedChips); - das geht beim ersten mal bearbeiten nicht -- vllt zu langsam
+      setChipData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
     setIsEditing(true);
   };
 
   const handleSaveClick = async () => {
     try {
-      console.log(editedItem);
-      // Hier können Sie die aktualisierten Daten speichern oder senden
-      // Setzen Sie das 'item' auf die aktualisierten Daten nach dem Speichern
-      //const response = await updateItem(editedItem)
-      //console.log(response)
+      if (!editedItem) {
+        return;
+      }
+      editedItem.tagNames = Array.from(selectedChips);
+      const selectedChipIDs = [];
+      // Durchlaufen Sie alle ausgewählten Chips
+      for (const selectedChip of selectedChips) {
+        // Suchen Sie die Übereinstimmung in chipData anhand des 'name'
+        const matchingChip = chipData.find((chip) => chip.name === selectedChip);
+
+        // Wenn eine Übereinstimmung gefunden wurde, fügen Sie die ID hinzu
+        if (matchingChip) {
+          console.log(matchingChip)
+          selectedChipIDs.push(matchingChip._id);
+        }
+      }
+      const itemBackendData: ItemTypeBackend = {
+        id: id,
+        name: editedItem.name,
+        description: editedItem.description,
+        image: editedItem.image,
+        location: editedItem.location,
+        tagIds: selectedChipIDs,
+      };
+      const response = await updateItem(itemBackendData)
+      console.log(itemBackendData)
+      console.log(response)
       setItem(editedItem);
       setIsEditing(false);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const toggleChip = (chip :any) => {
+      const newSelectedChips = new Set(selectedChips);
+      if (newSelectedChips.has(chip.name)) {
+        newSelectedChips.delete(chip.name);
+      } else {
+        newSelectedChips.add(chip.name);
+      }
+      setSelectedChips(newSelectedChips);
+    
   };
 
   const handleInputChange = (fieldName: keyof ItemType, value: string) => {
@@ -92,6 +156,7 @@ const DetailPage: React.FC = () => {
   const handleCancelClick = () => {
     // Beim Abbrechen setzen Sie den Bearbeitungsmodus auf false
     // und stellen Sie das 'editedItem' auf den ursprünglichen Wert zurück (item)
+    setSelectedChips(item?.tagNames ? new Set(item.tagNames) : new Set());
     setIsEditing(false);
     setEditedItem(item);
   };
@@ -150,6 +215,36 @@ const DetailPage: React.FC = () => {
   }
 />
                   </IonItem>
+
+
+
+                  <IonCardContent>
+            <p>Select chips by clicking on them:</p>
+            <div>
+              {chipData.map((chip, index) => {
+                function handleChipContextMenu(
+                  e: React.MouseEvent<HTMLIonChipElement, MouseEvent>,
+                  chip: ChipData
+                ): void {
+                  e.preventDefault();
+                }
+
+                return (
+                  <IonChip
+                    key={index}
+                    color={selectedChips.has(chip.name) ? "success" : "primary"}
+                    onClick={() => toggleChip(chip)}
+                    onContextMenu={(e) => handleChipContextMenu(e, chip)}
+                  >
+                    {chip.name}
+                  </IonChip>
+                );
+              })}
+              
+            </div>
+          </IonCardContent>
+
+
                   <IonButton expand="full" onClick={handleSaveClick}>
                     Speichern
                   </IonButton>
