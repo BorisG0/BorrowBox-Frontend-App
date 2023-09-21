@@ -232,7 +232,7 @@ const DetailPage: React.FC = () => {
                 return (
                   <IonChip
                     key={index}
-                    color={selectedChips.has(chip.name) ? "success" : "primary"}
+                    color={selectedChips.has(chip.name) ? "success" : "medium"}
                     onClick={() => toggleChip(chip)}
                     onContextMenu={(e) => handleChipContextMenu(e, chip)}
                   >
