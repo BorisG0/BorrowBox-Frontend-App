@@ -76,6 +76,15 @@ export const fetchTags = async (userId: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
+
+export const fetchItemTags = async (itemId: any): Promise<AxiosResponse<any>> => {
+  try {
+      const response = await apiService.get("tags/" + itemId);
+      return response;
+  } catch (error) {
+    throw error;
+  }
+};
 export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
   try {
     const userId = checkLoginStatus();
@@ -140,7 +149,7 @@ export const updateUserTag = async (data: any): Promise<AxiosResponse<any>> => {
 
 export const updateItem = async (data: any): Promise<AxiosResponse<any>> => {
   try {
-    const response = await apiService.post("item", data);
+    const response = await apiService.put("item", data);
     return response;
   } catch (error) {
     throw error;
