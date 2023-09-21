@@ -44,6 +44,7 @@ type ItemType = {
   location: string;
   tagNames: string[];
   currentRenter: string;
+  rentedSince: string;
   // Fügen Sie hier weitere Felder hinzu, die Ihr 'item' hat
 };
 
@@ -291,7 +292,11 @@ const DetailPage: React.FC = () => {
                         <IonChip key={index}>{tag}</IonChip>
                       )}
                     </p>
-                    {item?.available ? <></> : <> Rented by:{item?.currentRenter}</>}
+                    {item?.available ? <></> :
+                    <>
+                    <p>Rented by:{item?.currentRenter}</p>
+                    <p>Ausgeliehen seit: {item?.rentedSince}</p>
+                    </>}
                     <IonButton expand="full">
                       Ausleihen
                     </IonButton>
