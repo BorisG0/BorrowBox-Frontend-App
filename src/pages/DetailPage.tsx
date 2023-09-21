@@ -20,7 +20,8 @@ import {
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { fetchItemDetailData, fetchTags, updateItem } from '../apiService';
+import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem } from '../apiService';
+import { checkLoginStatus } from '../data/utils';
 
 //ItemType für backend
 type ItemTypeBackend = {
@@ -55,10 +56,18 @@ const DetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedChips, setSelectedChips] = useState<Set<string>>(new Set());
   const [chipData, setChipData] = useState<ChipData[]>([]);
+  const [userRole, setUserRole] = useState();
+
 
   useEffect(() => {
     async function fetchData() {
       try {
+        const loginTokenData = checkLoginStatus();
+        if (loginTokenData) {
+          const userData = await fetchCurrentUser();
+          setUserRole(userData.data.role);
+        }
+
         const item = await fetchItemDetailData(id);
         setItem(item.data);
         setLoading(false);
@@ -81,6 +90,15 @@ const DetailPage: React.FC = () => {
       setEditedItem({ ...item });
     }
   }, [item]);
+
+  const handleDeleteClick = async () => {
+    try {
+      const response = await deleteItem(id);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleEditClick = async () => {
     try {
@@ -136,15 +154,15 @@ const DetailPage: React.FC = () => {
     }
   };
 
-  const toggleChip = (chip :any) => {
-      const newSelectedChips = new Set(selectedChips);
-      if (newSelectedChips.has(chip.name)) {
-        newSelectedChips.delete(chip.name);
-      } else {
-        newSelectedChips.add(chip.name);
-      }
-      setSelectedChips(newSelectedChips);
-    
+  const toggleChip = (chip: any) => {
+    const newSelectedChips = new Set(selectedChips);
+    if (newSelectedChips.has(chip.name)) {
+      newSelectedChips.delete(chip.name);
+    } else {
+      newSelectedChips.add(chip.name);
+    }
+    setSelectedChips(newSelectedChips);
+
   };
 
   const handleInputChange = (fieldName: keyof ItemType, value: string) => {
@@ -173,107 +191,114 @@ const DetailPage: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonContent>
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>{item?.name}</IonCardTitle>
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>{item?.name}</IonCardTitle>
 
-              <IonCardSubtitle>
-                {item?.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
-              </IonCardSubtitle>
-            </IonCardHeader>
-            <IonCardContent>
-              {isEditing ? (
-                <form>
-                  <IonItem>
-                  <IonLabel position="stacked">Enter the name:</IonLabel>
-                  <IonInput
-  type="text"
-  value={editedItem?.name || ''}
-  onIonInput={(e) =>
-    handleInputChange('name', (e as any).target.value)
-  }
-/>
+                <IonCardSubtitle>
+                  {item?.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
+                </IonCardSubtitle>
+              </IonCardHeader>
+              <IonCardContent>
+                {isEditing ? (
+                  <form>
+                    <IonItem>
+                      <IonLabel position="stacked">Enter the name:</IonLabel>
+                      <IonInput
+                        type="text"
+                        value={editedItem?.name || ''}
+                        onIonInput={(e) =>
+                          handleInputChange('name', (e as any).target.value)
+                        }
+                      />
 
-                  </IonItem>
-                  <IonItem>
-                  <IonLabel position="stacked">Enter the description:</IonLabel>
-                  <IonInput
-  type="text"
-  value={editedItem?.description || ''}
-  onIonInput={(e) =>
-    handleInputChange('description', (e as any).target.value)
-  }
-/>
-                  </IonItem>
-                  <IonItem>
-                  <IonLabel position="stacked">Enter the location:</IonLabel>
-                  <IonInput
-  type="text"
-  value={editedItem?.location || ''}
-  onIonInput={(e) =>
-    handleInputChange('location', (e as any).target.value)
-  }
-/>
-                  </IonItem>
-
-
-
-                  <IonCardContent>
-            <p>Select chips by clicking on them:</p>
-            <div>
-              {chipData.map((chip, index) => {
-                function handleChipContextMenu(
-                  e: React.MouseEvent<HTMLIonChipElement, MouseEvent>,
-                  chip: ChipData
-                ): void {
-                  e.preventDefault();
-                }
-
-                return (
-                  <IonChip
-                    key={index}
-                    color={selectedChips.has(chip.name) ? "success" : "medium"}
-                    onClick={() => toggleChip(chip)}
-                    onContextMenu={(e) => handleChipContextMenu(e, chip)}
-                  >
-                    {chip.name}
-                  </IonChip>
-                );
-              })}
-              
-            </div>
-          </IonCardContent>
+                    </IonItem>
+                    <IonItem>
+                      <IonLabel position="stacked">Enter the description:</IonLabel>
+                      <IonInput
+                        type="text"
+                        value={editedItem?.description || ''}
+                        onIonInput={(e) =>
+                          handleInputChange('description', (e as any).target.value)
+                        }
+                      />
+                    </IonItem>
+                    <IonItem>
+                      <IonLabel position="stacked">Enter the location:</IonLabel>
+                      <IonInput
+                        type="text"
+                        value={editedItem?.location || ''}
+                        onIonInput={(e) =>
+                          handleInputChange('location', (e as any).target.value)
+                        }
+                      />
+                    </IonItem>
 
 
-                  <IonButton expand="full" onClick={handleSaveClick}>
-                    Speichern
-                  </IonButton>
-                  <IonButton expand="full" onClick={handleCancelClick}>
+
+                    <IonCardContent>
+                      <p>Select chips by clicking on them:</p>
+                      <div>
+                        {chipData.map((chip, index) => {
+                          function handleChipContextMenu(
+                            e: React.MouseEvent<HTMLIonChipElement, MouseEvent>,
+                            chip: ChipData
+                          ): void {
+                            e.preventDefault();
+                          }
+
+                          return (
+                            <IonChip
+                              key={index}
+                              color={selectedChips.has(chip.name) ? "success" : "medium"}
+                              onClick={() => toggleChip(chip)}
+                              onContextMenu={(e) => handleChipContextMenu(e, chip)}
+                            >
+                              {chip.name}
+                            </IonChip>
+                          );
+                        })}
+
+                      </div>
+                    </IonCardContent>
+
+
+                    <IonButton expand="full" onClick={handleSaveClick}>
+                      Speichern
+                    </IonButton>
+                    <IonButton expand="full" onClick={handleCancelClick}>
                       Abbrechen
                     </IonButton>
-                </form>
-              ) : (
-                <>
-                  <IonImg src={item?.image} />
-                  <p> Beschreibung: {item?.description}</p>
-                  <p> Location: {item?.location}</p>
-                  <p>Tags:
-                    {item?.tagNames.map((tag: string, index: number) =>
-                    <IonChip key={index}>{tag}</IonChip>
-                  )}
-                  </p>
-                  {item?.available ? <></> : <> Rented by:{item?.currentRenter}</>}
-                  <IonButton expand="full" onClick={handleEditClick}>
-                    Bearbeiten
-                  </IonButton>
-                  <IonButton expand="full">
-                    Ausleihen
-                  </IonButton>
-                </>
-              )}
-            </IonCardContent>
-          </IonCard>
-        </IonContent>
+                  </form>
+                ) : (
+                  <>
+                    <IonImg src={item?.image} />
+                    <p> Beschreibung: {item?.description}</p>
+                    <p> Location: {item?.location}</p>
+                    <p>Tags:
+                      {item?.tagNames.map((tag: string, index: number) =>
+                        <IonChip key={index}>{tag}</IonChip>
+                      )}
+                    </p>
+                    {item?.available ? <></> : <> Rented by:{item?.currentRenter}</>}
+                    <IonButton expand="full">
+                      Ausleihen
+                    </IonButton>
+                    {userRole === "admin" && (
+                      <>
+                        <IonButton expand="full" onClick={handleEditClick}>
+                          Bearbeiten
+                        </IonButton>
+                        <IonButton expand="full" onClick={handleDeleteClick}>
+                          Löschen
+                        </IonButton>
+                      </>
+                    )}
+                  </>
+                )}
+              </IonCardContent>
+            </IonCard>
+          </IonContent>
         </>
       )}
     </IonPage>
