@@ -16,12 +16,14 @@ import {
   IonImg,
   IonItem,
   IonLabel,
+  IonAlert,
 } from '@ionic/react';
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem } from '../apiService';
 import { checkLoginStatus } from '../data/utils';
+import { useHistory } from 'react-router-dom';
 
 //ItemType für backend
 type ItemTypeBackend = {
@@ -57,6 +59,8 @@ const DetailPage: React.FC = () => {
   const [selectedChips, setSelectedChips] = useState<Set<string>>(new Set());
   const [chipData, setChipData] = useState<ChipData[]>([]);
   const [userRole, setUserRole] = useState();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
 
 
   useEffect(() => {
@@ -91,10 +95,17 @@ const DetailPage: React.FC = () => {
     }
   }, [item]);
 
-  const handleDeleteClick = async () => {
+  const handleDeleteClick = () => {
+    setShowConfirmation(true);
+  };
+
+
+  const handleDelete = async () => {
     try {
       const response = await deleteItem(id);
       console.log(response);
+
+      window.location.href = '/borrow';
     } catch (error) {
       console.log(error);
     }
@@ -299,6 +310,27 @@ const DetailPage: React.FC = () => {
               </IonCardContent>
             </IonCard>
           </IonContent>
+          <IonAlert
+        isOpen={showConfirmation}
+        onDidDismiss={() => setShowConfirmation(false)}
+        header="Löschen"
+        message={`Möchten Sie ${item?.name} wirklich löschen?`}
+        buttons={[
+          {
+            text: "Nein",
+            role: "cancel",
+            handler: () => {
+              console.log("Cancel clicked");
+            },
+          },
+          {
+            text: "Ja",
+            handler: () => {
+              handleDelete();
+            },
+          },
+        ]}
+      />
         </>
       )}
     </IonPage>
