@@ -24,6 +24,7 @@ import React, { useState, useEffect } from 'react';
 import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem } from '../apiService';
 import { checkLoginStatus } from '../data/utils';
 import { useHistory } from 'react-router-dom';
+import BorrowReturnButton from '../components/BorrowReturnButton';
 
 //ItemType für backend
 type ItemTypeBackend = {
@@ -61,6 +62,7 @@ const DetailPage: React.FC = () => {
   const [chipData, setChipData] = useState<ChipData[]>([]);
   const [userRole, setUserRole] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isItemAvailable, setIsItemAvailable] = useState(false);
 
 
 
@@ -76,6 +78,7 @@ const DetailPage: React.FC = () => {
         const item = await fetchItemDetailData(id);
         setItem(item.data);
         setLoading(false);
+        setIsItemAvailable(item.data.available);
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -208,7 +211,7 @@ const DetailPage: React.FC = () => {
                 <IonCardTitle>{item?.name}</IonCardTitle>
 
                 <IonCardSubtitle>
-                  {item?.available ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
+                  {isItemAvailable ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
                 </IonCardSubtitle>
               </IonCardHeader>
               <IonCardContent>
@@ -297,9 +300,10 @@ const DetailPage: React.FC = () => {
                     <p>Rented by:{item?.currentRenter}</p>
                     <p>Ausgeliehen seit: {item?.rentedSince}</p>
                     </>}
-                    <IonButton expand="full">
+                    <BorrowReturnButton item={item} isFunctionStartRental={true} isItemAvailable={isItemAvailable} setIsItemAvailable={setIsItemAvailable}/>
+                    {/* <IonButton expand="full">
                       Ausleihen
-                    </IonButton>
+                    </IonButton> */}
                     {userRole === "admin" && (
                       <>
                         <IonButton expand="full" onClick={handleEditClick}>
