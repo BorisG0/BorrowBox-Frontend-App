@@ -6,9 +6,9 @@ import { checkLoginStatus } from "../data/utils";
 const BorrowReturnButton: React.FC<{
     item: any;
     isFunctionStartRental: boolean;
-    
-}> = ({item, isFunctionStartRental}) => {
-    const [isItemAvailable, setIsItemAvailable] = useState(item.available);
+    isItemAvailable: boolean;
+    setIsItemAvailable: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({item, isFunctionStartRental, isItemAvailable, setIsItemAvailable}) => {
     const [showBorrowConfirmation, setShowBorrowConfirmation] = useState(false);
     const [showReturnConfirmation, setShowReturnConfirmation] = useState(false);
 
