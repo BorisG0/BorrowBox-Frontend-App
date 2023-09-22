@@ -12,6 +12,7 @@ import { endRental, startRental } from "../apiService";
 import { useState } from "react";
 import { checkLoginStatus } from "../data/utils";
 import { h } from "ionicons/dist/types/stencil-public-runtime";
+import BorrowReturnButton from "./BorrowReturnButton";
 
 const BorrowItem: React.FC<{
   item: any;
@@ -79,7 +80,7 @@ const BorrowItem: React.FC<{
 
         <div style={{ float: "right", padding: "10px" }}>
           <IonButton routerLink={`/item/${item._id}`} fill="clear">Details</IonButton>
-          <IonButton
+          {/* <IonButton
             onClick={ (isFunctionStartRental ? handleRentPressed: handleReturnPressed) }
             disabled={(!checkLoginStatus())
               || (!isItemAvailable && isFunctionStartRental)
@@ -88,7 +89,8 @@ const BorrowItem: React.FC<{
               //oder Item nicht verfügbar beim Ausleihen oder Item verfügbar beim Zurückgeben
           >
             {isFunctionStartRental ? "Ausleihen" : "Zurückgeben"}
-          </IonButton>
+          </IonButton> */}
+          <BorrowReturnButton item={item} isFunctionStartRental={isFunctionStartRental}/>
         </div>
       </IonCard>
 
