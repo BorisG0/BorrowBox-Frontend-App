@@ -42,7 +42,11 @@ export const fetchLogin = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     console.log(loginData)
-    const response = await apiService.post("login", loginData);
+    const loginDataWithName = {
+      name: loginData.email,
+      password: loginData.password,
+    }
+    const response = await apiService.post("login", loginDataWithName);
     return response;
   } catch (error) {
     throw error;
