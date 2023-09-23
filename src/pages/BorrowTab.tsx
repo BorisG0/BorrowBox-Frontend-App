@@ -25,6 +25,7 @@ const BorrowTab: React.FC<{}> = () => {
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
   const [filterTags, setFilterTags] = useState([] as Tag[]);
+  const [showAvailable, setShowAvailable] = useState(false);
 
   const itemIncludesSelectedTag = (item: any) => {
     for (const tag of filterTags) {
@@ -40,6 +41,8 @@ const BorrowTab: React.FC<{}> = () => {
     item.name.toLowerCase().includes(searchText.toLowerCase())
     //check if item has a tag that is selected from the filter
     && itemIncludesSelectedTag(item)
+    //check if item is available
+    && (showAvailable ? item.available : true)
   );
 
   const modalOncklick = () => {
@@ -49,6 +52,10 @@ const BorrowTab: React.FC<{}> = () => {
   const toggleTag = (tag: Tag) => {
     tag.selected = !tag.selected;
     setFilterTags([...filterTags]);
+  };
+
+  const toggleShowAvailable = () => {
+    setShowAvailable(!showAvailable);
   };
 
   useEffect(() => {
@@ -85,6 +92,7 @@ const BorrowTab: React.FC<{}> = () => {
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
+        <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
         {filterTags.map((tag, index) => (
           <IonChip
             key={index}

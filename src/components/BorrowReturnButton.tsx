@@ -11,6 +11,10 @@ const BorrowReturnButton: React.FC<{
 }> = ({item, isFunctionStartRental, isItemAvailable, setIsItemAvailable}) => {
     const [showBorrowConfirmation, setShowBorrowConfirmation] = useState(false);
     const [showReturnConfirmation, setShowReturnConfirmation] = useState(false);
+    const [showReportConfirmation, setShowReportConfirmation] = useState(false);
+    const [showLocationSelection, setShowLocationSelection] = useState(false);
+
+    const [selectedLocation, setSelectedLocation] = useState("");
 
     const handleRentPressed = async () => {
         setShowBorrowConfirmation(true);
@@ -29,18 +33,33 @@ const BorrowReturnButton: React.FC<{
     }
 
     const handleReturnPressed = async () => {
-    setShowReturnConfirmation(true);
+        setShowLocationSelection(true);
     }
 
-    const handleEndRental = async (location: string) => {
-    try{
-        console.log("ending rental")
-        const response = await endRental(item._id, location);
-        setIsItemAvailable(true);
-        console.log(response);
-    }catch(error){
-        console.log(error);
+    const handleLocationSelected = async (location: string) => {
+        console.log(location)
+        setSelectedLocation(location);
+        setShowReturnConfirmation(true);
     }
+
+    const handleFileReportPressed = async () => {
+        console.log("file report")
+        setShowReportConfirmation(true);
+    }
+
+    const handleNoReportPressed = async () => {
+        console.log("no report")
+    }
+
+    const handleEndRental = async (report?: string, criticalReport?: boolean) => {
+        try{
+            console.log("ending rental")
+            const response = await endRental(item._id, selectedLocation, (report ? report: ""), (criticalReport ? criticalReport: false));
+            setIsItemAvailable(true);
+            console.log(response);
+        }catch(error){
+            console.log(error);
+        }
     }
 
     return(
@@ -56,7 +75,7 @@ const BorrowReturnButton: React.FC<{
                 {isFunctionStartRental ? "Ausleihen" : "Zurückgeben"}
             </IonButton>
 
-            <IonAlert
+            <IonAlert // Ausleihe bestätigen
                 isOpen={showBorrowConfirmation}
                 onDidDismiss={() => setShowBorrowConfirmation(false)}
                 header="Ausleihen"
@@ -78,24 +97,78 @@ const BorrowReturnButton: React.FC<{
                 ]}
             />
 
-            <IonAlert
+            <IonAlert // Location auswählen
+                isOpen={showLocationSelection}
+                onDidDismiss={() => setShowLocationSelection(false)}
+                header="Abgabeort auswählen"
+                inputs={[
+                    {
+                        label: "Keller",
+                        type: "radio",
+                        value: "Keller",
+                    },
+                    {
+                        label: "Schnellregal",
+                        type: "radio",
+                        value: "Schnellregal",
+                    }
+                ]}
+                buttons={[
+                    {
+                        text: "Ok",
+                        handler: (data) => {
+                            handleLocationSelected(data);
+                        }
+                    }
+                ]}
+            />
+
+            <IonAlert // Rückgabe bestätigen
                 isOpen={showReturnConfirmation}
                 onDidDismiss={() => setShowReturnConfirmation(false)}
                 header="Zurückgeben"
-                message={`Wo geben Sie ${item.name} zurück?`}
+                message={`Ist mit ${item.name} alles in Ordung?`}
                 buttons={[
-                {
-                    text: "Keller",
-                    handler: () => {
-                    handleEndRental("Keller");
+                    {
+                        text: "Problem melden",
+                        handler: () => {
+                            handleFileReportPressed()
+                        }
                     },
-                },
-                {
-                    text: "Schnellregal",
-                    handler: () => {
-                    handleEndRental("Schnellregal");
+                    {
+                        text: "Ja",
+                        handler: () => {
+                            handleEndRental()
+                        }
+                    }
+                ]}
+            />
+
+            <IonAlert // Report erstellen
+                isOpen={showReportConfirmation}
+                onDidDismiss={() => setShowReportConfirmation(false)}
+                header="Problem melden"
+                message={`Ist das Problem mit ${item.name} kritisch?`}
+                inputs={[
+                    {
+                        name: "report",
+                        type: "text",
+                        placeholder: "Beschreibung des Problems"
+                    }
+                ]}
+                buttons={[
+                    {
+                        text: "Nein",
+                        handler: (data) => {
+                            handleEndRental(data.report, false)
+                        }
                     },
-                }
+                    {
+                        text: "Ja",
+                        handler: (data) => {
+                            handleEndRental(data.report, true)
+                        }
+                    }
                 ]}
             />
         </>
