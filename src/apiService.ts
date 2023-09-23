@@ -42,7 +42,7 @@ export const fetchLogin = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     console.log(loginData)
-    const loginDataWithName = {
+    const loginDataWithName = { // backend erwartet name und nicht email
       name: loginData.email,
       password: loginData.password,
     }
