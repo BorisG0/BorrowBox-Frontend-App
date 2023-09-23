@@ -17,6 +17,12 @@ import {
   IonItem,
   IonLabel,
   IonAlert,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonCol,
+  IonGrid,
+  IonRow,
 } from '@ionic/react';
 
 import { useParams } from 'react-router-dom';
@@ -25,6 +31,8 @@ import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateIte
 import { checkLoginStatus } from '../data/utils';
 import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
+import { camera } from 'ionicons/icons';
+import { usePhotoGallery } from '../hooks/usePhotoGallery';
 
 type FixedReport = {
   userId: string;
@@ -223,6 +231,8 @@ const DetailPage: React.FC = () => {
     setEditedItem(item);
   };
 
+  const { photos, takePhoto } = usePhotoGallery();
+
   return (
     <IonPage>
       {loading ? (
@@ -349,6 +359,20 @@ const DetailPage: React.FC = () => {
                 )}
               </IonCardContent>
             </IonCard>
+            <IonGrid>
+              <IonRow>
+                {photos.map((photo, index) => (
+                  <IonCol size="6" key={photo.filepath}>
+                    <IonImg src={photo.webviewPath} />
+                  </IonCol>
+                ))}
+              </IonRow>
+            </IonGrid>
+            <IonFab vertical="bottom" horizontal="center" slot="fixed">
+              <IonFabButton onClick={() => takePhoto()}>
+                <IonIcon icon={camera}></IonIcon>
+              </IonFabButton>
+            </IonFab>
           </IonContent>
           <IonAlert
             isOpen={showConfirmation}
