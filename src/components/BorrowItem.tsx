@@ -6,7 +6,7 @@ import {
   IonCardTitle,
   IonChip,
 } from "@ionic/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BorrowReturnButton from "./BorrowReturnButton";
 
 const BorrowItem: React.FC<{
@@ -14,6 +14,11 @@ const BorrowItem: React.FC<{
   isFunctionStartRental: boolean;
 }> = ({ item, isFunctionStartRental }) => {
   const [isItemAvailable, setIsItemAvailable] = useState(item.available);
+
+  useEffect(() => {
+    setIsItemAvailable(item.available);
+  }
+  , [item.available]);
 
   return (
     <>
