@@ -27,7 +27,7 @@ import {
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport } from '../apiService';
+import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport, uploadItemPhoto } from '../apiService';
 import { checkLoginStatus } from '../data/utils';
 import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
@@ -231,7 +231,27 @@ const DetailPage: React.FC = () => {
     setEditedItem(item);
   };
 
-  const { photos, takePhoto } = usePhotoGallery();
+  const { photo, takePhoto } = usePhotoGallery();
+
+  const handleUploadPhoto = async () => {
+    try {
+      if (photo && photo.webviewPath) {
+        // Call the uploadItemPhoto function and pass photo.filepath as an argument
+        const file = new File([await fetch(photo.webviewPath).then((r) => r.blob())], 'photo.jpg');
+      
+        console.log(file);
+
+        const response = await uploadItemPhoto(file);
+        console.log('Photo upload response:', response);
+        
+        // Handle the response as needed
+      } else {
+        console.error('No photo to upload.');
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
+  };
 
   return (
     <IonPage>
@@ -319,7 +339,25 @@ const DetailPage: React.FC = () => {
                   </form>
                 ) : (
                   <>
-                    <IonImg src={item?.image} />
+                    {photo ? (
+                      <>
+                        <IonImg src={photo.webviewPath} />
+                        <IonButton onClick={() => takePhoto()}>
+                          Foto ändern
+                        </IonButton>
+                        <IonButton onClick={() => handleUploadPhoto()}>
+                          Foto hochladen
+                        </IonButton>
+                      </>
+                    ):
+                    (
+                      <>
+                        <IonButton onClick={() => takePhoto()}>
+                          Bild hinzufügen
+                        </IonButton>
+                      </>
+                    )}
+                    
                     <p> Beschreibung: {item?.description}</p>
                     <p> Location: {item?.location}</p>
                     <p>Tags:
@@ -359,20 +397,6 @@ const DetailPage: React.FC = () => {
                 )}
               </IonCardContent>
             </IonCard>
-            <IonGrid>
-              <IonRow>
-                {photos.map((photo, index) => (
-                  <IonCol size="6" key={photo.filepath}>
-                    <IonImg src={photo.webviewPath} />
-                  </IonCol>
-                ))}
-              </IonRow>
-            </IonGrid>
-            <IonFab vertical="bottom" horizontal="center" slot="fixed">
-              <IonFabButton onClick={() => takePhoto()}>
-                <IonIcon icon={camera}></IonIcon>
-              </IonFabButton>
-            </IonFab>
           </IonContent>
           <IonAlert
             isOpen={showConfirmation}
