@@ -21,10 +21,15 @@ import {
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem } from '../apiService';
+import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport } from '../apiService';
 import { checkLoginStatus } from '../data/utils';
 import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
+
+type FixedReport = {
+  userId: string;
+  itemId: string;
+}
 
 //ItemType für backend
 type ItemTypeBackend = {
@@ -46,6 +51,10 @@ type ItemType = {
   tagNames: string[];
   currentRenter: string;
   rentedSince: string;
+  reportStateCritical: boolean;
+  reportUser: string;
+  reportTime: string;
+  reportDescription: string;
   // Fügen Sie hier weitere Felder hinzu, die Ihr 'item' hat
 };
 
@@ -63,6 +72,8 @@ const DetailPage: React.FC = () => {
   const [userRole, setUserRole] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isItemAvailable, setIsItemAvailable] = useState(false);
+  const [showReportConfirmation, setShowReportConfirmation] = useState(false);
+  const [ userId, setUserId ] = useState<string>("");
 
 
 
@@ -73,12 +84,14 @@ const DetailPage: React.FC = () => {
         if (loginTokenData) {
           const userData = await fetchCurrentUser();
           setUserRole(userData.data.role);
+          setUserId(userData.data._id);
         }
 
-        const item = await fetchItemDetailData(id);
-        setItem(item.data);
+        const fetchedItem = await fetchItemDetailData(id);
+        setItem(fetchedItem.data);
         setLoading(false);
-        setIsItemAvailable(item.data.available);
+        setIsItemAvailable(fetchedItem.data.available);
+        console.log(fetchedItem)
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -102,6 +115,9 @@ const DetailPage: React.FC = () => {
   const handleDeleteClick = () => {
     setShowConfirmation(true);
   };
+  const handleFixReportClick = () => {
+    setShowReportConfirmation(true);
+  };
 
 
   const handleDelete = async () => {
@@ -110,6 +126,19 @@ const DetailPage: React.FC = () => {
       console.log(response);
 
       window.location.href = '/borrow';
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFixReport = async () => {
+    try {
+      const fixedReport: FixedReport = {
+        userId: userId,
+        itemId: id,
+      }
+      const response = await fixReport(fixedReport);
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -211,7 +240,7 @@ const DetailPage: React.FC = () => {
                 <IonCardTitle>{item?.name}</IonCardTitle>
 
                 <IonCardSubtitle>
-                  {isItemAvailable ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Ausgeliehen</IonChip>}
+                  {isItemAvailable ? <IonChip color="success">Verfügbar</IonChip> : <IonChip color="danger">Nicht verfügbar</IonChip>}
                 </IonCardSubtitle>
               </IonCardHeader>
               <IonCardContent>
@@ -248,9 +277,6 @@ const DetailPage: React.FC = () => {
                         }
                       />
                     </IonItem>
-
-
-
                     <IonCardContent>
                       <p>Select chips by clicking on them:</p>
                       <div>
@@ -261,7 +287,6 @@ const DetailPage: React.FC = () => {
                           ): void {
                             e.preventDefault();
                           }
-
                           return (
                             <IonChip
                               key={index}
@@ -273,11 +298,8 @@ const DetailPage: React.FC = () => {
                             </IonChip>
                           );
                         })}
-
                       </div>
                     </IonCardContent>
-
-
                     <IonButton expand="full" onClick={handleSaveClick}>
                       Speichern
                     </IonButton>
@@ -295,17 +317,26 @@ const DetailPage: React.FC = () => {
                         <IonChip key={index}>{tag}</IonChip>
                       )}
                     </p>
-                    {item?.available ? <></> :
-                    <>
-                    <p>Rented by:{item?.currentRenter}</p>
-                    <p>Ausgeliehen seit: {item?.rentedSince}</p>
-                    </>}
-                    <BorrowReturnButton item={item} isFunctionStartRental={true} isItemAvailable={isItemAvailable} setIsItemAvailable={setIsItemAvailable}/>
-                    {/* <IonButton expand="full">
-                      Ausleihen
-                    </IonButton> */}
-                    {userRole === "admin" && (
+                    {item?.currentRenter !== "" &&
                       <>
+                        <p>Rented by:{item?.currentRenter}</p>
+                        <p>Ausgeliehen seit: {item?.rentedSince}</p>
+                      </>}
+                    {item?.reportDescription !== "" ? <>
+                      <p>Report: {item?.reportDescription}</p>
+                      <p>Report von: {item?.reportUser}</p>
+                      <p>Report Zeitpunkt: {item?.reportTime}</p>
+                      <p>Report kritisch: {item?.reportStateCritical ? "Ja" : "Nein"}</p>
+                    </>
+                      : <p> Kein Report vorhanden</p>
+                    }
+                    <BorrowReturnButton item={item} isFunctionStartRental={true} isItemAvailable={isItemAvailable} setIsItemAvailable={setIsItemAvailable} />
+                    {userRole === "admin" && (
+                      <>{item?.reportStateCritical && 
+                        <IonButton expand="full" onClick={handleFixReportClick}>
+                          Report beheben
+                        </IonButton>
+                        }
                         <IonButton expand="full" onClick={handleEditClick}>
                           Bearbeiten
                         </IonButton>
@@ -320,26 +351,47 @@ const DetailPage: React.FC = () => {
             </IonCard>
           </IonContent>
           <IonAlert
-        isOpen={showConfirmation}
-        onDidDismiss={() => setShowConfirmation(false)}
-        header="Löschen"
-        message={`Möchten Sie ${item?.name} wirklich löschen?`}
-        buttons={[
-          {
-            text: "Nein",
-            role: "cancel",
-            handler: () => {
-              console.log("Cancel clicked");
-            },
-          },
-          {
-            text: "Ja",
-            handler: () => {
-              handleDelete();
-            },
-          },
-        ]}
-      />
+            isOpen={showConfirmation}
+            onDidDismiss={() => setShowConfirmation(false)}
+            header="Löschen"
+            message={`Möchten Sie ${item?.name} wirklich löschen?`}
+            buttons={[
+              {
+                text: "Nein",
+                role: "cancel",
+                handler: () => {
+                  console.log("Cancel clicked");
+                },
+              },
+              {
+                text: "Ja",
+                handler: () => {
+                  handleDelete();
+                },
+              },
+            ]}
+          />
+                    <IonAlert
+            isOpen={showReportConfirmation}
+            onDidDismiss={() => setShowReportConfirmation(false)}
+            header="Reparieren"
+            message={`Ist ${item?.name} wirklich repariert?`}
+            buttons={[
+              {
+                text: "Nein",
+                role: "cancel",
+                handler: () => {
+                  console.log("Cancel clicked");
+                },
+              },
+              {
+                text: "Ja",
+                handler: () => {
+                  handleFixReport();
+                },
+              },
+            ]}
+          />
         </>
       )}
     </IonPage>

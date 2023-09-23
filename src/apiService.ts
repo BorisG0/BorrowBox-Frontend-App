@@ -2,6 +2,13 @@ import axios, { AxiosResponse } from "axios";
 import { filter } from "ionicons/icons";
 import { checkLoginStatus } from "./data/utils";
 
+type ReportForBackend = {
+  userId: string;
+  itemId: string;
+  reportState: boolean;
+  description: string;
+}
+
 const API_URL = "http://localhost:8080";
 
 const apiService = axios.create({
@@ -227,6 +234,19 @@ export const deleteUsers = async (data: any): Promise<AxiosResponse<any>> => {
   }
 };
 
-
+export const fixReport = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    const reportForBackend: ReportForBackend = {
+      userId: data.userId,
+      itemId: data.itemId,
+      reportState: false,
+      description: "Das Item wurde repariert",
+    };
+    const response = await apiService.post(`report`, reportForBackend);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export default apiService;
