@@ -18,7 +18,9 @@ const BorrowReturnButton: React.FC<{
     
     const handleStartRental = async () => {
     try{
-        const response = await startRental(item._id);
+        console.log("starting rental")
+        console.log(item)
+        const response = await startRental(item._id ? item._id : item.id);
         console.log(response);
         setIsItemAvailable(false);
     }catch(error){
