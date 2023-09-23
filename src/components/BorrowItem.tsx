@@ -30,7 +30,7 @@ const BorrowItem: React.FC<{
               {isItemAvailable ? (
                 <IonChip color="success">Verfügbar</IonChip>
               ) : (
-                <IonChip color="danger">Ausgeliehen</IonChip>
+                <IonChip color="danger">Nicht Verfügbar</IonChip>
               )}
             </div>
           </IonCardTitle>

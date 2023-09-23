@@ -120,12 +120,17 @@ export const startRental = async (
 
 export const endRental = async (
   itemId: string,
-  location: string
+  location: string,
+  report: string,
+  reportCritical: boolean,
 ): Promise<AxiosResponse<any>> => {
   try {
     const returnData = {
       itemId: itemId,
       location: location,
+      reportDescription: report,
+      reportState: reportCritical,
+      userId: checkLoginStatus(),
     };
     const response = await apiService.post("endRental", returnData);
     return response;
