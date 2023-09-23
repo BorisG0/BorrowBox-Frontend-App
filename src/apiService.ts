@@ -258,17 +258,19 @@ export const fixReport = async (data: any): Promise<AxiosResponse<any>> => {
   }
 };
 
-export const uploadItemPhoto = async (photoFile: File): Promise<AxiosResponse<any>> => {
+export const uploadItemPhoto = async (itemId: string, photoFile: File): Promise<AxiosResponse<any>> => {
   try {
     const formData = new FormData();
     formData.append("photo", photoFile);
+
+    console.log("uploadItemPhoto", itemId, photoFile)
 
     const response = await apiService.post(`uploadItemPhoto`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     return response;
   } catch (error) {
     throw error;

@@ -241,7 +241,7 @@ const DetailPage: React.FC = () => {
       
         console.log(file);
 
-        const response = await uploadItemPhoto(file);
+        const response = await uploadItemPhoto(id, file);
         console.log('Photo upload response:', response);
         
         // Handle the response as needed
