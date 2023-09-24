@@ -27,7 +27,7 @@ import {
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport, uploadItemPhoto } from '../apiService';
+import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport, uploadItemPhoto, fetchItemImage } from '../apiService';
 import { checkLoginStatus } from '../data/utils';
 import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
@@ -82,7 +82,7 @@ const DetailPage: React.FC = () => {
   const [isItemAvailable, setIsItemAvailable] = useState(false);
   const [showReportConfirmation, setShowReportConfirmation] = useState(false);
   const [ userId, setUserId ] = useState<string>("");
-
+  const [imageURL, setImageURL] = useState<string>("");
 
 
   useEffect(() => {
@@ -100,6 +100,10 @@ const DetailPage: React.FC = () => {
         setLoading(false);
         setIsItemAvailable(fetchedItem.data.available);
         console.log(fetchedItem)
+
+        const url = await fetchItemImage(id);
+        setImageURL(url);
+
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -339,6 +343,7 @@ const DetailPage: React.FC = () => {
                   </form>
                 ) : (
                   <>
+                    <IonImg src={imageURL} />
                     {photo ? (
                       <>
                         <IonImg src={photo.webviewPath} />

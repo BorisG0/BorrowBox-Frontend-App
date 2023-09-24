@@ -277,4 +277,19 @@ export const uploadItemPhoto = async (itemId: string, photoFile: File): Promise<
   }
 };
 
+export const fetchItemImage = async (itemId: string) => {
+  try {
+    const response = await apiService.get(`itemImage/${itemId}`, {
+      responseType: "arraybuffer",
+    });
+
+    const imageBlob = new Blob([response.data], { type: "image/jpeg" });
+    const imageUrl = URL.createObjectURL(imageBlob);
+    return imageUrl;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    throw error;
+  }
+};
+
 export default apiService;
