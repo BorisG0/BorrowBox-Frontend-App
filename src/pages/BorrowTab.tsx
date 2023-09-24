@@ -18,6 +18,7 @@ import { fetchItemData, fetchCurrentUser, fetchTags } from "../apiService";
 import { add } from "ionicons/icons";
 import { checkLoginStatus } from "../data/utils";
 import { Tag } from "../data/tag";
+import EmptyPage from "../components/EmptyPage";
 
 const BorrowTab: React.FC<{}> = () => {
   const [allItems, setAllItems] = useState([] as any[]);
@@ -92,6 +93,11 @@ const BorrowTab: React.FC<{}> = () => {
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
+        <div style={{
+          width: "100%",   
+          whiteSpace: "nowrap", 
+          overflowX: "auto",  
+        }}>
         <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
         {filterTags.map((tag, index) => (
           <IonChip
@@ -102,12 +108,16 @@ const BorrowTab: React.FC<{}> = () => {
             {tag.name}
           </IonChip>
         ))}
+        </div>
         {userRole === "admin" && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={modalOncklick}>
               <IonIcon icon={add} />
             </IonFabButton>
           </IonFab>
+        )}
+        {filteredItems.length === 0 && (
+          <EmptyPage message="Keine Items gefunden" />
         )}
         {filteredItems.map((item, index) => (
           <BorrowItem

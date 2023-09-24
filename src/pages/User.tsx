@@ -20,6 +20,7 @@ import {
   IonChip,
   IonModal,
   IonToast,
+  IonLoading,
 } from "@ionic/react";
 import { personCircle, informationCircle, logOut, time } from "ionicons/icons";
 import { RouteComponentProps } from "react-router-dom";
@@ -50,18 +51,17 @@ const UserProfile: React.FC<
   const [passwordValue, setPasswordValue] = useState<any>("");
   const [passwordValue2, setPasswordValue2] = useState<any>("");
   const [editModeEnabled, setEditModeEnabled] = useState<any>(false);
-  const [isManageUsersModalOpen, setIsManageUsersModalOpen] = useState(false);
-  const [isRentalHistoryModalOpen, setRentalHistoryModalOpen] = useState(false);
   const [chipData, setChipData] = useState<ChipData[]>([]);
   const [selectedChips, setSelectedChips] = useState(new Set());
   const [toast, setToast] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const closeManageUsersModal = () => {
-    setIsManageUsersModalOpen(false);
-  };
+  const pagePersonalInfo = "personal-info";
+  const pageFilter = "filter";
 
   useEffect(() => {
     const checkLoginAndFetchData = async () => {
+      setLoading(true);
       if (!loginToken) {
         const result = await checkLoginStatus();
         setLoginToken(result);
@@ -91,6 +91,7 @@ const UserProfile: React.FC<
       } catch (error) {
         console.log(error);
       }
+      setLoading(false);
     };
     checkLoginAndFetchData();
   }, [loginToken, history]);
@@ -103,9 +104,6 @@ const UserProfile: React.FC<
   if (!loginToken) {
     return null;
   }
-
-  const pagePersonalInfo = "personal-info";
-  const pageFilter = "filter";
 
   const togglePersonalInfo = () => {
     if (currentPage === pagePersonalInfo) {
@@ -167,7 +165,7 @@ const UserProfile: React.FC<
               boxShadow: "0px 0px 10px 0px rgba(200, 200, 200, 0.5)", // Hinzugefügte Schatten-Stilregel
             }}
           >
-            <img src="./user.jpg" alt /*  */="Benutzerbild" />
+            <img src="./userPicture.svg" alt /*  */="Benutzerbild" />
           </IonAvatar>
           <IonText style={{ fontSize: "24px" }}>
             {t("welcome")} {userData?.username}
@@ -278,7 +276,6 @@ const UserProfile: React.FC<
           <IonIcon icon={logOut} />
           Log Out
         </IonButton>
-        
       </IonContent>
       <IonToast
         isOpen={toast}
@@ -286,6 +283,7 @@ const UserProfile: React.FC<
         onDidDismiss={() => setToast(false)}
         duration={5000}
       ></IonToast>
+      <IonLoading isOpen={loading} message="Daten werden geladen..." />
     </IonPage>
   );
 };

@@ -10,6 +10,7 @@ import BorrowItem from "../components/BorrowItem";
 import { useState, useEffect } from "react";
 import { fetchUserItemData } from "../apiService";
 import { checkLoginStatus } from "../data/utils";
+import EmptyPage from "../components/EmptyPage";
 
 const MyItemsTab: React.FC<{}> = () => {
   const [items, setItems] = useState([] as any[]);
@@ -40,8 +41,7 @@ const MyItemsTab: React.FC<{}> = () => {
               <IonTitle>My Items</IonTitle>
             </IonToolbar>
           </IonHeader>
-          {/* TODO: Schön machen */}
-          <div>Bitte melden Sie sich an, um diese Seite anzuzeigen.</div>
+          <EmptyPage message="Bitte melde dich an, um deine Items zu sehen." />
         </IonContent>
       </IonPage>
     );
@@ -57,8 +57,7 @@ const MyItemsTab: React.FC<{}> = () => {
         </IonHeader>
         {responseCode === 204 ?
         <div>
-          <p>Keine Items vorhanden, gerne kannst du nach neuen Items suchen!</p>
-          <IonButton routerLink={`/borrow`}>Neue Items finden</IonButton>
+          <EmptyPage message="Du hast keine Items im ausgeliehenen Zusatand" />
           </div> :
           <>
             {items.map((item, index) => (
