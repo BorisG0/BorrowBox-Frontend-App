@@ -6,6 +6,14 @@ import { t } from "i18next";
 const API_URL = "http://localhost:8088";
 /* const API_URL = "http://anton.b5r4773jcchdcbhm.myfritz.net:8088";
  */
+
+type ReportForBackend = {
+  userId: string;
+  itemId: string;
+  reportState: boolean;
+  description: string;
+}
+
 const apiService = axios.create({
   baseURL: API_URL,
   timeout: 3000,
@@ -36,7 +44,12 @@ export const fetchLogin = async (
   loginData: any
 ): Promise<AxiosResponse<any>> => {
   try {
-    const response = await apiService.post("login", loginData);
+    console.log(loginData)
+    const loginDataWithName = { // backend erwartet name und nicht email
+      name: loginData.email,
+      password: loginData.password,
+    }
+    const response = await apiService.post("login", loginDataWithName);
     return response;
   } catch (error) {
     throw error;
@@ -77,6 +90,15 @@ export const fetchTags = async (userId: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
+
+export const fetchItemTags = async (itemId: any): Promise<AxiosResponse<any>> => {
+  try {
+      const response = await apiService.get("tags/" + itemId);
+      return response;
+  } catch (error) {
+    throw error;
+  }
+};
 export const fetchUserItemData = async (): Promise<AxiosResponse<any>> => {
   try {
     const userId = checkLoginStatus();
@@ -104,10 +126,20 @@ export const startRental = async (
 };
 
 export const endRental = async (
-  itemId: string
+  itemId: string,
+  location: string,
+  report: string,
+  reportCritical: boolean,
 ): Promise<AxiosResponse<any>> => {
   try {
-    const response = await apiService.put("endRental/" + itemId);
+    const returnData = {
+      itemId: itemId,
+      location: location,
+      reportDescription: report,
+      reportState: reportCritical,
+      userId: checkLoginStatus(),
+    };
+    const response = await apiService.post("endRental", returnData);
     return response;
   } catch (error) {
     throw error;
@@ -128,6 +160,24 @@ export const fetchItemDetailData = async (
 export const updateUserTag = async (data: any): Promise<AxiosResponse<any>> => {
   try {
     const response = await apiService.post("tag", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateItem = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.put("item", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteItem = async (id: any): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.delete(`item/${id}`);
     return response;
   } catch (error) {
     throw error;
@@ -204,6 +254,22 @@ export const updateUserRole = async (data: any): Promise<AxiosResponse<any>> => 
     throw error;
   }
 };
+    
+export const fixReport = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    const reportForBackend: ReportForBackend = {
+      userId: data.userId,
+      itemId: data.itemId,
+      reportState: false,
+      description: "Das Item wurde repariert",
+    };
+    const response = await apiService.post(`report`, reportForBackend);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const fetchRentalHistory = async (): Promise<AxiosResponse<any>> => {
   try {
@@ -213,8 +279,39 @@ export const fetchRentalHistory = async (): Promise<AxiosResponse<any>> => {
   } catch (error) {
     throw error;
   }
-}
+};
 
+export const uploadItemPhoto = async (itemId: string, photoFile: File): Promise<AxiosResponse<any>> => {
+  try {
+    const formData = new FormData();
+    formData.append("photo", photoFile);
 
+    console.log("uploadItemPhoto", itemId, photoFile)
+
+    const response = await apiService.post(`uploadItemPhoto/${itemId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchItemImage = async (itemId: string) => {
+  try {
+    const response = await apiService.get(`itemImage/${itemId}`, {
+      responseType: "arraybuffer",
+    });
+
+    const imageBlob = new Blob([response.data], { type: "image/jpeg" });
+    const imageUrl = URL.createObjectURL(imageBlob);
+    return imageUrl;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    throw error;
+  }
+};
 
 export default apiService;
