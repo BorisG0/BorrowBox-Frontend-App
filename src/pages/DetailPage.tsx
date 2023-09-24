@@ -17,14 +17,22 @@ import {
   IonItem,
   IonLabel,
   IonAlert,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonCol,
+  IonGrid,
+  IonRow,
 } from '@ionic/react';
 
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport } from '../apiService';
+import { deleteItem, fetchCurrentUser, fetchItemDetailData, fetchTags, updateItem, fixReport, uploadItemPhoto, fetchItemImage } from '../apiService';
 import { checkLoginStatus } from '../data/utils';
 import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
+import { camera } from 'ionicons/icons';
+import { usePhotoGallery } from '../hooks/usePhotoGallery';
 
 type FixedReport = {
   userId: string;
@@ -74,7 +82,7 @@ const DetailPage: React.FC = () => {
   const [isItemAvailable, setIsItemAvailable] = useState(false);
   const [showReportConfirmation, setShowReportConfirmation] = useState(false);
   const [ userId, setUserId ] = useState<string>("");
-
+  const [imageURL, setImageURL] = useState<string>("");
 
 
   useEffect(() => {
@@ -92,6 +100,10 @@ const DetailPage: React.FC = () => {
         setLoading(false);
         setIsItemAvailable(fetchedItem.data.available);
         console.log(fetchedItem)
+
+        const url = await fetchItemImage(id);
+        setImageURL(url);
+
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -223,6 +235,28 @@ const DetailPage: React.FC = () => {
     setEditedItem(item);
   };
 
+  const { photo, takePhoto } = usePhotoGallery();
+
+  const handleUploadPhoto = async () => {
+    try {
+      if (photo && photo.webviewPath) {
+        // Call the uploadItemPhoto function and pass photo.filepath as an argument
+        const file = new File([await fetch(photo.webviewPath).then((r) => r.blob())], 'photo.jpg');
+      
+        console.log(file);
+
+        const response = await uploadItemPhoto(id, file);
+        console.log('Photo upload response:', response);
+        
+        // Handle the response as needed
+      } else {
+        console.error('No photo to upload.');
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
+  };
+
   return (
     <IonPage>
       {loading ? (
@@ -309,7 +343,26 @@ const DetailPage: React.FC = () => {
                   </form>
                 ) : (
                   <>
-                    <IonImg src={item?.image} />
+                    <IonImg src={imageURL} />
+                    {photo ? (
+                      <>
+                        <IonImg src={photo.webviewPath} />
+                        <IonButton onClick={() => takePhoto()}>
+                          Foto ändern
+                        </IonButton>
+                        <IonButton onClick={() => handleUploadPhoto()}>
+                          Foto hochladen
+                        </IonButton>
+                      </>
+                    ):
+                    (
+                      <>
+                        <IonButton onClick={() => takePhoto()}>
+                          Bild hinzufügen
+                        </IonButton>
+                      </>
+                    )}
+                    
                     <p> Beschreibung: {item?.description}</p>
                     <p> Location: {item?.location}</p>
                     <p>Tags:

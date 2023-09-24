@@ -258,4 +258,38 @@ export const fixReport = async (data: any): Promise<AxiosResponse<any>> => {
   }
 };
 
+export const uploadItemPhoto = async (itemId: string, photoFile: File): Promise<AxiosResponse<any>> => {
+  try {
+    const formData = new FormData();
+    formData.append("photo", photoFile);
+
+    console.log("uploadItemPhoto", itemId, photoFile)
+
+    const response = await apiService.post(`uploadItemPhoto/${itemId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchItemImage = async (itemId: string) => {
+  try {
+    const response = await apiService.get(`itemImage/${itemId}`, {
+      responseType: "arraybuffer",
+    });
+
+    const imageBlob = new Blob([response.data], { type: "image/jpeg" });
+    const imageUrl = URL.createObjectURL(imageBlob);
+    return imageUrl;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    throw error;
+  }
+};
+
 export default apiService;
