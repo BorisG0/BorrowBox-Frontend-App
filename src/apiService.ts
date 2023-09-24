@@ -265,7 +265,7 @@ export const uploadItemPhoto = async (itemId: string, photoFile: File): Promise<
 
     console.log("uploadItemPhoto", itemId, photoFile)
 
-    const response = await apiService.post(`uploadItemPhoto`, formData, {
+    const response = await apiService.post(`uploadItemPhoto/${itemId}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
