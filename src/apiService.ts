@@ -1,9 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import { filter } from "ionicons/icons";
 import { checkLoginStatus } from "./data/utils";
+import { t } from "i18next";
 
-const API_URL = "http://localhost:8080";
-
+const API_URL = "http://localhost:8088";
+/* const API_URL = "http://anton.b5r4773jcchdcbhm.myfritz.net:8088";
+ */
 const apiService = axios.create({
   baseURL: API_URL,
   timeout: 3000,
@@ -34,7 +36,6 @@ export const fetchLogin = async (
   loginData: any
 ): Promise<AxiosResponse<any>> => {
   try {
-    console.log(loginData)
     const response = await apiService.post("login", loginData);
     return response;
   } catch (error) {
@@ -56,7 +57,7 @@ export const updateUserData = async (
   userData: any
 ): Promise<AxiosResponse<any>> => {
   try {
-    const response = await apiService.put("user", userData);
+    const response = await apiService.post("user/update", userData);
     return response;
   } catch (error) {
     throw error;
@@ -194,6 +195,25 @@ export const deleteUsers = async (data: any): Promise<AxiosResponse<any>> => {
     throw error;
   }
 };
+
+export const updateUserRole = async (data: any): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.post(`user/role/update`, data);
+    return response;
+  }catch (error) {
+    throw error;
+  }
+};
+
+export const fetchRentalHistory = async (): Promise<AxiosResponse<any>> => {
+  try {
+    const userid = checkLoginStatus();
+    const response = await apiService.get(`rentalhistory/${userid}`);
+    return response
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 

@@ -79,12 +79,12 @@ export const validateForm = (fields: any[]) => {
 
 export const getLoginData = (fields: any[]) => {
 	let data = {
-		"email": '',
+		"name": '',
 		"password": '',
 	}
 	fields.forEach((field) => {
-		if(field.id === 'email'){
-			data.email = field.input.state.value
+		if(field.id === 'name'){
+			data.name = field.input.state.value
 		}else if (field.id === 'password' ){
 			data.password = field.input.state.value
 		}

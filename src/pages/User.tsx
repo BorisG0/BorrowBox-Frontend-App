@@ -19,31 +19,22 @@ import {
   IonToolbar,
   IonChip,
   IonModal,
-  IonAlert,
+  IonToast,
 } from "@ionic/react";
-import {
-  personCircle,
-  informationCircle,
-  logOut,
-  closeCircleOutline,
-} from "ionicons/icons";
+import { personCircle, informationCircle, logOut, time } from "ionicons/icons";
 import { RouteComponentProps } from "react-router-dom";
 import { checkLoginStatus, deleteCookie, hashPassword } from "../data/utils";
-import {
-  fetchCurrentUser,
-  updateUserData,
-  fetchTags,
-  updateUserTag,
-  addFilter,
-  deleteFilter,
-} from "../apiService";
+import { fetchCurrentUser, updateUserData, fetchTags } from "../apiService";
 import { useTranslation } from "react-i18next";
 import styles from "./User.module.scss";
+import FilterManagement from "../components/FilterManagement";
 
 interface UserProfileProps extends RouteComponentProps {}
+
 interface ChipData {
-  id: string;
+  _id: string;
   name: string;
+  tagged: boolean;
 }
 
 const UserProfile: React.FC<
@@ -56,57 +47,14 @@ const UserProfile: React.FC<
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState<any>(null);
   const [emailValue, setEmailValue] = useState<any>();
-  const [passwordValue, setPasswordValue] = useState<any>();
-  const [passwordValue2, setPasswordValue2] = useState<any>();
-  const [selectedChips, setSelectedChips] = useState(new Set());
+  const [passwordValue, setPasswordValue] = useState<any>("");
+  const [passwordValue2, setPasswordValue2] = useState<any>("");
   const [editModeEnabled, setEditModeEnabled] = useState<any>(false);
   const [isManageUsersModalOpen, setIsManageUsersModalOpen] = useState(false);
+  const [isRentalHistoryModalOpen, setRentalHistoryModalOpen] = useState(false);
   const [chipData, setChipData] = useState<ChipData[]>([]);
-  const [inputValue, setInputValue] = useState("");
-  const [alertState, setAlertState] = useState(false);
-
-  const [tagsEditState, setTagsEditState] = useState(false);
-
-  const toggleChip = async (chip: any) => {
-    if (!tagsEditState) {
-      const updatedChips = new Set(selectedChips);
-      if (updatedChips.has(chip.name)) {
-        updatedChips.delete(chip.name);
-      } else {
-        updatedChips.add(chip.name);
-      }
-      const data = {
-        userId: loginToken,
-        tagId: chip._id,
-      };
-      const response = await updateUserTag(data);
-      if (response.status === 200) {
-        setSelectedChips(updatedChips);
-      }
-    }
-  };
-
-  const handleAlertDismiss = async (e: any) => {
-    if (e.detail.role !== "cancel") {
-      const enteredValue = e.detail.data.values[0];
-      const response = await addFilter({
-        loginToken: loginToken,
-        filterName: enteredValue,
-      });
-      setChipData(response.data);
-    } else {
-      setInputValue("");
-    }
-    setAlertState(false);
-  };
-
-  const addChip = () => {
-    setAlertState(!alertState);
-  };
-
-  const openManageUsersModal = () => {
-    setIsManageUsersModalOpen(true);
-  };
+  const [selectedChips, setSelectedChips] = useState(new Set());
+  const [toast, setToast] = useState(false);
 
   const closeManageUsersModal = () => {
     setIsManageUsersModalOpen(false);
@@ -115,12 +63,11 @@ const UserProfile: React.FC<
   useEffect(() => {
     const checkLoginAndFetchData = async () => {
       if (!loginToken) {
-        const result = checkLoginStatus();
+        const result = await checkLoginStatus();
         setLoginToken(result);
         loginToken = result;
         if (result === null) {
           history.push("/login");
-          console.log("Test2");
           return;
         }
       }
@@ -176,33 +123,31 @@ const UserProfile: React.FC<
   };
   const editSaveButton = async () => {
     if (editModeEnabled) {
-      if (emailValue != userData?.email && passwordValue != "") {
+      if (emailValue != userData?.email || passwordValue != "") {
         let updatedUserData = {
           id: loginToken,
           username: userData?.username,
-          email: "",
+          email: userData?.email,
           password: "",
         };
-        if (passwordValue != "" && passwordValue === passwordValue2) {
-          const hashedPassword = await hashPassword(passwordValue);
-          updatedUserData.password = hashedPassword.toString();
+        if (passwordValue != "") {
+          if (passwordValue != passwordValue2) {
+            setToast(true);
+            return;
+          } else {
+            const hashedPassword = await hashPassword(passwordValue);
+            updatedUserData.password = hashedPassword.toString();
+          }
         }
         if (emailValue != null) {
           updatedUserData.email = emailValue;
         }
         const result = await updateUserData(updatedUserData);
       }
+      setPasswordValue("");
+      setPasswordValue2("");
     }
     setEditModeEnabled(!editModeEnabled);
-    setChipData([]);
-    setEmailValue("");
-    setPasswordValue("");
-    setPasswordValue2("");
-  };
-
-  const handleDeleteChip = async (chip: any) => {
-    const result = await deleteFilter(chip._id);
-    setChipData(result.data);
   };
 
   return (
@@ -213,13 +158,18 @@ const UserProfile: React.FC<
             <IonTitle>User Page</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <div style={{ textAlign: "center", marginBottom: "10px" }}>
           <IonAvatar
-            style={{ width: "120px", height: "120px", margin: "0 auto" }}
+            style={{
+              width: "120px",
+              height: "120px",
+              margin: "20px auto",
+              boxShadow: "0px 0px 10px 0px rgba(200, 200, 200, 0.5)", // Hinzugefügte Schatten-Stilregel
+            }}
           >
             <img src="./user.jpg" alt /*  */="Benutzerbild" />
           </IonAvatar>
-          <IonText style={{ fontSize: "24px", margin: "20px 0" }}>
+          <IonText style={{ fontSize: "24px" }}>
             {t("welcome")} {userData?.username}
           </IonText>
         </div>
@@ -250,6 +200,7 @@ const UserProfile: React.FC<
                       <IonInput
                         value={emailValue}
                         onIonChange={(e) => setEmailValue(e.detail.value!)}
+                        aria-label="email-input"
                       />
                     ) : (
                       <IonLabel>{emailValue}</IonLabel>
@@ -266,6 +217,7 @@ const UserProfile: React.FC<
                         value={passwordValue}
                         placeholder="**********"
                         onIonChange={(e) => setPasswordValue(e.detail.value!)}
+                        aria-label="password-input"
                       />
                     ) : (
                       <IonLabel>*********</IonLabel>
@@ -282,6 +234,7 @@ const UserProfile: React.FC<
                         value={passwordValue2}
                         placeholder="**********"
                         onIonChange={(e) => setPasswordValue2(e.detail.value!)}
+                        aria-label="password-input2"
                       />
                     </IonItem>
                   </IonCol>
@@ -302,56 +255,14 @@ const UserProfile: React.FC<
             currentPage === pageFilter ? styles.open : ""
           }`}
         >
-          <IonCardContent>
-            <p>Select chips by clicking on them:</p>
-            <div>
-              {chipData.map((chip, index) => {
-                function handleChipContextMenu(
-                  e: React.MouseEvent<HTMLIonChipElement, MouseEvent>,
-                  chip: ChipData
-                ): void {
-                  e.preventDefault();
-                  setTagsEditState(!tagsEditState);
-                }
-
-                return (
-                  <IonChip
-                    key={index}
-                    color={selectedChips.has(chip.name) ? "success" : "primary"}
-                    onClick={() => toggleChip(chip)}
-                    onContextMenu={(e) => handleChipContextMenu(e, chip)}
-                    className={tagsEditState ? styles.wobbleanimation : ""} // Fügen Sie die CSS-Klasse hinzu, wenn tagsEditState aktiviert ist
-                  >
-                    {chip.name}
-                    {tagsEditState && (
-                      <IonIcon
-                        icon={closeCircleOutline}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteChip(chip);
-                        }}
-                        style={{
-                          fontSize: "14px",
-                          marginLeft: "8px",
-                          cursor: "pointer",
-                        }}
-                      />
-                    )}
-                  </IonChip>
-                );
-              })}
-              {userData?.role == "admin" && (
-                <IonChip
-                  key={"add"}
-                  color="primary"
-                  id="present-alert"
-                  onClick={() => addChip()}
-                >
-                  +
-                </IonChip>
-              )}
-            </div>
-          </IonCardContent>
+          <FilterManagement
+            loginToken={loginToken}
+            chipData={chipData}
+            setChipData={setChipData}
+            userData={userData}
+            selectedChips={selectedChips}
+            setSelectedChips={setSelectedChips}
+          />
         </div>
         {userData?.role == "admin" && (
           <IonButton expand="full" color="primary" routerLink="/usermanagement">
@@ -359,32 +270,22 @@ const UserProfile: React.FC<
             Manage Users
           </IonButton>
         )}
+        <IonButton expand="full" color="primary" routerLink="/rentalhistory">
+          <IonIcon icon={time} />
+          Rental History
+        </IonButton>
         <IonButton expand="full" color="primary" onClick={handleLogOut}>
           <IonIcon icon={logOut} />
           Log Out
         </IonButton>
-        <IonModal
-          isOpen={isManageUsersModalOpen}
-          onDidDismiss={closeManageUsersModal}
-        >
-          <IonText>Das ist das Manage Users Modal.</IonText>
-          <IonButton onClick={closeManageUsersModal}>Schließen</IonButton>
-        </IonModal>
-        {userData?.role === "admin" && (
-          <IonAlert
-            isOpen={alertState}
-            header="Please enter a filter name"
-            buttons={["OK", "CANCEL"]}
-            inputs={[
-              {
-                placeholder: "Math, English, ...",
-                value: inputValue,
-              },
-            ]}
-            onDidDismiss={handleAlertDismiss}
-          ></IonAlert>
-        )}
+        
       </IonContent>
+      <IonToast
+        isOpen={toast}
+        message="This toast will close in 5 seconds"
+        onDidDismiss={() => setToast(false)}
+        duration={5000}
+      ></IonToast>
     </IonPage>
   );
 };

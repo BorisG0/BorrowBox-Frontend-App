@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   IonAlert,
   IonButton,
@@ -16,6 +16,7 @@ import {
   IonList,
   IonModal,
   IonPage,
+  IonPopover,
   IonSelect,
   IonSelectOption,
   IonText,
@@ -37,10 +38,11 @@ import {
   closeCircleOutline,
 } from "ionicons/icons";
 import { generateRandomPassword } from "../data/auth";
-import { addUser, deleteUsers, fetchUser } from "../apiService";
+import { addUser, deleteUsers, fetchUser, updateUserData } from "../apiService";
 import { logDOM } from "@testing-library/react";
 import { checkLoginStatus, hashPassword } from "../data/utils";
 import { AxiosResponse } from "axios";
+import RoleSelection from "../components/RoleSelection";
 interface UserProfileProps extends RouteComponentProps {}
 
 interface User {
@@ -66,26 +68,28 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
   const [inputUsername, setinputUsername] = useState("");
   const [inputEmail, setinputEmail] = useState("");
   const [inputPassword, setinputPassword] = useState(generateRandomPassword());
+  const [pwdChangeAlert, setPwdChangeAlert] = useState(false);
+  const [userToReset, setUserToReset] = useState<User>();
 
   const handlePasswordReset = (user: any) => {
-    // Hier kannst du die Logik für das Passwort-Reset implementieren
-    console.log(`Reset Password for User: ${user.name}`);
+    setPwdChangeAlert(true);
+    setUserToReset(user);
   };
 
   const handleUserDelete = async () => {
-    setEditModeEnabled(!editModeEnabled);
-    let ids = selectedUsers.map(user => ({ id: user.id }));
-    const response = await deleteUsers(ids)      
-    const filteredResponse = response.data.map((user: any) => {
-      return {
-        ...user,
-        id: user._id,
-      };
-    });
-    
-    const filterd = setUsersWithFilter(filteredResponse);
-    setUsers(filterd);
-    console.log(response);
+    if (selectedUsers.length != 0) {
+      setEditModeEnabled(!editModeEnabled);
+      let ids = selectedUsers.map((user) => ({ id: user.id }));
+      const response = await deleteUsers(ids);
+      const filteredResponse = response.data.map((user: any) => {
+        return {
+          ...user,
+          id: user._id,
+        };
+      });
+      const filterd = setUsersWithFilter(filteredResponse);
+      setUsers(filterd);
+    }
   };
 
   const handleAddUser = () => {
@@ -116,7 +120,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
   };
 
   const handleAlertDismiss = async (e: any) => {
-    const hash = hashPassword(e.detail.data.values[1]);
+    const hash = hashPassword(e.detail.data.values[2]);
     if (e.detail.role !== "cancel") {
       const userData: User = {
         username: e.detail.data.values[0],
@@ -125,6 +129,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
         id: "",
         role: "teacher",
       };
+
       const response = await addUser(userData);
 
       const filteredResponse = response.data.map((user: any) => {
@@ -133,7 +138,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
           id: user._id,
         };
       });
-      
+
       const filterd = setUsersWithFilter(filteredResponse);
       setUsers(filterd);
       console.log(filterd);
@@ -144,20 +149,11 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
     setAlertState(false);
   };
 
-  function handleChipContextMenu(
-    e: React.MouseEvent<HTMLIonChipElement, MouseEvent>,
-    user: User
-  ): void {
-    e.preventDefault();
-    throw new Error("Function not implemented.");
-  }
-
   useEffect(() => {
     async function test() {
       const result = await fetchUser();
       const filteredArray = setUsersWithFilter(result);
       setUsers(filteredArray);
-      console.log(filteredArray);
     }
     test();
   }, []);
@@ -168,6 +164,18 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
     const filteredArray = filterArray.filter((item) => item.id !== loginToken);
     return filteredArray;
   };
+
+  async function resetPassword(user: any) {
+    let updatedUserData = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      email: user.email,
+      password: (await hashPassword("Welcome1!")).toString(),
+    };
+    const result = await updateUserData(updatedUserData);
+  }
+
   return (
     <IonPage>
       <IonContent>
@@ -228,12 +236,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
                   <h2>{user.username}</h2>
                   <p>{user.email}</p>
                 </IonLabel>
-                <IonChip
-                  color={user.role === "admin" ? "danger" : "primary"}
-                  onContextMenu={(e) => handleChipContextMenu(e, user)}
-                >
-                  {user.role}
-                </IonChip>
+                <RoleSelection userId={user?.id} defaultRole={user?.role} />
               </div>
               {!editModeEnabled && (
                 <IonButton onClick={() => handlePasswordReset(user)}>
@@ -271,7 +274,11 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
         {editModeEnabled ? (
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
             <IonFabButton onClick={handleUserDelete}>
-              <IonIcon icon={trashBin}></IonIcon>
+              {selectedUsers.length !== 0 ? (
+                <IonIcon icon={trashBin}></IonIcon>
+              ) : (
+                <IonIcon icon={arrowBack}></IonIcon>
+              )}
             </IonFabButton>
           </IonFab>
         ) : (
@@ -289,7 +296,10 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
                 <IonIcon icon={add}></IonIcon>
               </IonFabButton>
               <IonFabButton
-                onClick={() => {setEditModeEnabled(!editModeEnabled); setSelectedUsers([])} }
+                onClick={() => {
+                  setEditModeEnabled(!editModeEnabled);
+                  setSelectedUsers([]);
+                }}
               >
                 <IonIcon icon={pencil}></IonIcon>
               </IonFabButton>
@@ -315,6 +325,28 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
             },
           ]}
           onDidDismiss={handleAlertDismiss}
+        ></IonAlert>
+        <IonAlert
+          header=""
+          message="Do you want to reset the passwort?"
+          isOpen={pwdChangeAlert}
+          buttons={[
+            {
+              text: "Cancel",
+              role: "cancel",
+            },
+            {
+              text: "OK",
+              role: "confirm",
+            },
+          ]}
+          onDidDismiss={({ detail }) => {
+            if (detail.role === "confirm") {
+              resetPassword(userToReset);
+              console.log(userToReset);
+            }
+            setPwdChangeAlert(false);
+          }}
         ></IonAlert>
       </IonContent>
     </IonPage>

@@ -114,7 +114,7 @@ interface AddItemModalProps {
                 return (
                   <IonChip
                     key={index}
-                    color={selected ? "success" : "primary"}
+                    color={selected ? "success" : "medium"}
 
                     onClick={() => toggleChip(tag)}
                   >
