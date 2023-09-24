@@ -9,6 +9,9 @@ defineCustomElements(window);
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
+
+import './data/i18n';
+
 root.render(
   <React.StrictMode>
     <App />

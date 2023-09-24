@@ -71,7 +71,7 @@ const Login: React.FC<
             message: "Something went wrong",
           },
           {
-            id: "email",
+            id: "name",
             message: "Something went wrong",
           },
         ]);

@@ -45,6 +45,8 @@ import UserLoginSwitch from "./pages/UserLoginSwitch";
 import DBQuery from "./pages/dbquerry";
 import { withAuth } from "./data/auth";
 import UserTable from "./pages/UserManagement";
+import Test from "./pages/Test";
+import RentalHistory from "./pages/RentalHistory";
 
 setupIonicReact();
 
@@ -83,6 +85,9 @@ const App: React.FC = () => {
             <Route exact path="/myItems">
               <MyItemsTab/>
             </Route>
+            <Route exact path="/test">
+              <Test/>
+            </Route>
             <Route
               exact
               path="/login"
@@ -94,6 +99,10 @@ const App: React.FC = () => {
             exact
             path="/usermanagement"
             render={(props) => ( <UserTable {...props} loginToken={loginToken}/> ) } />
+            <Route
+            exact
+            path="/rentalhistory"
+            render={(props) => ( <RentalHistory {...props}/> ) } />
             <Route
               exact
               path="/"
