@@ -44,12 +44,7 @@ export const fetchLogin = async (
   loginData: any
 ): Promise<AxiosResponse<any>> => {
   try {
-    console.log(loginData)
-    const loginDataWithName = { // backend erwartet name und nicht email
-      name: loginData.email,
-      password: loginData.password,
-    }
-    const response = await apiService.post("login", loginDataWithName);
+    const response = await apiService.post("login", loginData);
     return response;
   } catch (error) {
     throw error;
