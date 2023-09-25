@@ -44,6 +44,7 @@ import { checkLoginStatus } from "./data/utils";
 import UserTable from "./pages/UserManagement";
 import Test from "./pages/Test";
 import RentalHistory from "./pages/RentalHistory";
+import ReportedList from "./pages/ReportedList";
 
 setupIonicReact();
 
@@ -77,13 +78,13 @@ const App: React.FC = () => {
               <DetailPage />
             </Route>
             <Route exact path="/borrow">
-              <BorrowTab/>
+              <BorrowTab />
             </Route>
             <Route exact path="/myItems">
-              <MyItemsTab/>
+              <MyItemsTab />
             </Route>
             <Route exact path="/test">
-              <Test/>
+              <Test />
             </Route>
             <Route
               exact
@@ -93,18 +94,31 @@ const App: React.FC = () => {
               )}
             />
             <Route
-            exact
-            path="/usermanagement"
-            render={(props) => ( <UserTable {...props} loginToken={loginToken}/> ) } />
+              exact
+              path="/reportlist"
+              render={(props) => <ReportedList {...props} />}
+            />
             <Route
-            exact
-            path="/rentalhistory"
-            render={(props) => ( <RentalHistory {...props}/> ) } />
+              exact
+              path="/usermanagement"
+              render={(props) => (
+                <UserTable {...props} loginToken={loginToken} />
+              )}
+            />
+            <Route
+              exact
+              path="/rentalhistory"
+              render={(props) => <RentalHistory {...props} />}
+            />
             <Route
               exact
               path="/"
               render={(props) => (
-                <UserProfile {...props} loginToken={loginToken} setLoginToken={setLoginToken} />
+                <UserProfile
+                  {...props}
+                  loginToken={loginToken}
+                  setLoginToken={setLoginToken}
+                />
               )}
             ></Route>
           </IonRouterOutlet>

@@ -252,8 +252,12 @@ export const updateUserRole = async (data: any): Promise<AxiosResponse<any>> => 
     
 export const fixReport = async (data: any): Promise<AxiosResponse<any>> => {
   try {
+    const userId = checkLoginStatus()?.toString();
+    if (!userId) {
+      throw new Error("User is not logged in");
+    }
     const reportForBackend: ReportForBackend = {
-      userId: data.userId,
+      userId: userId,
       itemId: data.itemId,
       reportState: false,
       description: "Das Item wurde repariert",
@@ -305,6 +309,15 @@ export const fetchItemImage = async (itemId: string) => {
     return imageUrl;
   } catch (error) {
     //console.error('Error fetching image:', error);
+    throw error;
+  }
+};
+
+export const fetchReports = async (): Promise<AxiosResponse<any>> => {
+  try {
+    const response = await apiService.get(`reports`);
+    return response;
+  } catch (error) {
     throw error;
   }
 };

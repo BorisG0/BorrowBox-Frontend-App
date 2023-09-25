@@ -21,11 +21,23 @@ import {
   IonModal,
   IonToast,
   IonLoading,
+  IonBadge,
 } from "@ionic/react";
-import { personCircle, informationCircle, logOut, time } from "ionicons/icons";
+import {
+  personCircle,
+  informationCircle,
+  logOut,
+  time,
+  alert,
+} from "ionicons/icons";
 import { RouteComponentProps } from "react-router-dom";
 import { checkLoginStatus, deleteCookie, hashPassword } from "../data/utils";
-import { fetchCurrentUser, updateUserData, fetchTags } from "../apiService";
+import {
+  fetchCurrentUser,
+  updateUserData,
+  fetchTags,
+  fetchReports,
+} from "../apiService";
 import { useTranslation } from "react-i18next";
 import styles from "./User.module.scss";
 import FilterManagement from "../components/FilterManagement";
@@ -55,6 +67,7 @@ const UserProfile: React.FC<
   const [selectedChips, setSelectedChips] = useState(new Set());
   const [toast, setToast] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [reports, setReports] = useState(0);
 
   const pagePersonalInfo = "personal-info";
   const pageFilter = "filter";
@@ -88,6 +101,12 @@ const UserProfile: React.FC<
         });
         setSelectedChips(updatedChips);
         setChipData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+      try {
+        const response = await fetchReports();
+        setReports(response.data.length);
       } catch (error) {
         console.log(error);
       }
@@ -154,6 +173,14 @@ const UserProfile: React.FC<
         <IonHeader>
           <IonToolbar>
             <IonTitle>User Page</IonTitle>
+            <IonButton
+              slot="end"
+              color="light"
+              onClick={handleLogOut}
+              style={{ marginRight: "10px" }}
+            >
+              <IonIcon icon={logOut} />
+            </IonButton>
           </IonToolbar>
         </IonHeader>
         <div style={{ textAlign: "center", marginBottom: "10px" }}>
@@ -171,111 +198,160 @@ const UserProfile: React.FC<
             {t("welcome")} {userData?.username}
           </IonText>
         </div>
-        <IonButton expand="full" color="primary" onClick={togglePersonalInfo}>
-          <IonIcon icon={personCircle} />
-          Persönliche Infos
-        </IonButton>
-        <div
-          className={`${styles["personal-info-container"]} ${
-            currentPage === pagePersonalInfo ? styles.open : ""
-          }`}
-        >
-          <IonCardContent>
-            <IonGrid>
-              <IonRow>
-                <IonCol>
-                  <IonItem>
-                    <IonLabel position="fixed">Username:</IonLabel>
-                    <IonLabel>{userData?.username}</IonLabel>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-              <IonRow>
-                <IonCol>
-                  <IonItem>
-                    <IonLabel position="fixed">Email:</IonLabel>
-                    {editModeEnabled ? (
-                      <IonInput
-                        value={emailValue}
-                        onIonChange={(e) => setEmailValue(e.detail.value!)}
-                        aria-label="email-input"
-                      />
-                    ) : (
-                      <IonLabel>{emailValue}</IonLabel>
+
+        <IonGrid>
+          <IonRow style={{ justifyContent: "center" }}>
+            <IonCol size="12" size-md="8" size-lg="6">
+              <IonButton
+                expand="block"
+                shape="round"
+                color="primary"
+                onClick={togglePersonalInfo}
+              >
+                <IonIcon icon={personCircle} />
+                Persönliche Infos
+              </IonButton>
+              <div
+                className={`${styles["personal-info-container"]} ${
+                  currentPage === pagePersonalInfo ? styles.open : ""
+                }`}
+              >
+                <IonCardContent>
+                  <IonGrid>
+                    <IonRow>
+                      <IonCol>
+                        <IonItem>
+                          <IonLabel position="fixed">Username:</IonLabel>
+                          <IonLabel>{userData?.username}</IonLabel>
+                        </IonItem>
+                      </IonCol>
+                    </IonRow>
+                    <IonRow>
+                      <IonCol>
+                        <IonItem>
+                          <IonLabel position="fixed">Email:</IonLabel>
+                          {editModeEnabled ? (
+                            <IonInput
+                              value={emailValue}
+                              onIonChange={(e) =>
+                                setEmailValue(e.detail.value!)
+                              }
+                              aria-label="email-input"
+                            />
+                          ) : (
+                            <IonLabel>{emailValue}</IonLabel>
+                          )}
+                        </IonItem>
+                      </IonCol>
+                    </IonRow>
+                    <IonRow>
+                      <IonCol>
+                        <IonItem>
+                          <IonLabel position="fixed">Password:</IonLabel>
+                          {editModeEnabled ? (
+                            <IonInput
+                              value={passwordValue}
+                              placeholder="**********"
+                              onIonChange={(e) =>
+                                setPasswordValue(e.detail.value!)
+                              }
+                              aria-label="password-input"
+                            />
+                          ) : (
+                            <IonLabel>*********</IonLabel>
+                          )}
+                        </IonItem>
+                      </IonCol>
+                    </IonRow>
+                    {editModeEnabled && (
+                      <IonRow>
+                        <IonCol>
+                          <IonItem>
+                            <IonLabel position="fixed">repeat:</IonLabel>
+                            <IonInput
+                              value={passwordValue2}
+                              placeholder="**********"
+                              onIonChange={(e) =>
+                                setPasswordValue2(e.detail.value!)
+                              }
+                              aria-label="password-input2"
+                            />
+                          </IonItem>
+                        </IonCol>
+                      </IonRow>
                     )}
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-              <IonRow>
-                <IonCol>
-                  <IonItem>
-                    <IonLabel position="fixed">Password:</IonLabel>
-                    {editModeEnabled ? (
-                      <IonInput
-                        value={passwordValue}
-                        placeholder="**********"
-                        onIonChange={(e) => setPasswordValue(e.detail.value!)}
-                        aria-label="password-input"
-                      />
-                    ) : (
-                      <IonLabel>*********</IonLabel>
-                    )}
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-              {editModeEnabled && (
-                <IonRow>
-                  <IonCol>
-                    <IonItem>
-                      <IonLabel position="fixed">repeat:</IonLabel>
-                      <IonInput
-                        value={passwordValue2}
-                        placeholder="**********"
-                        onIonChange={(e) => setPasswordValue2(e.detail.value!)}
-                        aria-label="password-input2"
-                      />
-                    </IonItem>
-                  </IonCol>
-                </IonRow>
-              )}
-            </IonGrid>
-            <IonButton expand="full" onClick={editSaveButton}>
-              {editModeEnabled ? "Save" : "Edit"}
-            </IonButton>
-          </IonCardContent>
-        </div>
-        <IonButton expand="full" color="primary" onClick={toggleFilter}>
-          <IonIcon icon={informationCircle} />
-          Filter
-        </IonButton>
-        <div
-          className={`${styles["filter-container"]} ${
-            currentPage === pageFilter ? styles.open : ""
-          }`}
-        >
-          <FilterManagement
-            loginToken={loginToken}
-            chipData={chipData}
-            setChipData={setChipData}
-            userData={userData}
-            selectedChips={selectedChips}
-            setSelectedChips={setSelectedChips}
-          />
-        </div>
-        {userData?.role == "admin" && (
-          <IonButton expand="full" color="primary" routerLink="/usermanagement">
-            <IonIcon icon={logOut} />
-            Manage Users
-          </IonButton>
-        )}
-        <IonButton expand="full" color="primary" routerLink="/rentalhistory">
-          <IonIcon icon={time} />
-          Rental History
-        </IonButton>
-        <IonButton expand="full" color="primary" onClick={handleLogOut}>
-          <IonIcon icon={logOut} />
-          Log Out
-        </IonButton>
+                  </IonGrid>
+                  <IonButton expand="full" onClick={editSaveButton}>
+                    {editModeEnabled ? "Save" : "Edit"}
+                  </IonButton>
+                </IonCardContent>
+              </div>
+            </IonCol>
+            <IonCol size="12" size-md="8" size-lg="6">
+              <IonButton
+                expand="block"
+                shape="round"
+                color="primary"
+                onClick={toggleFilter}
+              >
+                <IonIcon icon={informationCircle} />
+                Filter
+              </IonButton>
+              <div
+                className={`${styles["filter-container"]} ${
+                  currentPage === pageFilter ? styles.open : ""
+                }`}
+              >
+                <FilterManagement
+                  loginToken={loginToken}
+                  chipData={chipData}
+                  setChipData={setChipData}
+                  userData={userData}
+                  selectedChips={selectedChips}
+                  setSelectedChips={setSelectedChips}
+                />
+              </div>
+            </IonCol>
+            {userData?.role == "admin" && (
+              <IonCol size="12" size-md="8" size-lg="6">
+                <IonButton
+                  expand="block"
+                  shape="round"
+                  color="primary"
+                  routerLink="/usermanagement"
+                >
+                  <IonIcon icon={logOut} />
+                  Nutzerverwaltung
+                </IonButton>
+              </IonCol>
+            )}
+            <IonCol size="12" size-md="8" size-lg="6">
+              {" "}
+              <IonButton
+                expand="block"
+                shape="round"
+                color="primary"
+                routerLink="/rentalhistory"
+              >
+                <IonIcon icon={time} />
+                Historie
+              </IonButton>
+            </IonCol>
+
+            {userData?.role == "admin" && reports > 0 && (
+              <IonCol size="12" size-md="8" size-lg="6">
+                <IonButton
+                  expand="block"
+                  shape="round"
+                  color="warning"
+                  routerLink="/reportlist"
+                >
+                  {reports} Gemeldete Gegenstände
+                </IonButton>
+              </IonCol>
+            )}
+          </IonRow>
+        </IonGrid>
       </IonContent>
       <IonToast
         isOpen={toast}
