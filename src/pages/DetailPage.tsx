@@ -33,6 +33,7 @@ import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
 import { camera } from 'ionicons/icons';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
+import QRCodeModal from '../components/QrCode';
 
 type FixedReport = {
   userId: string;
@@ -83,6 +84,7 @@ const DetailPage: React.FC = () => {
   const [showReportConfirmation, setShowReportConfirmation] = useState(false);
   const [ userId, setUserId ] = useState<string>("");
   const [imageURL, setImageURL] = useState<string>("");
+  const [showModal, setShowModal] = useState(false);
 
 
   useEffect(() => {
@@ -173,6 +175,9 @@ const DetailPage: React.FC = () => {
     }
     setIsEditing(true);
   };
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   const handleSaveClick = async () => {
     try {
@@ -400,11 +405,17 @@ const DetailPage: React.FC = () => {
                         </IonButton>
                       </>
                     )}
+                    <IonButton expand="full" onClick={handleShowModal}>
+                      QR-Code drucken
+                    </IonButton>
+
                   </>
                 )}
               </IonCardContent>
             </IonCard>
           </IonContent>
+          <QRCodeModal isOpen={showModal} onClose={handleCloseModal} qrCodeText={"item/" + id} />
+
           <IonAlert
             isOpen={showConfirmation}
             onDidDismiss={() => setShowConfirmation(false)}
