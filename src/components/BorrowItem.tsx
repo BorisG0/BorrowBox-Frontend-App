@@ -30,7 +30,7 @@ const BorrowItem: React.FC<{
           const url = await fetchItemImage(item._id);
           setImageURL(url);
         }catch(error){
-          setImageURL("https://content.mycutegraphics.com/graphics/household/box-black-white.png")
+          setImageURL("")
         }
     }
     fetchData()
@@ -60,7 +60,11 @@ const BorrowItem: React.FC<{
           </IonCardSubtitle>
         </IonCardHeader>
         <IonCardContent>
-          <IonImg src={imageURL} />
+          {imageURL ?
+            <IonImg src={imageURL} />
+            : <IonImg src="/box_logo.png" />
+        }
+          
         </IonCardContent>
 
         <div style={{ float: "right", padding: "10px" }}>
