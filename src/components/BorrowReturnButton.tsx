@@ -22,10 +22,7 @@ const BorrowReturnButton: React.FC<{
     
     const handleStartRental = async () => {
     try{
-        console.log("starting rental")
-        console.log(item)
         const response = await startRental(item._id ? item._id : item.id);
-        console.log(response);
         setIsItemAvailable(false);
     }catch(error){
         console.log(error);
@@ -37,26 +34,21 @@ const BorrowReturnButton: React.FC<{
     }
 
     const handleLocationSelected = async (location: string) => {
-        console.log(location)
         setSelectedLocation(location);
         setShowReturnConfirmation(true);
     }
 
     const handleFileReportPressed = async () => {
-        console.log("file report")
         setShowReportConfirmation(true);
     }
 
     const handleNoReportPressed = async () => {
-        console.log("no report")
     }
 
     const handleEndRental = async (report?: string, criticalReport?: boolean) => {
         try{
-            console.log("ending rental")
             const response = await endRental(item._id, selectedLocation, (report ? report: ""), (criticalReport ? criticalReport: false));
             setIsItemAvailable(true);
-            console.log(response);
         }catch(error){
             console.log(error);
         }
@@ -85,7 +77,6 @@ const BorrowReturnButton: React.FC<{
                     text: "Nein",
                     role: "cancel",
                     handler: () => {
-                    console.log("Cancel clicked");
                     },
                 },
                 {

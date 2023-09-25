@@ -77,7 +77,6 @@ const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems, isAuthenticated })
       const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
       setCartItems(updatedCartItems);
     }
-    console.log(cartItems)
   };
 
   const handleConsoleClick = async () => {
@@ -90,7 +89,6 @@ const Tab1: React.FC<Tab1Props> = ({ cartItems, setCartItems, isAuthenticated })
         destinationType: Camera.DestinationType.DATA_URL,
       });
 
-      console.log("Image data:", image);
     } catch (error) {
       console.error("Error accessing camera:", error);
     }

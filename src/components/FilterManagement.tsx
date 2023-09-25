@@ -95,7 +95,6 @@ const FilterManagement: React.FC<FilterManagementProps> = ({
     chipData.forEach((tag: any) => {
       if (tag.tagged) {
         updatedChips.add(tag.name);
-        console.log(tag.name);
       }
     });
     setSelectedChips(updatedChips);

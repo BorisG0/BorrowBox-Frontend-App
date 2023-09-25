@@ -12,10 +12,8 @@ const QRCodeScanner = (props: { isActive: boolean;
     
   const [mounted,setMounted] = useState(false);
   useEffect(() => {
-    console.log("mount scanner");
     setMounted(true);
     return ()=>{
-      console.log("unmount and stop scan");
       setMounted(false);
       DBR.stopScan();
     }
@@ -32,10 +30,8 @@ const QRCodeScanner = (props: { isActive: boolean;
   useEffect(() => {
     if (props.torchOn != undefined && mounted) {
       if (props.torchOn == true) {
-        console.log("torch on");
         DBR.toggleTorch({"on":true});
       }else{
-        console.log("torch off");
         DBR.toggleTorch({"on":false});
       }
     }

@@ -33,6 +33,7 @@ import { useHistory } from 'react-router-dom';
 import BorrowReturnButton from '../components/BorrowReturnButton';
 import { camera } from 'ionicons/icons';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
+import QRCodeModal from '../components/QrCode';
 
 type FixedReport = {
   userId: string;
@@ -83,6 +84,7 @@ const DetailPage: React.FC = () => {
   const [showReportConfirmation, setShowReportConfirmation] = useState(false);
   const [ userId, setUserId ] = useState<string>("");
   const [imageURL, setImageURL] = useState<string>("");
+  const [showModal, setShowModal] = useState(false);
 
 
   useEffect(() => {
@@ -99,7 +101,6 @@ const DetailPage: React.FC = () => {
         setItem(fetchedItem.data);
         setLoading(false);
         setIsItemAvailable(fetchedItem.data.available);
-        console.log(fetchedItem)
 
         const url = await fetchItemImage(id);
         setImageURL(url);
@@ -135,7 +136,6 @@ const DetailPage: React.FC = () => {
   const handleDelete = async () => {
     try {
       const response = await deleteItem(id);
-      console.log(response);
 
       window.location.href = '/borrow';
     } catch (error) {
@@ -150,7 +150,6 @@ const DetailPage: React.FC = () => {
         itemId: id,
       }
       const response = await fixReport(fixedReport);
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -174,6 +173,9 @@ const DetailPage: React.FC = () => {
     setIsEditing(true);
   };
 
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
   const handleSaveClick = async () => {
     try {
       if (!editedItem) {
@@ -188,7 +190,6 @@ const DetailPage: React.FC = () => {
 
         // Wenn eine Übereinstimmung gefunden wurde, fügen Sie die ID hinzu
         if (matchingChip) {
-          console.log(matchingChip)
           selectedChipIDs.push(matchingChip._id);
         }
       }
@@ -201,8 +202,6 @@ const DetailPage: React.FC = () => {
         tagIds: selectedChipIDs,
       };
       const response = await updateItem(itemBackendData)
-      console.log(itemBackendData)
-      console.log(response)
       setItem(editedItem);
       setIsEditing(false);
     } catch (error) {
@@ -243,10 +242,8 @@ const DetailPage: React.FC = () => {
         // Call the uploadItemPhoto function and pass photo.filepath as an argument
         const file = new File([await fetch(photo.webviewPath).then((r) => r.blob())], 'photo.jpg');
       
-        console.log(file);
 
         const response = await uploadItemPhoto(id, file);
-        console.log('Photo upload response:', response);
         
         // Handle the response as needed
       } else {
@@ -265,7 +262,7 @@ const DetailPage: React.FC = () => {
         <>
           <IonHeader>
             <IonToolbar>
-              <IonTitle>Item Detail</IonTitle>
+              <IonTitle>Item Details</IonTitle>
             </IonToolbar>
           </IonHeader>
           <IonContent>
@@ -281,7 +278,7 @@ const DetailPage: React.FC = () => {
                 {isEditing ? (
                   <form>
                     <IonItem>
-                      <IonLabel position="stacked">Enter the name:</IonLabel>
+                      <IonLabel position="stacked">Name:</IonLabel>
                       <IonInput
                         type="text"
                         value={editedItem?.name || ''}
@@ -292,7 +289,7 @@ const DetailPage: React.FC = () => {
 
                     </IonItem>
                     <IonItem>
-                      <IonLabel position="stacked">Enter the description:</IonLabel>
+                      <IonLabel position="stacked">Beschreibung:</IonLabel>
                       <IonInput
                         type="text"
                         value={editedItem?.description || ''}
@@ -302,7 +299,7 @@ const DetailPage: React.FC = () => {
                       />
                     </IonItem>
                     <IonItem>
-                      <IonLabel position="stacked">Enter the location:</IonLabel>
+                      <IonLabel position="stacked">Lagerort:</IonLabel>
                       <IonInput
                         type="text"
                         value={editedItem?.location || ''}
@@ -312,7 +309,7 @@ const DetailPage: React.FC = () => {
                       />
                     </IonItem>
                     <IonCardContent>
-                      <p>Select chips by clicking on them:</p>
+                      <p>Tags durch klicken auswählen:</p>
                       <div>
                         {chipData.map((chip, index) => {
                           function handleChipContextMenu(
@@ -364,30 +361,32 @@ const DetailPage: React.FC = () => {
                     )}
                     
                     <p> Beschreibung: {item?.description}</p>
-                    <p> Location: {item?.location}</p>
-                    <p>Tags:
-                      {item?.tagNames.map((tag: string, index: number) =>
-                        <IonChip key={index}>{tag}</IonChip>
-                      )}
+                    <p> Lagerort: {item?.location}</p>
+                    <p> Tags:
+                        {item?.tagNames && item?.tagNames.length > 0 &&
+                        item?.tagNames.map((tag: string, index: number) => (
+                          <IonChip key={index}>{tag}</IonChip>
+                        ))
+                      }
                     </p>
                     {item?.currentRenter !== "" &&
                       <>
-                        <p>Rented by:{item?.currentRenter}</p>
+                        <p>Ausgeliehen von:{item?.currentRenter}</p>
                         <p>Ausgeliehen seit: {item?.rentedSince}</p>
                       </>}
                     {item?.reportDescription !== "" ? <>
-                      <p>Report: {item?.reportDescription}</p>
-                      <p>Report von: {item?.reportUser}</p>
-                      <p>Report Zeitpunkt: {item?.reportTime}</p>
-                      <p>Report kritisch: {item?.reportStateCritical ? "Ja" : "Nein"}</p>
+                      <p> Schadensbericht: {item?.reportDescription}</p>
+                      <p> Gemeldet von: {item?.reportUser}</p>
+                      <p> Meldezeitpunkt: {item?.reportTime}</p>
+                      <p> Schaden kritisch: {item?.reportStateCritical ? "Ja" : "Nein"}</p>
                     </>
-                      : <p> Kein Report vorhanden</p>
+                      : <p> Kein Schaden vorhanden</p>
                     }
                     <BorrowReturnButton item={item} isFunctionStartRental={true} isItemAvailable={isItemAvailable} setIsItemAvailable={setIsItemAvailable} />
                     {userRole === "admin" && (
                       <>{item?.reportStateCritical && 
                         <IonButton expand="full" onClick={handleFixReportClick}>
-                          Report beheben
+                          Schaden beheben
                         </IonButton>
                         }
                         <IonButton expand="full" onClick={handleEditClick}>
@@ -398,11 +397,17 @@ const DetailPage: React.FC = () => {
                         </IonButton>
                       </>
                     )}
+                    <IonButton expand="full" onClick={handleShowModal}>
+                      QR-Code drucken
+                    </IonButton>
+
                   </>
                 )}
               </IonCardContent>
             </IonCard>
           </IonContent>
+          <QRCodeModal isOpen={showModal} onClose={handleCloseModal} qrCodeText={"item/" + id} />
+
           <IonAlert
             isOpen={showConfirmation}
             onDidDismiss={() => setShowConfirmation(false)}
@@ -413,7 +418,6 @@ const DetailPage: React.FC = () => {
                 text: "Nein",
                 role: "cancel",
                 handler: () => {
-                  console.log("Cancel clicked");
                 },
               },
               {
@@ -434,7 +438,6 @@ const DetailPage: React.FC = () => {
                 text: "Nein",
                 role: "cancel",
                 handler: () => {
-                  console.log("Cancel clicked");
                 },
               },
               {

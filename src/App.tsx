@@ -18,6 +18,11 @@ import { addCircle, layers, person } from "ionicons/icons";
 import UserProfile from "./pages/User";
 import MyItemsTab from "./pages/MyItemsTab";
 import DetailPage from "./pages/DetailPage";
+import CustomBoxSVG from '../Anonymous-Package.svg';
+import CustomPersonaSVG from '../Female-Avatar-5.svg';
+import CustomCartSVG from '../baroquon_Shopping_Cart.svg';
+
+
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -124,15 +129,15 @@ const App: React.FC = () => {
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
             <IonTabButton tab="borrow" href="/borrow">
-              <IonIcon aria-hidden="true" icon={addCircle} />
+              <IonIcon aria-hidden="true" icon={CustomCartSVG} />
               <IonLabel>Borrow</IonLabel>
             </IonTabButton>
             <IonTabButton tab="myItems" href="/myItems">
-              <IonIcon aria-hidden="true" icon={layers} />
+              <IonIcon aria-hidden="true" icon={CustomBoxSVG} />
               <IonLabel>My Items</IonLabel>
             </IonTabButton>
             <IonTabButton tab="User" href="/user">
-              <IonIcon aria-hidden="true" icon={person} />
+              <IonIcon aria-hidden="true" icon={CustomPersonaSVG} />
               <IonLabel>User</IonLabel>
             </IonTabButton>
           </IonTabBar>
