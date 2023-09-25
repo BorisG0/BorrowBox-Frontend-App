@@ -25,12 +25,12 @@ const BorrowTab: React.FC<{}> = () => {
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
-  const [filterTags, setFilterTags] = useState([] as Tag[]);
+  const [filterTags, setFilterTags] = useState<Tag[] | null>(null);
   const [showAvailable, setShowAvailable] = useState(false);
 
   const itemIncludesSelectedTag = (item: any) => {
-    for (const tag of filterTags) {
-      if (tag.selected && !item.tags.includes(tag.name)) {
+    for (const tag of filterTags!) {
+      if (tag.tagged && !item.tags.includes(tag.name)) {
         return false;
       }
     }
@@ -51,14 +51,15 @@ const BorrowTab: React.FC<{}> = () => {
   };
 
   const toggleTag = (tag: Tag) => {
-    tag.selected = !tag.selected;
-    setFilterTags([...filterTags]);
+    tag.tagged = !tag.tagged;
+    setFilterTags([...filterTags!]);
+
   };
 
   const toggleShowAvailable = () => {
     setShowAvailable(!showAvailable);
   };
-
+  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -66,12 +67,14 @@ const BorrowTab: React.FC<{}> = () => {
         if (loginTokenData) {
           const userData = await fetchCurrentUser();
           setUserRole(userData.data.role);
+          if(userData) {
+            const tagData = await fetchTags(userData.data._id);
+            setFilterTags(tagData.data);
+          }
         }
         const itemData = await fetchItemData();
         setAllItems(itemData.data);
 
-        const tagData = await fetchTags(null);
-        setFilterTags(tagData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -93,22 +96,22 @@ const BorrowTab: React.FC<{}> = () => {
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
-        <div style={{
-          width: "100%",   
-          whiteSpace: "nowrap", 
-          overflowX: "auto",  
-        }}>
-        <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
-        {filterTags.map((tag, index) => (
-          <IonChip
-            key={index}
-            onClick={() => toggleTag(tag)}
-            color={tag.selected ? "primary" : ""}
-          >
-            {tag.name}
-          </IonChip>
-        ))}
-        </div>
+  <div style={{
+    width: "100%",   
+    whiteSpace: "nowrap", 
+    overflowX: "auto",  
+  }}>
+    <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
+    {filterTags?.map((tag, index) => (
+      <IonChip
+        key={index}
+        onClick={() => toggleTag(tag)}
+        color={tag.tagged ? "primary" : ""}
+      >
+        {tag.name}
+      </IonChip>
+    ))}
+  </div>
         {userRole === "admin" && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={modalOncklick}>
