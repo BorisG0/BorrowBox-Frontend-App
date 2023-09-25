@@ -1,5 +1,6 @@
 import {
   IonAvatar,
+  IonButton,
   IonChip,
   IonContent,
   IonHeader,
@@ -64,16 +65,17 @@ const RentalHistory: React.FC<RentalHistoryProps> = ({ history }) => {
       <IonContent>
         <IonHeader>
           <IonToolbar>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <IonIcon
-                icon={arrowBack}
-                style={{ marginLeft: "20px" }}
-                onClick={() => {
-                  history.push("/user");
-                }}
-              />
-              <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
-            </div>
+            <IonButton
+              color="light"
+              slot="start"
+              style={{ marginLeft: "10px" }}
+              onClick={() => {
+                history.push("/user");
+              }}
+            >
+              <IonIcon icon={arrowBack} />
+            </IonButton>
+            <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
           </IonToolbar>
         </IonHeader>
 

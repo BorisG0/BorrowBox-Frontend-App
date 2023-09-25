@@ -43,6 +43,7 @@ import { logDOM } from "@testing-library/react";
 import { checkLoginStatus, hashPassword } from "../data/utils";
 import { AxiosResponse } from "axios";
 import RoleSelection from "../components/RoleSelection";
+import EmptyPage from "../components/EmptyPage";
 interface UserProfileProps extends RouteComponentProps {}
 
 interface User {
@@ -178,11 +179,17 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
       <IonContent>
         <IonHeader>
           <IonToolbar>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <IonButton
+              color="light"
+              slot="start"
+              style={{ marginLeft: "10px" }}
+              onClick={() => {
+                history.push("/user");
+              }}
+            >
               {editModeEnabled ? (
                 <IonIcon
                   icon={closeCircleOutline}
-                  style={{ marginLeft: "20px" }}
                   onClick={() => {
                     setEditModeEnabled(false);
                   }}
@@ -190,60 +197,61 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
               ) : (
                 <IonIcon
                   icon={arrowBack}
-                  style={{ marginLeft: "20px" }}
                   onClick={() => {
                     history.push("/user");
                   }}
                 />
               )}
-              <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
-            </div>
+            </IonButton>
+            <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
           </IonToolbar>
         </IonHeader>
-
-        <IonList>
-          {users.map((user: User, index) => (
-            <IonItem
-              key={user.id}
-              lines="none"
-              style={{
-                marginBottom: index === users.length - 1 ? "0" : "16px",
-              }}
-            >
-              {" "}
-              <div style={{ marginRight: "16px" }}>
-                {editModeEnabled && (
-                  <IonCheckbox
-                    checked={selectedUsers.includes(user)}
-                    onIonChange={(e) => handleCheckboxChange(e, user)}
-                    aria-label="Auswählen"
-                    labelPlacement="fixed"
-                  />
-                )}
-              </div>
-              <div
+        {users.length === 0 ? (
+          <EmptyPage message="Keine Einträge vorhanden" />
+        ) : (
+          <IonList>
+            {users.map((user: User, index) => (
+              <IonItem
+                key={user.id}
+                lines="none"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "100%",
+                  marginBottom: index === users.length - 1 ? "0" : "16px",
                 }}
               >
-                <IonLabel>
-                  <h2>{user.username}</h2>
-                  <p>{user.email}</p>
-                </IonLabel>
-                <RoleSelection userId={user?.id} defaultRole={user?.role} />
-              </div>
-              {!editModeEnabled && (
-                <IonButton onClick={() => handlePasswordReset(user)}>
-                  <IonIcon icon={key} />
-                </IonButton>
-              )}
-            </IonItem>
-          ))}
-        </IonList>
-
+                {" "}
+                <div style={{ marginRight: "16px" }}>
+                  {editModeEnabled && (
+                    <IonCheckbox
+                      checked={selectedUsers.includes(user)}
+                      onIonChange={(e) => handleCheckboxChange(e, user)}
+                      aria-label="Auswählen"
+                      labelPlacement="fixed"
+                    />
+                  )}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <IonLabel>
+                    <h2>{user.username}</h2>
+                    <p>{user.email}</p>
+                  </IonLabel>
+                  <RoleSelection userId={user?.id} defaultRole={user?.role} />
+                </div>
+                {!editModeEnabled && (
+                  <IonButton onClick={() => handlePasswordReset(user)}>
+                    <IonIcon icon={key} />
+                  </IonButton>
+                )}
+              </IonItem>
+            ))}
+          </IonList>
+        )}
         <IonModal isOpen={showAddUserModal}>
           <IonItem>
             <IonLabel position="floating">Name</IonLabel>
