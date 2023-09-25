@@ -25,40 +25,41 @@ const BorrowTab: React.FC<{}> = () => {
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
-  const [filterTags, setFilterTags] = useState([] as Tag[]);
+  const [filterTags, setFilterTags] = useState<Tag[] | null>(null);
   const [showAvailable, setShowAvailable] = useState(false);
 
   const itemIncludesSelectedTag = (item: any) => {
-    for (const tag of filterTags) {
-      if (tag.selected && !item.tags.includes(tag.name)) {
-        return false;
+    for (const tag of filterTags!) {
+      if (tag.tagged && item.tags.includes(tag.name)) {
+        return true; // Wenn mindestens ein ausgewählter Tag gefunden wird, geben Sie true zurück
       }
     }
-    return true;
+    return false; // Wenn kein ausgewählter Tag gefunden wird, geben Sie false zurück
   };
 
   const filteredItems = allItems.filter((item) =>
-    //check if item has the name searched for
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-    //check if item has a tag that is selected from the filter
-    && itemIncludesSelectedTag(item)
-    //check if item is available
-    && (showAvailable ? item.available : true)
-  );
+  // Prüfen Sie, ob das Element den Namen enthält, nach dem gesucht wird
+  item.name.toLowerCase().includes(searchText.toLowerCase())
+  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat
+  && itemIncludesSelectedTag(item)
+  // Überprüfen Sie, ob das Element verfügbar ist (falls erforderlich)
+  && (showAvailable ? item.available : true)
+);
 
   const modalOncklick = () => {
     setShowModal(!showModal);
   };
 
   const toggleTag = (tag: Tag) => {
-    tag.selected = !tag.selected;
-    setFilterTags([...filterTags]);
+    tag.tagged = !tag.tagged;
+    setFilterTags([...filterTags!]);
+
   };
 
   const toggleShowAvailable = () => {
     setShowAvailable(!showAvailable);
   };
-
+  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -66,12 +67,14 @@ const BorrowTab: React.FC<{}> = () => {
         if (loginTokenData) {
           const userData = await fetchCurrentUser();
           setUserRole(userData.data.role);
+          if(userData) {
+            const tagData = await fetchTags(userData.data._id);
+            setFilterTags(tagData.data);
+          }
         }
         const itemData = await fetchItemData();
         setAllItems(itemData.data);
 
-        const tagData = await fetchTags(null);
-        setFilterTags(tagData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -93,22 +96,22 @@ const BorrowTab: React.FC<{}> = () => {
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
-        <div style={{
-          width: "100%",   
-          whiteSpace: "nowrap", 
-          overflowX: "auto",  
-        }}>
-        <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
-        {filterTags.map((tag, index) => (
-          <IonChip
-            key={index}
-            onClick={() => toggleTag(tag)}
-            color={tag.selected ? "primary" : ""}
-          >
-            {tag.name}
-          </IonChip>
-        ))}
-        </div>
+  <div style={{
+    width: "100%",   
+    whiteSpace: "nowrap", 
+    overflowX: "auto",  
+  }}>
+    <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
+    {filterTags?.map((tag, index) => (
+      <IonChip
+        key={index}
+        onClick={() => toggleTag(tag)}
+        color={tag.tagged ? "primary" : ""}
+      >
+        {tag.name}
+      </IonChip>
+    ))}
+  </div>
         {userRole === "admin" && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={modalOncklick}>
