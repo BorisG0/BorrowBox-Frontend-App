@@ -93,7 +93,6 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
   };
 
   const handleAddUser = () => {
-    console.log(`Add User: ${newUserName}`);
     setShowAddUserModal(false);
     setNewUserName("");
     setNewUserPassword("");
@@ -101,7 +100,6 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
 
   const handleCheckboxChange = (e: any, user: User) => {
     const isChecked = e.detail.checked;
-    console.log(user.username);
     if (isChecked) {
       // Überprüfe, ob der Benutzer bereits ausgewählt ist
       const isUserSelected = selectedUsers.some(
@@ -141,7 +139,6 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
 
       const filterd = setUsersWithFilter(filteredResponse);
       setUsers(filterd);
-      console.log(filterd);
     } else {
       setinputPassword("");
       setinputUsername("");
@@ -343,7 +340,6 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
           onDidDismiss={({ detail }) => {
             if (detail.role === "confirm") {
               resetPassword(userToReset);
-              console.log(userToReset);
             }
             setPwdChangeAlert(false);
           }}
