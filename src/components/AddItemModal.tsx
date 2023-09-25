@@ -89,24 +89,24 @@ interface AddItemModalProps {
     <IonModal isOpen={true}>
     <IonHeader>
       <IonToolbar>
-        <IonTitle>Add an Item</IonTitle>
+        <IonTitle>Item hinzufügen</IonTitle>
       </IonToolbar>
     </IonHeader>
     <IonContent>
       <IonItem>
-        <IonLabel position="stacked">Enter the name:</IonLabel>
+        <IonLabel position="stacked">Name:</IonLabel>
         <IonInput ref={inputRefs.name} type="text" placeholder="Name" />
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Enter the description:</IonLabel>
-        <IonInput ref={inputRefs.description} type="text" placeholder="Description" />
+        <IonLabel position="stacked">Beschreibung:</IonLabel>
+        <IonInput ref={inputRefs.description} type="text" placeholder="Beschreibung" />
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Enter the location:</IonLabel>
-        <IonInput ref={inputRefs.location} type="text" placeholder="Location" />
+        <IonLabel position="stacked">Lagerort:</IonLabel>
+        <IonInput ref={inputRefs.location} type="text" placeholder="Lagerort" />
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Enter the tags:</IonLabel>
+        <IonLabel position="stacked">Tags:</IonLabel>
         <div>
               {existingTags.map((tag, index) => {
                 const selected = selectedTagIds.includes(tag._id);
@@ -125,11 +125,11 @@ interface AddItemModalProps {
             </div>
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Enter the picture:</IonLabel>
-        <IonInput ref={inputRefs.picture} type="text" placeholder="Picture" />
+        <IonLabel position="stacked">Bild:</IonLabel>
+        <IonInput ref={inputRefs.picture} type="text" placeholder="Bild" />
       </IonItem>
-      <IonButton onClick={confirm}>Confirm</IonButton>
-      <IonButton onClick={onClose}>Cancel</IonButton>
+      <IonButton onClick={confirm}>Bestätigen</IonButton>
+      <IonButton onClick={onClose}>Abbrechen</IonButton>
     </IonContent>
   </IonModal>
   );

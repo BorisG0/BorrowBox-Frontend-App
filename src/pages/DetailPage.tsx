@@ -262,7 +262,7 @@ const DetailPage: React.FC = () => {
         <>
           <IonHeader>
             <IonToolbar>
-              <IonTitle>Item Detail</IonTitle>
+              <IonTitle>Item Details</IonTitle>
             </IonToolbar>
           </IonHeader>
           <IonContent>
@@ -278,7 +278,7 @@ const DetailPage: React.FC = () => {
                 {isEditing ? (
                   <form>
                     <IonItem>
-                      <IonLabel position="stacked">Enter the name:</IonLabel>
+                      <IonLabel position="stacked">Name:</IonLabel>
                       <IonInput
                         type="text"
                         value={editedItem?.name || ''}
@@ -289,7 +289,7 @@ const DetailPage: React.FC = () => {
 
                     </IonItem>
                     <IonItem>
-                      <IonLabel position="stacked">Enter the description:</IonLabel>
+                      <IonLabel position="stacked">Beschreibung:</IonLabel>
                       <IonInput
                         type="text"
                         value={editedItem?.description || ''}
@@ -299,7 +299,7 @@ const DetailPage: React.FC = () => {
                       />
                     </IonItem>
                     <IonItem>
-                      <IonLabel position="stacked">Enter the location:</IonLabel>
+                      <IonLabel position="stacked">Lagerort:</IonLabel>
                       <IonInput
                         type="text"
                         value={editedItem?.location || ''}
@@ -309,7 +309,7 @@ const DetailPage: React.FC = () => {
                       />
                     </IonItem>
                     <IonCardContent>
-                      <p>Select chips by clicking on them:</p>
+                      <p>Tags durch klicken auswählen:</p>
                       <div>
                         {chipData.map((chip, index) => {
                           function handleChipContextMenu(
@@ -361,8 +361,8 @@ const DetailPage: React.FC = () => {
                     )}
                     
                     <p> Beschreibung: {item?.description}</p>
-                    <p> Location: {item?.location}</p>
-                    <p>Tags:
+                    <p> Lagerort: {item?.location}</p>
+                    <p> Tags:
                         {item?.tagNames && item?.tagNames.length > 0 &&
                         item?.tagNames.map((tag: string, index: number) => (
                           <IonChip key={index}>{tag}</IonChip>
@@ -371,22 +371,22 @@ const DetailPage: React.FC = () => {
                     </p>
                     {item?.currentRenter !== "" &&
                       <>
-                        <p>Rented by:{item?.currentRenter}</p>
+                        <p>Ausgeliehen von:{item?.currentRenter}</p>
                         <p>Ausgeliehen seit: {item?.rentedSince}</p>
                       </>}
                     {item?.reportDescription !== "" ? <>
-                      <p>Report: {item?.reportDescription}</p>
-                      <p>Report von: {item?.reportUser}</p>
-                      <p>Report Zeitpunkt: {item?.reportTime}</p>
-                      <p>Report kritisch: {item?.reportStateCritical ? "Ja" : "Nein"}</p>
+                      <p> Schadensbericht: {item?.reportDescription}</p>
+                      <p> Gemeldet von: {item?.reportUser}</p>
+                      <p> Meldezeitpunkt: {item?.reportTime}</p>
+                      <p> Schaden kritisch: {item?.reportStateCritical ? "Ja" : "Nein"}</p>
                     </>
-                      : <p> Kein Report vorhanden</p>
+                      : <p> Kein Schaden vorhanden</p>
                     }
                     <BorrowReturnButton item={item} isFunctionStartRental={true} isItemAvailable={isItemAvailable} setIsItemAvailable={setIsItemAvailable} />
                     {userRole === "admin" && (
                       <>{item?.reportStateCritical && 
                         <IonButton expand="full" onClick={handleFixReportClick}>
-                          Report beheben
+                          Schaden beheben
                         </IonButton>
                         }
                         <IonButton expand="full" onClick={handleEditClick}>
