@@ -30,21 +30,21 @@ const BorrowTab: React.FC<{}> = () => {
 
   const itemIncludesSelectedTag = (item: any) => {
     for (const tag of filterTags!) {
-      if (tag.tagged && !item.tags.includes(tag.name)) {
-        return false;
+      if (tag.tagged && item.tags.includes(tag.name)) {
+        return true; // Wenn mindestens ein ausgewählter Tag gefunden wird, geben Sie true zurück
       }
     }
-    return true;
+    return false; // Wenn kein ausgewählter Tag gefunden wird, geben Sie false zurück
   };
 
   const filteredItems = allItems.filter((item) =>
-    //check if item has the name searched for
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-    //check if item has a tag that is selected from the filter
-    && itemIncludesSelectedTag(item)
-    //check if item is available
-    && (showAvailable ? item.available : true)
-  );
+  // Prüfen Sie, ob das Element den Namen enthält, nach dem gesucht wird
+  item.name.toLowerCase().includes(searchText.toLowerCase())
+  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat
+  && itemIncludesSelectedTag(item)
+  // Überprüfen Sie, ob das Element verfügbar ist (falls erforderlich)
+  && (showAvailable ? item.available : true)
+);
 
   const modalOncklick = () => {
     setShowModal(!showModal);
