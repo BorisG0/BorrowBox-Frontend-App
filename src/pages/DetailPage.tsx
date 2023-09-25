@@ -366,9 +366,11 @@ const DetailPage: React.FC = () => {
                     <p> Beschreibung: {item?.description}</p>
                     <p> Location: {item?.location}</p>
                     <p>Tags:
-                      {item?.tagNames.map((tag: string, index: number) =>
-                        <IonChip key={index}>{tag}</IonChip>
-                      )}
+                        {item?.tagNames && item?.tagNames.length > 0 &&
+                        item?.tagNames.map((tag: string, index: number) => (
+                          <IonChip key={index}>{tag}</IonChip>
+                        ))
+                      }
                     </p>
                     {item?.currentRenter !== "" &&
                       <>
