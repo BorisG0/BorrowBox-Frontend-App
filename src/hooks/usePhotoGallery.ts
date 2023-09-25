@@ -37,7 +37,6 @@ export function usePhotoGallery() {
             const savedFileImage = await savePicture(photo, fileName);
 
             setPhoto(savedFileImage);
-            console.log(savedFileImage.filepath)
         } catch (error) {
             console.error('Error taking photo:', error);
         }

@@ -101,7 +101,6 @@ const DetailPage: React.FC = () => {
         setItem(fetchedItem.data);
         setLoading(false);
         setIsItemAvailable(fetchedItem.data.available);
-        console.log(fetchedItem)
 
         const url = await fetchItemImage(id);
         setImageURL(url);
@@ -137,7 +136,6 @@ const DetailPage: React.FC = () => {
   const handleDelete = async () => {
     try {
       const response = await deleteItem(id);
-      console.log(response);
 
       window.location.href = '/borrow';
     } catch (error) {
@@ -152,7 +150,6 @@ const DetailPage: React.FC = () => {
         itemId: id,
       }
       const response = await fixReport(fixedReport);
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -193,7 +190,6 @@ const DetailPage: React.FC = () => {
 
         // Wenn eine Übereinstimmung gefunden wurde, fügen Sie die ID hinzu
         if (matchingChip) {
-          console.log(matchingChip)
           selectedChipIDs.push(matchingChip._id);
         }
       }
@@ -206,8 +202,6 @@ const DetailPage: React.FC = () => {
         tagIds: selectedChipIDs,
       };
       const response = await updateItem(itemBackendData)
-      console.log(itemBackendData)
-      console.log(response)
       setItem(editedItem);
       setIsEditing(false);
     } catch (error) {
@@ -248,10 +242,8 @@ const DetailPage: React.FC = () => {
         // Call the uploadItemPhoto function and pass photo.filepath as an argument
         const file = new File([await fetch(photo.webviewPath).then((r) => r.blob())], 'photo.jpg');
       
-        console.log(file);
 
         const response = await uploadItemPhoto(id, file);
-        console.log('Photo upload response:', response);
         
         // Handle the response as needed
       } else {
@@ -426,7 +418,6 @@ const DetailPage: React.FC = () => {
                 text: "Nein",
                 role: "cancel",
                 handler: () => {
-                  console.log("Cancel clicked");
                 },
               },
               {
@@ -447,7 +438,6 @@ const DetailPage: React.FC = () => {
                 text: "Nein",
                 role: "cancel",
                 handler: () => {
-                  console.log("Cancel clicked");
                 },
               },
               {

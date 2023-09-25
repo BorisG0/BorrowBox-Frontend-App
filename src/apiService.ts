@@ -182,7 +182,6 @@ export const deleteItem = async (id: any): Promise<AxiosResponse<any>> => {
 export const addItem = async (item: any): Promise<AxiosResponse<any>> => {
   try {
     const response = await apiService.post("addItem", item);
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);
@@ -233,7 +232,6 @@ export const addUser = async (data: any): Promise<AxiosResponse<any>> => {
 
 export const deleteUsers = async (data: any): Promise<AxiosResponse<any>> => {
   try {
-    console.log(data)
     const response = await apiService.post(`users`, data);
     return response;
   } catch (error) {
@@ -281,7 +279,6 @@ export const uploadItemPhoto = async (itemId: string, photoFile: File): Promise<
     const formData = new FormData();
     formData.append("photo", photoFile);
 
-    console.log("uploadItemPhoto", itemId, photoFile)
 
     const response = await apiService.post(`uploadItemPhoto/${itemId}`, formData, {
       headers: {
