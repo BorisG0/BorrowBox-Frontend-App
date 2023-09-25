@@ -10,6 +10,9 @@ import {
   IonFabButton,
   IonIcon,
   IonChip,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from "@ionic/react";
 import BorrowItem from "../components/BorrowItem";
 import AddItemModal from "../components/AddItemModal";
@@ -19,14 +22,26 @@ import { add } from "ionicons/icons";
 import { checkLoginStatus } from "../data/utils";
 import { Tag } from "../data/tag";
 import EmptyPage from "../components/EmptyPage";
+import BorrowItem2 from "../components/BorrowItem2";
 
-const BorrowTab: React.FC<{}> = () => {
+import "../components/BorrowItem2.css";
+import { RouteComponentProps } from "react-router";
+
+interface ContainerProps extends RouteComponentProps {
+  history: any;
+}
+
+const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const [allItems, setAllItems] = useState([] as any[]);
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
   const [filterTags, setFilterTags] = useState([] as Tag[]);
   const [showAvailable, setShowAvailable] = useState(false);
+
+  const navigate = (src: string) => {
+    history.push(src)
+  }
 
   const itemIncludesSelectedTag = (item: any) => {
     for (const tag of filterTags) {
@@ -37,13 +52,14 @@ const BorrowTab: React.FC<{}> = () => {
     return true;
   };
 
-  const filteredItems = allItems.filter((item) =>
-    //check if item has the name searched for
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-    //check if item has a tag that is selected from the filter
-    && itemIncludesSelectedTag(item)
-    //check if item is available
-    && (showAvailable ? item.available : true)
+  const filteredItems = allItems.filter(
+    (item) =>
+      //check if item has the name searched for
+      item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+      //check if item has a tag that is selected from the filter
+      itemIncludesSelectedTag(item) &&
+      //check if item is available
+      (showAvailable ? item.available : true)
   );
 
   const modalOncklick = () => {
@@ -78,7 +94,6 @@ const BorrowTab: React.FC<{}> = () => {
     }
     fetchData();
   }, []);
-  
 
   return (
     <IonPage>
@@ -93,21 +108,28 @@ const BorrowTab: React.FC<{}> = () => {
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
-        <div style={{
-          width: "100%",   
-          whiteSpace: "nowrap", 
-          overflowX: "auto",  
-        }}>
-        <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
-        {filterTags.map((tag, index) => (
+        <div
+          style={{
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflowX: "auto",
+          }}
+        >
           <IonChip
-            key={index}
-            onClick={() => toggleTag(tag)}
-            color={tag.selected ? "primary" : ""}
+            onClick={toggleShowAvailable}
+            color={showAvailable ? "primary" : ""}
           >
-            {tag.name}
+            Verfügbar
           </IonChip>
-        ))}
+          {filterTags.map((tag, index) => (
+            <IonChip
+              key={index}
+              onClick={() => toggleTag(tag)}
+              color={tag.selected ? "primary" : ""}
+            >
+              {tag.name}
+            </IonChip>
+          ))}
         </div>
         {userRole === "admin" && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
@@ -119,13 +141,18 @@ const BorrowTab: React.FC<{}> = () => {
         {filteredItems.length === 0 && (
           <EmptyPage message="Keine Items gefunden" />
         )}
-        {filteredItems.map((item, index) => (
-          <BorrowItem
-            item={item}
-            key={index}
-            isFunctionStartRental={true}
-          />
-        ))}
+        <IonGrid>
+          <IonRow style={{ gap: "20px" }}>
+            {filteredItems.map((item, index) => (
+                <BorrowItem2
+                  item={item}
+                  key={index}
+                  isFunctionStartRental={true}
+                  navigate={navigate}
+                />
+            ))}
+          </IonRow>
+        </IonGrid>
         {/* Bedingtes Rendern des Modals basierend auf showModal-Zustand */}
         {showModal && <AddItemModal onClose={() => setShowModal(false)} />}
       </IonContent>
