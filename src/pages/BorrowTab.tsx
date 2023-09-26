@@ -45,6 +45,7 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   }
 
   const itemIncludesSelectedTag = (item: any) => {
+    if(!filterTags) return true;
     for (const tag of filterTags!) {
       if (tag.tagged && item.tags.includes(tag.name)) {
         return true; // Wenn mindestens ein ausgewählter Tag gefunden wird, geben Sie true zurück
