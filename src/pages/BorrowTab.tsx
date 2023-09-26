@@ -159,6 +159,11 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
                   isFunctionStartRental={true}
                   navigate={navigate}
                 />
+/*                 <BorrowItem
+                  item={item}
+                  key={index}
+                  isFunctionStartRental={true}
+                /> */
             ))}
           </IonRow>
         </IonGrid>

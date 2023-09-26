@@ -51,19 +51,17 @@ const BorrowItem2: React.FC<ContainerProps> = ({ item, isFunctionStartRental, na
     <>
       <IonCol
         size="auto"
+        className="ion_col_custom"
         style={{ minWidth: "170px", maxWidth: "180px",backgroundcolor: "red" }}
       >
         <IonCardTitle>{item.name}</IonCardTitle>
         <IonCardSubtitle>{item.location}</IonCardSubtitle>
         <IonCardContent>
-          <IonThumbnail onClick={() => { }}>
+          <IonThumbnail onClick={() => {       window.location.href = `/item/${item._id}`; }}>
             {imageURL ? <img src={imageURL} /> : <img src="/box_logo.png" />}
           </IonThumbnail>
         </IonCardContent>
         <div style={{ float: "right", padding: "10px" }}>
-{/*           <IonButton routerLink={`/item/${item._id}`} fill="clear">
-            Details
-          </IonButton> */}
           {isItemAvailable ? (
             <BorrowReturnButton
               item={item}

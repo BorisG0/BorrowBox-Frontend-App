@@ -3,7 +3,7 @@
     --border-radius: 14px;
   }
 
-  ion-col {
+  .ion_col_custom {
     background-color: #73737315;
     padding-left: 20px; /* Hier können Sie den gewünschten Abstand einstellen */
     padding-top: 20px; /* Hier können Sie den gewünschten Abstand einstellen */
