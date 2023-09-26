@@ -203,7 +203,7 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
                 />
               )}
             </IonButton>
-            <IonTitle style={{ marginLeft: "8px" }}>Benutzertabelle</IonTitle>
+            <IonTitle style={{ marginLeft: "8px" }}>Nutzerverwaltung</IonTitle>
           </IonToolbar>
         </IonHeader>
         {users.length === 0 ? (
