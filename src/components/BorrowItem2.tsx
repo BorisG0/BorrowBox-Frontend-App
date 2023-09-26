@@ -38,6 +38,7 @@ const BorrowItem2: React.FC<ContainerProps> = ({ item, isFunctionStartRental, na
     async function fetchData() {
       try {
         const url = await fetchItemImage(item._id);
+        setIsItemAvailable(item.available);
         setImageURL(url);
       } catch (error) {
         setImageURL("");

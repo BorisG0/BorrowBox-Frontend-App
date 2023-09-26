@@ -46,19 +46,22 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
 
   const itemIncludesSelectedTag = (item: any) => {
     if(!filterTags) return true;
+    let atLeastOneTagged = false;
+
     for (const tag of filterTags!) {
+      if(tag.tagged) atLeastOneTagged = true;
       if (tag.tagged && item.tags.includes(tag.name)) {
         return true; // Wenn mindestens ein ausgewählter Tag gefunden wird, geben Sie true zurück
       }
     }
-    return false; // Wenn kein ausgewählter Tag gefunden wird, geben Sie false zurück
+    return !atLeastOneTagged; // Wenn kein ausgewählter tag gepasst dann false, falls kein tag ausgewählt true
   };
 
 
   const filteredItems = allItems.filter((item) =>
   // Prüfen Sie, ob das Element den Namen enthält, nach dem gesucht wird
   item.name.toLowerCase().includes(searchText.toLowerCase())
-  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat
+  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat, falls kein filter ausgewählt: alle anzeigen
   && itemIncludesSelectedTag(item)
   // Überprüfen Sie, ob das Element verfügbar ist (falls erforderlich)
   && (showAvailable ? item.available : true)

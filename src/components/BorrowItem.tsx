@@ -29,6 +29,7 @@ const BorrowItem: React.FC<{
         try{
           const url = await fetchItemImage(item._id);
           setImageURL(url);
+          setIsItemAvailable(item.available);
         }catch(error){
           setImageURL("")
         }
