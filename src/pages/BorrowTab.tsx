@@ -13,6 +13,7 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import BorrowItem from "../components/BorrowItem";
 import AddItemModal from "../components/AddItemModal";
@@ -37,7 +38,7 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
   const [filterTags, setFilterTags] = useState<Tag[] | null>(null);
-  const [showAvailable, setShowAvailable] = useState(false);
+  const [showAvailable, setShowAvailable] = useState(true);
 
   const navigate = (src: string) => {
     history.push(src)
@@ -75,6 +76,11 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const toggleShowAvailable = () => {
     setShowAvailable(!showAvailable);
   };
+
+  async function fetchAllItemData(){
+      const itemData = await fetchItemData();
+      setAllItems(itemData.data);
+  }
   
   useEffect(() => {
     async function fetchData() {
@@ -88,8 +94,7 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
             setFilterTags(tagData.data);
           }
         }
-        const itemData = await fetchItemData();
-        setAllItems(itemData.data);
+        fetchAllItemData();
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -97,6 +102,10 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
     }
     fetchData();
   }, []);
+
+  useIonViewWillEnter(() => {
+    fetchAllItemData();
+  })
 
   return (
     <IonPage>
