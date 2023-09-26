@@ -38,7 +38,7 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
   const [filterTags, setFilterTags] = useState<Tag[] | null>(null);
-  const [showAvailable, setShowAvailable] = useState(false);
+  const [showAvailable, setShowAvailable] = useState(true);
 
   const navigate = (src: string) => {
     history.push(src)
