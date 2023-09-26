@@ -44,7 +44,8 @@ import { checkLoginStatus, hashPassword } from "../data/utils";
 import { AxiosResponse } from "axios";
 import RoleSelection from "../components/RoleSelection";
 import EmptyPage from "../components/EmptyPage";
-interface UserProfileProps extends RouteComponentProps {}
+import { sendThisMail } from "../components/SendMail";
+interface UserProfileProps extends RouteComponentProps { }
 
 interface User {
   email: string;
@@ -130,6 +131,12 @@ const UserTable: React.FC<UserProfileProps & { loginToken: any }> = ({
       };
 
       const response = await addUser(userData);
+
+      sendThisMail({
+        userName: userData.username,
+        email: userData.email,
+        password: e.detail.data.values[2]
+      })
 
       const filteredResponse = response.data.map((user: any) => {
         return {
