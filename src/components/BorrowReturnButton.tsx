@@ -119,7 +119,7 @@ const BorrowReturnButton: React.FC<{
 
             <IonAlert // Location genauer bestimmen
                 isOpen={showLocationDetailSelection}
-                onDidDismiss={() => setShowReportConfirmation(false)}
+                onDidDismiss={() => setShowLocationDetailSelection(false)}
                 header="Optional"
                 message={`Im welchen Regal wird es abgelegt`}
                 inputs={[
