@@ -300,7 +300,10 @@ export const fetchItemImage = async (itemId: string) => {
     const response = await apiService.get(`itemImage/${itemId}`, {
       responseType: "arraybuffer",
     });
-
+    
+    if(response.data.byteLength == 0){
+      return "";
+    }
     const imageBlob = new Blob([response.data], { type: "image/jpeg" });
     const imageUrl = URL.createObjectURL(imageBlob);
     return imageUrl;
