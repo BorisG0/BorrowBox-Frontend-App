@@ -5,7 +5,6 @@ import { t } from "i18next";
 
 //const API_URL = "http://localhost:8088";
  const API_URL = "http://anton.b5r4773jcchdcbhm.myfritz.net:8088";
- 
 
 type ReportForBackend = {
   userId: string;

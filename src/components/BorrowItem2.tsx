@@ -21,12 +21,16 @@ import "./BorrowItem2.css";
 import { RouteComponentProps } from "react-router";
 
 interface ContainerProps {
-    item: any;
-    isFunctionStartRental: boolean;
-    navigate: (src: string) => void;
+  item: any;
+  isFunctionStartRental: boolean;
+  navigate: (src: string) => void;
 }
 
-const BorrowItem2: React.FC<ContainerProps> = ({ item, isFunctionStartRental, navigate }) => {
+const BorrowItem2: React.FC<ContainerProps> = ({
+  item,
+  isFunctionStartRental,
+  navigate,
+}) => {
   const [isItemAvailable, setIsItemAvailable] = useState(item.available);
   const [imageURL, setImageURL] = useState<string>("");
 
@@ -52,15 +56,21 @@ const BorrowItem2: React.FC<ContainerProps> = ({ item, isFunctionStartRental, na
       <IonCol
         size="auto"
         className="ion_col_custom"
-        style={{ minWidth: "170px", maxWidth: "180px",backgroundcolor: "red" }}
+        style={{ minWidth: "170px", maxWidth: "180px", backgroundcolor: "red" }}
       >
-        <IonCardTitle>{item.name}</IonCardTitle>
-        <IonCardSubtitle>{item.location}</IonCardSubtitle>
+        <IonCardTitle style={{ whiteSpace: "pre-line", minHeight: "3em" }}>
+          {item.name}
+        </IonCardTitle>
         <IonCardContent>
-          <IonThumbnail onClick={() => {       window.location.href = `/item/${item._id}`; }}>
+          <IonThumbnail
+            onClick={() => {
+              window.location.href = `/item/${item._id}`;
+            }}
+          >
             {imageURL ? <img src={imageURL} /> : <img src="/box_logo.png" />}
           </IonThumbnail>
         </IonCardContent>
+        <IonCardSubtitle style={{ textAlign: 'right', marginRight:"20px" }}>{item.location}</IonCardSubtitle>
         <div style={{ float: "right", padding: "10px" }}>
           {isItemAvailable ? (
             <BorrowReturnButton
@@ -70,7 +80,9 @@ const BorrowItem2: React.FC<ContainerProps> = ({ item, isFunctionStartRental, na
               setIsItemAvailable={setIsItemAvailable}
             />
           ) : (
-            <IonChip color="danger" style={{textAlign: "center"}}>nicht verfügbar</IonChip>
+            <IonChip color="danger" style={{ textAlign: "center" }}>
+              nicht verfügbar
+            </IonChip>
           )}
         </div>
       </IonCol>
