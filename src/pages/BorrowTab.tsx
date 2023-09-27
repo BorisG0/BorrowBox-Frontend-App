@@ -13,6 +13,7 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import BorrowItem from "../components/BorrowItem";
 import AddItemModal from "../components/AddItemModal";
@@ -37,26 +38,30 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const [searchText, setSearchText] = useState("");
   const [userRole, setUserRole] = useState();
   const [filterTags, setFilterTags] = useState<Tag[] | null>(null);
-  const [showAvailable, setShowAvailable] = useState(false);
+  const [showAvailable, setShowAvailable] = useState(true);
 
   const navigate = (src: string) => {
     history.push(src)
   }
 
   const itemIncludesSelectedTag = (item: any) => {
+    if(!filterTags) return true;
+    let atLeastOneTagged = false;
+
     for (const tag of filterTags!) {
+      if(tag.tagged) atLeastOneTagged = true;
       if (tag.tagged && item.tags.includes(tag.name)) {
         return true; // Wenn mindestens ein ausgewählter Tag gefunden wird, geben Sie true zurück
       }
     }
-    return false; // Wenn kein ausgewählter Tag gefunden wird, geben Sie false zurück
+    return !atLeastOneTagged; // Wenn kein ausgewählter tag gepasst dann false, falls kein tag ausgewählt true
   };
 
 
   const filteredItems = allItems.filter((item) =>
   // Prüfen Sie, ob das Element den Namen enthält, nach dem gesucht wird
   item.name.toLowerCase().includes(searchText.toLowerCase())
-  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat
+  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat, falls kein filter ausgewählt: alle anzeigen
   && itemIncludesSelectedTag(item)
   // Überprüfen Sie, ob das Element verfügbar ist (falls erforderlich)
   && (showAvailable ? item.available : true)
@@ -75,6 +80,11 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const toggleShowAvailable = () => {
     setShowAvailable(!showAvailable);
   };
+
+  async function fetchAllItemData(){
+      const itemData = await fetchItemData();
+      setAllItems(itemData.data);
+  }
   
   useEffect(() => {
     async function fetchData() {
@@ -88,8 +98,7 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
             setFilterTags(tagData.data);
           }
         }
-        const itemData = await fetchItemData();
-        setAllItems(itemData.data);
+        fetchAllItemData();
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -97,6 +106,10 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
     }
     fetchData();
   }, []);
+
+  useIonViewWillEnter(() => {
+    fetchAllItemData();
+  })
 
   return (
     <IonPage>

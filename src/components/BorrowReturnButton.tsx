@@ -13,6 +13,7 @@ const BorrowReturnButton: React.FC<{
     const [showReturnConfirmation, setShowReturnConfirmation] = useState(false);
     const [showReportConfirmation, setShowReportConfirmation] = useState(false);
     const [showLocationSelection, setShowLocationSelection] = useState(false);
+    const [showLocationDetailSelection, setShowLocationDetailSelection] = useState(false);
 
     const [selectedLocation, setSelectedLocation] = useState("");
 
@@ -35,14 +36,16 @@ const BorrowReturnButton: React.FC<{
 
     const handleLocationSelected = async (location: string) => {
         setSelectedLocation(location);
+        setShowLocationDetailSelection(true);
+    }
+
+    const handleLocationDetailSelected = async (detail: string) => {
+        if(detail) setSelectedLocation(selectedLocation + " " + detail)
         setShowReturnConfirmation(true);
     }
 
     const handleFileReportPressed = async () => {
         setShowReportConfirmation(true);
-    }
-
-    const handleNoReportPressed = async () => {
     }
 
     const handleEndRental = async (report?: string, criticalReport?: boolean) => {
@@ -109,6 +112,28 @@ const BorrowReturnButton: React.FC<{
                         text: "Ok",
                         handler: (data) => {
                             handleLocationSelected(data);
+                        }
+                    }
+                ]}
+            />
+
+            <IonAlert // Location genauer bestimmen
+                isOpen={showLocationDetailSelection}
+                onDidDismiss={() => setShowLocationDetailSelection(false)}
+                header="Optional"
+                message={`Im welchen Regal wird es abgelegt`}
+                inputs={[
+                    {
+                        name: "locationDetail",
+                        type: "text",
+                        placeholder: "Regalnummer"
+                    }
+                ]}
+                buttons={[
+                    {
+                        text: "Ok",
+                        handler: (data) => {
+                            handleLocationDetailSelected(data.locationDetail)
                         }
                     }
                 ]}

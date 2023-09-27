@@ -42,6 +42,7 @@ const BorrowItem2: React.FC<ContainerProps> = ({
     async function fetchData() {
       try {
         const url = await fetchItemImage(item._id);
+        setIsItemAvailable(item.available);
         setImageURL(url);
       } catch (error) {
         setImageURL("");

@@ -5,6 +5,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import BorrowItem from "../components/BorrowItem";
 import { useState, useEffect } from "react";
@@ -16,21 +17,25 @@ const MyItemsTab: React.FC<{}> = () => {
   const [items, setItems] = useState([] as any[]);
   const [responseCode, setResponseCode] = useState(500);
 
-
-  useEffect(() => {
-    async function fetchItems() {
-      try {
-        const itemData = await fetchUserItemData();
-        setItems(itemData.data.items);
-        setResponseCode(itemData.status)
-      } catch (error: any) {
-        if (error.response.data.message != "No documents found") {
-          console.log(error);
-        }
+  async function fetchItems() {
+    try {
+      const itemData = await fetchUserItemData();
+      setItems(itemData.data.items);
+      setResponseCode(itemData.status)
+    } catch (error: any) {
+      if (error.response.data.message != "No documents found") {
+        console.log(error);
       }
     }
+  }
+
+  useEffect(() => {
     fetchItems();
   }, []);
+
+  useIonViewWillEnter(() => {
+    fetchItems();
+  })
 
   if (!checkLoginStatus()) {
     return (
