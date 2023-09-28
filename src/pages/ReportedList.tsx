@@ -15,11 +15,15 @@ import React, { useEffect, useState } from "react";
 import { Route, RouteComponentProps } from "react-router";
 import { deleteItem, fetchReports, fixReport } from "../apiService";
 import { arrowBack } from "ionicons/icons";
+import { checkLoginStatus } from "../data/utils";
 
 interface ReportedListProps extends RouteComponentProps {
   history: any;
 }
-
+type FixedReport = {
+  userId: string;
+  itemId: string;
+}
 interface Report {
   _id: string;
   description: string;
@@ -37,7 +41,7 @@ const ReportedList: React.FC<ReportedListProps> = ({ history }) => {
   const handleFixButtonClick = (reportId: any) => {
     setCiurrentEntry(reportId);
     setFixSheet(true);
-    console.log(`Problem beheben für Report ID: ${reportId}`);
+    console.log(`Problem beheben für Report ID: ${reportId.itemId}`);
   };
 
   const handleRemoveItem = (reportId: any) => {
@@ -51,12 +55,18 @@ const ReportedList: React.FC<ReportedListProps> = ({ history }) => {
     }
   };
 
-  const handleFixReport = (reportId: any) => {
+  const handleFixReport = async (report: any) => {
     try {
-      fixReport(reportId); 
-      setReports((prevReports) =>
+      console.log(report);
+      const userId = await checkLoginStatus();
+      const fixedReport: FixedReport = {
+        userId: userId + "",
+        itemId: report.itemId + "",
+      }
+      fixReport(fixedReport); 
+/*       setReports((prevReports) =>
         prevReports.filter((report) => report._id !== reportId)
-      );
+      ); */
     } catch (error) {
       console.log(error);
     }
@@ -107,7 +117,7 @@ const ReportedList: React.FC<ReportedListProps> = ({ history }) => {
                 <IonButton
                   expand="full"
                   fill="clear"
-                  onClick={() => handleFixButtonClick(report._id)}
+                  onClick={() => handleFixButtonClick(report)}
                 >
                   Beheben
                 </IonButton>

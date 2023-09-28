@@ -32,7 +32,7 @@ interface ContainerProps extends RouteComponentProps {
   history: any;
 }
 
-const BorrowTab: React.FC<ContainerProps> = ({history}) => {
+const BorrowTab: React.FC<ContainerProps> = ({ history }) => {
   const [allItems, setAllItems] = useState([] as any[]);
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -41,15 +41,15 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const [showAvailable, setShowAvailable] = useState(true);
 
   const navigate = (src: string) => {
-    history.push(src)
-  }
+    history.push(src);
+  };
 
   const itemIncludesSelectedTag = (item: any) => {
-    if(!filterTags) return true;
+    if (!filterTags) return true;
     let atLeastOneTagged = false;
 
     for (const tag of filterTags!) {
-      if(tag.tagged) atLeastOneTagged = true;
+      if (tag.tagged) atLeastOneTagged = true;
       if (tag.tagged && item.tags.includes(tag.name)) {
         return true; // Wenn mindestens ein ausgewählter Tag gefunden wird, geben Sie true zurück
       }
@@ -57,15 +57,15 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
     return !atLeastOneTagged; // Wenn kein ausgewählter tag gepasst dann false, falls kein tag ausgewählt true
   };
 
-
-  const filteredItems = allItems.filter((item) =>
-  // Prüfen Sie, ob das Element den Namen enthält, nach dem gesucht wird
-  item.name.toLowerCase().includes(searchText.toLowerCase())
-  // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat, falls kein filter ausgewählt: alle anzeigen
-  && itemIncludesSelectedTag(item)
-  // Überprüfen Sie, ob das Element verfügbar ist (falls erforderlich)
-  && (showAvailable ? item.available : true)
-);
+  const filteredItems = allItems?.filter(
+    (item) =>
+      // Prüfen Sie, ob das Element den Namen enthält, nach dem gesucht wird
+      item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+      // Überprüfen Sie, ob das Element mindestens einen ausgewählten Tag hat, falls kein filter ausgewählt: alle anzeigen
+      itemIncludesSelectedTag(item) &&
+      // Überprüfen Sie, ob das Element verfügbar ist (falls erforderlich)
+      (showAvailable ? item.available : true)
+  );
 
   const modalOncklick = () => {
     setShowModal(!showModal);
@@ -74,18 +74,17 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
   const toggleTag = (tag: Tag) => {
     tag.tagged = !tag.tagged;
     setFilterTags([...filterTags!]);
-
   };
 
   const toggleShowAvailable = () => {
     setShowAvailable(!showAvailable);
   };
 
-  async function fetchAllItemData(){
-      const itemData = await fetchItemData();
+  async function fetchAllItemData() {
+    const itemData = await fetchItemData();
       setAllItems(itemData.data);
   }
-  
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -93,13 +92,12 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
         if (loginTokenData) {
           const userData = await fetchCurrentUser();
           setUserRole(userData.data.role);
-          if(userData) {
+          if (userData) {
             const tagData = await fetchTags(userData.data._id);
             setFilterTags(tagData.data);
           }
         }
         fetchAllItemData();
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -109,7 +107,7 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
 
   useIonViewWillEnter(() => {
     fetchAllItemData();
-  })
+  });
 
   return (
     <IonPage>
@@ -124,22 +122,29 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
         />
-  <div style={{
-    width: "100%",   
-    whiteSpace: "nowrap", 
-    overflowX: "auto",  
-  }}>
-    <IonChip onClick={toggleShowAvailable} color={showAvailable ? "primary" : ""}>Verfügbar</IonChip>
-    {filterTags?.map((tag, index) => (
-      <IonChip
-        key={index}
-        onClick={() => toggleTag(tag)}
-        color={tag.tagged ? "primary" : ""}
-      >
-        {tag.name}
-      </IonChip>
-    ))}
-  </div>
+        <div
+          style={{
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflowX: "auto",
+          }}
+        >
+          <IonChip
+            onClick={toggleShowAvailable}
+            color={showAvailable ? "primary" : ""}
+          >
+            Verfügbar
+          </IonChip>
+          {filterTags?.map((tag, index) => (
+            <IonChip
+              key={index}
+              onClick={() => toggleTag(tag)}
+              color={tag.tagged ? "primary" : ""}
+            >
+              {tag.name}
+            </IonChip>
+          ))}
+        </div>
         {userRole === "admin" && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={modalOncklick}>
@@ -147,19 +152,19 @@ const BorrowTab: React.FC<ContainerProps> = ({history}) => {
             </IonFabButton>
           </IonFab>
         )}
-        {filteredItems.length === 0 && (
+        {(filteredItems?.length === 0 || !filteredItems ) && (
           <EmptyPage message="Keine Items gefunden" />
         )}
         <IonGrid>
           <IonRow style={{ gap: "20px" }}>
-            {filteredItems.map((item, index) => (
-                <BorrowItem2
-                  item={item}
-                  key={index}
-                  isFunctionStartRental={true}
-                  navigate={navigate}
-                />
-/*                 <BorrowItem
+            {filteredItems?.map((item, index) => (
+              <BorrowItem2
+                item={item}
+                key={index}
+                isFunctionStartRental={true}
+                navigate={navigate}
+              />
+              /*                 <BorrowItem
                   item={item}
                   key={index}
                   isFunctionStartRental={true}

@@ -22,6 +22,7 @@ import {
   IonToast,
   IonLoading,
   IonBadge,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import {
   personCircle,
@@ -71,47 +72,46 @@ const UserProfile: React.FC<
 
   const pagePersonalInfo = "personal-info";
   const pageFilter = "filter";
-
-  useEffect(() => {
-    const checkLoginAndFetchData = async () => {
-      setLoading(true);
-      if (!loginToken) {
-        const result = await checkLoginStatus();
-        setLoginToken(result);
-        loginToken = result;
-        if (result === null) {
-          history.push("/login");
-          return;
+  const checkLoginAndFetchData = async () => {
+    setLoading(true);
+    if (!loginToken) {
+      const result = await checkLoginStatus();
+      setLoginToken(result);
+      loginToken = result;
+      if (result === null) {
+        history.push("/login");
+        return;
+      }
+    }
+    try {
+      const data = await fetchCurrentUser();
+      setUserData(data.data);
+      setEmailValue(data.data.email);
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      const response = await fetchTags(loginToken);
+      const updatedChips = new Set(selectedChips);
+      response.data.map((tag: any) => {
+        if (tag.tagged) {
+          updatedChips.add(tag.name);
         }
-      }
-      try {
-        const data = await fetchCurrentUser();
-        setUserData(data.data);
-        setEmailValue(data.data.email);
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        const response = await fetchTags(loginToken);
-        const updatedChips = new Set(selectedChips);
-        response.data.map((tag: any) => {
-          if (tag.tagged) {
-            updatedChips.add(tag.name);
-          }
-        });
-        setSelectedChips(updatedChips);
-        setChipData(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        const response = await fetchReports();
-        setReports(response.data.length);
-      } catch (error) {
-        console.log(error);
-      }
-      setLoading(false);
-    };
+      });
+      setSelectedChips(updatedChips);
+      setChipData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      const response = await fetchReports();
+      setReports(response.data.length);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
     checkLoginAndFetchData();
   }, [loginToken, history]);
 
@@ -166,7 +166,9 @@ const UserProfile: React.FC<
     }
     setEditModeEnabled(!editModeEnabled);
   };
-
+  useIonViewWillEnter(() => {
+    checkLoginAndFetchData();
+  });
   return (
     <IonPage>
       <IonContent>
