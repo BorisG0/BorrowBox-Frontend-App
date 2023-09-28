@@ -85,6 +85,8 @@ const DetailPage: React.FC = () => {
   const [ userId, setUserId ] = useState<string>("");
   const [imageURL, setImageURL] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
+  
+  const { photo, takePhoto } = usePhotoGallery();
 
 
   useEffect(() => {
@@ -234,7 +236,7 @@ const DetailPage: React.FC = () => {
     setEditedItem(item);
   };
 
-  const { photo, takePhoto } = usePhotoGallery();
+  
 
   const handleUploadPhoto = async () => {
     try {

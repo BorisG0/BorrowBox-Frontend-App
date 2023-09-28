@@ -9,16 +9,20 @@ import {
     IonInput,
     IonItem,
     IonLabel,
-    IonChip
+    IonChip,
+    IonImg
 } from '@ionic/react';
-import { addItem, fetchTags } from '../apiService';
+import { addItem, fetchTags, uploadItemPhoto } from '../apiService';
 import { useEffect } from 'react';
 import { Tag } from '../data/tag';
+import { usePhotoGallery } from '../hooks/usePhotoGallery';
 interface AddItemModalProps {
     onClose: () => void; // onClose-Funktion als Prop hinzufügen
   }
 
   const AddItemModal: React.FC<AddItemModalProps> = ({ onClose }) => {
+    const { photo, takePhoto } = usePhotoGallery();
+
     const [existingTags, setExistingTags] = useState<Tag[]>([]);
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
     async function handleModalOpen() {
@@ -73,6 +77,9 @@ interface AddItemModalProps {
   const handleAddItem = async (newItem: any) => {
     try{
         const response = await addItem(newItem);
+        
+        const newId = response.data.message;
+        handleUploadPhoto(newId);
 
         if(response.status === 201){
           //hier toast
@@ -83,7 +90,26 @@ interface AddItemModalProps {
         //hier toast
 
     }
+  }
+
+  const handleUploadPhoto = async (id: string) => {
+    try {
+      if (photo && photo.webviewPath) {
+        // Call the uploadItemPhoto function and pass photo.filepath as an argument
+        const file = new File([await fetch(photo.webviewPath).then((r) => r.blob())], 'photo.jpg');
+      
+
+        const response = await uploadItemPhoto(id, file);
+        console.log(response);
+        
+        // Handle the response as needed
+      } else {
+        console.error('No photo to upload.');
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
     }
+  };
 
   return (
     <IonModal isOpen={true}>
@@ -126,7 +152,21 @@ interface AddItemModalProps {
       </IonItem>
       <IonItem>
         <IonLabel position="stacked">Bild:</IonLabel>
-        <IonInput ref={inputRefs.picture} type="text" placeholder="Bild" />
+        {photo ? (
+                      <>
+                        <IonImg src={photo.webviewPath} />
+                        <IonButton onClick={() => takePhoto()}>
+                          Foto ändern
+                        </IonButton>
+                      </>
+                    ):
+                    (
+                      <>
+                        <IonButton onClick={() => takePhoto()}>
+                          Foto hinzufügen
+                        </IonButton>
+                      </>
+                    )}
       </IonItem>
       <IonButton onClick={confirm}>Bestätigen</IonButton>
       <IonButton onClick={onClose}>Abbrechen</IonButton>
