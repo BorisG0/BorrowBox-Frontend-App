@@ -1,5 +1,6 @@
 # BorrowBox-Frontend-App
-Frontend part of BorrowBox Application
+Frontend part of BorrowBox Application\
+[backend repo](https://github.com/LucaGrab/BorrowBoxBackend)
 
 ## Start
 Some version of `node` required\
